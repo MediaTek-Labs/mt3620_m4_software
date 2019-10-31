@@ -1,0 +1,11 @@
+{
+  "SchemaVersion": 1,
+  "Name": "MT3620_RTApp_BareMetal_GPIO",
+  "ComponentId": "281F22B9-199E-4F47-A571-5976615BFFBE",
+  "EntryPoint": "/bin/app",
+  "CmdArgs": [],
+  "Capabilities": {
+    "Gpio": [ 9, 12 ]
+  },
+  "ApplicationType": "RealTimeCapable"
+}
