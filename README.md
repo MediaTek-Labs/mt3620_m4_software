@@ -17,7 +17,7 @@ This repository maintains the MT3620 M4 driver and real-time application sample 
 * **Sample_Code/**
     * The sample code which uses the **M-HAL** API in MT3620_M4_Driver/ to control the external peripherals.
 
-Please refer to the **[MT3620 M4 API Reference Manual](https://support.mediatek.com/AzureSphere/mt3620/)** for the detailed API description.
+Please refer to the **[MT3620 M4 API Reference Manual](https://support.mediatek.com/AzureSphere/mt3620/M4_API_Reference_Manual)** for the detailed API description.
 Use of the real-time cores is currently a **Beta** feature.
 
 ### Prerequisites

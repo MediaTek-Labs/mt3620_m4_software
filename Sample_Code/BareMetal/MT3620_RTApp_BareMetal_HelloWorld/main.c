@@ -83,7 +83,7 @@ static void Gpt3_WaitUs(int microseconds)
 
 static _Noreturn void RTCoreMain(void)
 {
-	int port_num = UART_PORT0;
+	int port_num = UART_ISU_0;
 
 	// SCB->VTOR = ExceptionVectorTable
 	WriteReg32(SCB_BASE, 0x08, (uint32_t)ExceptionVectorTable);

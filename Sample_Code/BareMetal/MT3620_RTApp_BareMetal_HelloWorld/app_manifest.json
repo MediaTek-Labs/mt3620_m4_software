@@ -4,6 +4,6 @@
   "ComponentId": "EFA4362A-14D6-4DA6-BE47-5A93D44E511A",
   "EntryPoint": "/bin/app",
   "CmdArgs": [],
-  "Capabilities": {},
+  "Capabilities": { "Uart": [ "ISU0" ] },
   "ApplicationType": "RealTimeCapable"
 }
