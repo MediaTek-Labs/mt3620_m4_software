@@ -12,7 +12,7 @@ This repository maintains the MT3620 M4 driver and real-time application sample 
     * The MT3620 M4 Driver which drives the external peripherals via GPIO or SPI or I2S or I2C or UART...
     * This driver could be divided into two layers
         * Upper layer: **M-HAL** (MediaTek Hardware AbstractionLayer), which provides high-level API to real-time application.
-        * Lower layer: **HDL** (Hardware Driver Layer), which handles the low-level hardware control.
+        * Lower layer: **HDL** (Hardware Driving Layer), which handles the low-level hardware control.
 
 * **Sample_Code/**
     * The sample code which uses the **M-HAL** API in MT3620_M4_Driver/ to control the external peripherals.

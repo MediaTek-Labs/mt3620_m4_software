@@ -11,9 +11,9 @@ Please refer to the [MT3620 M4 API Rerference Manual](https://support.mediatek.c
 
 * **Hardware**
     * [AVNET MT3620 Starter Kit](https://www.avnet.com/shop/us/products/avnet-engineering-services/aes-ms-mt3620-sk-g-3074457345636825680/)
-        * GPIO 26 / TXD0
-    * or [Seeed MT3620 Development Kit](https://aka.ms/azurespheredevkits)
         * Tx of Click Module 1
+    * or [Seeed MT3620 Development Kit](https://aka.ms/azurespheredevkits)
+        * GPIO 26 / TXD0
     * or other hardware that implements the [MT3620 Reference Development Board (RDB)](https://docs.microsoft.com/azure-sphere/hardware/mt3620-reference-board-design) design.
 
 * **Software**
