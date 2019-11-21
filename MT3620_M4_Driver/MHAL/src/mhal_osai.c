@@ -34,8 +34,9 @@
  */
 
 #include "mhal_osai.h"
+#include "os_hal_dma.h"
 
-#ifdef OS_BARE_METAL
+#ifdef OSAI_BARE_METAL
 void osai_delay_us(u32 us)
 {
 }
@@ -59,82 +60,7 @@ unsigned long osai_get_phyaddr(void* vir_addr)
 	return 0;
 
 }
-
-/* sync cache data to dram */
-void osai_clean_cache(void* vir_addr, u32 len)
-{
-
-}
-
-/* invalid cache data, next data read will from dram */
-void osai_invalid_cache(void* vir_addr, u32 len)
-{
-
-}
-
-int osai_dma_allocate_chan(u8 chn)
-{
-	return 0;
-}
-
-int osai_dma_config(u8 chn, struct osai_dma_config* cfg_params)
-{
-	return 0;
-}
-
-int osai_dma_start(u8 chn)
-{
-	return 0;
-}
-
-int osai_dma_stop(u8 chn)
-{
-	return 0;
-}
-
-int osai_dma_set_param(u8 chn, enum osai_dma_param_type param_type,
-	u32 value)
-{
-	return 0;
-}
-int osai_dma_get_param(u8 chn, enum osai_dma_param_type param_type)
-{
-
-	return 0;
-}
-
-int osai_dma_release_chan(u8 chn)
-{
-	return 0;
-}
-
-int osai_dma_get_status(u8 chn)
-{
-	return 0;
-}
-
-int osai_dma_update_vfifo_swptr(u8 chn, u32 length_byte)
-{
-	return 0;
-}
-
-int osai_dma_vff_read_data(u8 chn, u8* buffer, u32 length)
-{
-	return 0;
-}
-
-int osai_dma_reset(u8 chn)
-{
-	return 0;
-}
-
-int osai_dma_clr_dreq(u8 chn)
-{
-	return 0;
-}
 #else
-#include "os_hal_dma.h"
-
 void osai_delay_us(u32 us)
 {
 	 delay_us(us);
@@ -160,7 +86,9 @@ unsigned long osai_get_phyaddr(void *vir_addr)
 	return (unsigned long) vir_addr;
 
 }
+#endif
 
+#ifdef OSAI_ENABLE_DMA
 /* sync cache data to dram */
 void osai_clean_cache(void *vir_addr, u32 len)
 {
@@ -271,4 +199,20 @@ int osai_dma_clr_dreq(u8 chn)
 {
 	return mtk_os_hal_dma_clr_dreq(chn);
 }
+#else
+void osai_clean_cache(void *vir_addr, u32 len){}
+void osai_invalid_cache(void *vir_addr, u32 len){}
+int osai_dma_allocate_chan(u8 chn){return 0;}
+int osai_dma_config(u8 chn, struct osai_dma_config *cfg_params){return 0;}
+int osai_dma_start(u8 chn){return 0;}
+int osai_dma_stop(u8 chn){return 0;}
+int osai_dma_set_param(u8 chn, enum osai_dma_param_type param_type,
+						u32 value){return 0;}
+int osai_dma_get_param(u8 chn, enum osai_dma_param_type param_type){return 0;}
+int osai_dma_release_chan(u8 chn){return 0;}
+int osai_dma_get_status(u8 chn){return 0;}
+int osai_dma_update_vfifo_swptr(u8 chn, u32 length_byte){return 0;}
+int osai_dma_vff_read_data(u8 chn, u8 *buffer, u32 length){return 0;}
+int osai_dma_reset(u8 chn){return 0;}
+int osai_dma_clr_dreq(u8 chn){return 0;}
 #endif

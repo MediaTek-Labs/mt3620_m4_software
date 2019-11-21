@@ -388,6 +388,7 @@ void mtk_hdl_dma_dump_chn_reg(void __iomem *chn_base)
 	void __iomem *start_reg = chn_base;
 	u32 chn_reg_size = DMA_CHN_REG_OFFSET;
 	u32 reg_idx;
+	(void)start_reg;
 
 	for (reg_idx = 0; reg_idx < chn_reg_size; reg_idx += 4) {
 		if (reg_idx % 16 == 0)
@@ -402,6 +403,7 @@ void mtk_hdl_dma_dump_global_reg(void __iomem *dma_base)
 	void __iomem *start_reg = dma_base + DMA_GLB_REG_OFFSET;
 	u32 global_reg_size = 0x11C;
 	u32 reg_idx;
+	(void)start_reg;
 
 	for (reg_idx = 0; reg_idx < global_reg_size; reg_idx += 4) {
 		if (reg_idx % 16 == 0)

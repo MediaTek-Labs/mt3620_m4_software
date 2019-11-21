@@ -1,8 +1,17 @@
 CMAKE_MINIMUM_REQUIRED(VERSION 3.11)
 
-INCLUDE_DIRECTORIES(./MHAL/inc ./HDL/inc)
+INCLUDE_DIRECTORIES(./MHAL/inc ./HDL/inc ../MT3620_M4_Sample_Code/BareMetal/OS_HAL/inc)
 
-ADD_LIBRARY(MT3620_M4_Driver_OSAI ./MHAL/src/mhal_osai.c)
-ADD_LIBRARY(MT3620_M4_Driver_UART ./MHAL/src/mhal_uart.c ./HDL/src/hdl_uart.c)
+ADD_LIBRARY(MT3620_M4_Driver_ADC ./MHAL/src/mhal_adc.c ./HDL/src/hdl_adc.c)
+ADD_LIBRARY(MT3620_M4_Driver_DMA ./MHAL/src/mhal_dma.c ./HDL/src/hdl_dma.c)
+ADD_LIBRARY(MT3620_M4_Driver_EINT ./MHAL/src/mhal_eint.c ./HDL/src/hdl_eint.c)
 ADD_LIBRARY(MT3620_M4_Driver_GPIO ./MHAL/src/mhal_gpio.c ./HDL/src/hdl_gpio.c)
-
+ADD_LIBRARY(MT3620_M4_Driver_GPIOIF ./MHAL/src/mhal_gpioif.c ./HDL/src/hdl_gpioif.c)
+ADD_LIBRARY(MT3620_M4_Driver_GPT ./MHAL/src/mhal_gpt.c ./HDL/src/hdl_gpt.c)
+ADD_LIBRARY(MT3620_M4_Driver_I2C ./MHAL/src/mhal_i2c.c ./HDL/src/hdl_i2c.c)
+ADD_LIBRARY(MT3620_M4_Driver_I2S ./MHAL/src/mhal_i2s.c ./HDL/src/hdl_i2S.c)
+ADD_LIBRARY(MT3620_M4_Driver_OSAI ./MHAL/src/mhal_osai.c)
+ADD_LIBRARY(MT3620_M4_Driver_PWM ./MHAL/src/mhal_pwm.c ./HDL/src/hdl_pwm.c)
+ADD_LIBRARY(MT3620_M4_Driver_SPIM ./MHAL/src/mhal_spim.c ./HDL/src/hdl_spim.c)
+ADD_LIBRARY(MT3620_M4_Driver_UART ./MHAL/src/mhal_uart.c ./HDL/src/hdl_uart.c)
+ADD_LIBRARY(MT3620_M4_Driver_WDT ./MHAL/src/mhal_wdt.c ./HDL/src/hdl_wdt.c)

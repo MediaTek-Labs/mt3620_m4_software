@@ -8,14 +8,20 @@ git clone https://github.com/LawranceLiu/Azure-Sphere-MT3620-M4-Samples.git
 ### Description
 This repository maintains the MT3620 M4 driver and real-time application sample code, which divided into the following directories:
 
-* **MT3620\_M4_Driver/**
-    * The MT3620 M4 Driver which drives the external peripherals via GPIO or SPI or I2S or I2C or UART...
+* **MT3620_M4_BSP/**
+    * This folder includes the CMSIS-Core APIs and the configuration of interrupt vector table.
+    * Current BSP only supports **Bare Metal**, and **FreeRTOS** BSP is under development and coming soon.
+
+* **MT3620_M4_Driver/**
+    * The MT3620 M4 driver provides the APIs to access the peripheral interfaces, ex GPIO / SPI / I2S / I2C / UART...
     * This driver could be divided into two layers
         * Upper layer: **M-HAL** (MediaTek Hardware AbstractionLayer), which provides high-level API to real-time application.
         * Lower layer: **HDL** (Hardware Driving Layer), which handles the low-level hardware control.
 
-* **Sample_Code/**
-    * The sample code which uses the **M-HAL** API in MT3620_M4_Driver/ to control the external peripherals.
+* **MT3620_M4_Sample_Code/**
+    * This is the executable CMake project sample code which utilizes the M-HAL APIs to access the peripheral interfaces.
+    * Current available sample code is only for **Bare Metal**, and **FreeRTOS** sample is under development and coming soon.
+    
 
 Please refer to the **[MT3620 M4 API Reference Manual](https://support.mediatek.com/AzureSphere/mt3620/M4_API_Reference_Manual)** for the detailed API description.
 Use of the real-time cores is currently a **Beta** feature.

@@ -60,7 +60,7 @@
  */
 #define osai_print printf
 
-#ifdef OS_BARE_METAL
+#ifdef OSAI_BARE_METAL
 #define printf(...)
 #endif
 

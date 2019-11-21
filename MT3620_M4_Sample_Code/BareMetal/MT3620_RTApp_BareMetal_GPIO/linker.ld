@@ -45,5 +45,8 @@ SECTIONS
         *(.bss)
     } >BSS_REGION
 
+	  . = ALIGN(4);
+  	end = . ;
+
     StackTop = ORIGIN(TCM) + LENGTH(TCM);
 }

@@ -34,64 +34,34 @@
  * TO MEDIATEK DURING THE PRECEDING TWELVE (12) MONTHS FOR SUCH MEDIATEK
  * SOFTWARE AT ISSUE.
  */
+ 
 
-#ifndef __OS_HAL_UART_H__
-#define __OS_HAL_UART_H__
+#ifndef __MEM_UTIL_H__
+#define __MEM_UTIL_H__
 
-#include "mhal_uart.h"
+#include "type_def.h"
 
-/**
- * @addtogroup HAL
- * @{
- * @addtogroup UART
- * @{
- * This section describes the programming interfaces of the UART hal
- */
+#if 0
+void log_write(char *buf);
 
-typedef enum {
-	UART_PORT0 = 0,
-	UART_ISU_0,
-	UART_ISU_1,
-	UART_ISU_2,
-	UART_ISU_3,
-	UART_ISU_4,
-	UART_MAX_PORT
-} UART_PORT;
+void * memcpy(void *dest, const void *src, size_t n);
+int memcmp(const void * cs,const void * ct,size_t count);
+unsigned int strlen(const char *str);
+void memset(void *dest, int c, size_t count);
+void *memmove(void *dst, const void *src, size_t count);
+char *strcpy(char *dst, char *src);
+long strtol(const char *cp,char **endp,unsigned int base);
+#endif 
 
 
-int mtk_os_hal_uart_ctlr_init(UART_PORT bus_num);
-int mtk_os_hal_uart_ctlr_deinit(UART_PORT bus_num);
 
-void mtk_os_hal_uart_cg_gating(UART_PORT port_num);
-void mtk_os_hal_uart_cg_release(UART_PORT port_num);
-void mtk_os_hal_uart_sw_reset(UART_PORT port_num);
-void mtk_os_hal_uart_dumpreg(UART_PORT port_num);
+#define min(X, Y)	((X) > (Y) ? (Y) : (X))
+#define max(X, Y)	((X) > (Y) ? (X) : (Y))
 
-void mtk_os_hal_uart_set_baudrate(UART_PORT port_num, u32 baudrate);
-void mtk_os_hal_uart_set_format(UART_PORT port_num,
-		mhal_uart_data_len data_bit,
-		mhal_uart_parity parity,
-		mhal_uart_stop_bit stop_bit);
-u8 mtk_os_hal_uart_get_char(UART_PORT port_num);
-u8 mtk_os_hal_uart_get_char_nowait(UART_PORT port_num);
-void mtk_os_hal_uart_put_char(UART_PORT port_num, u8 data);
-void mtk_os_hal_uart_put_str(UART_PORT port_num, const char *msg);
 
-void mtk_os_hal_uart_dma_enable(UART_PORT port_num);
-void mtk_os_hal_uart_dma_disable(UART_PORT port_num);
 
-void mtk_os_hal_uart_set_loopback(UART_PORT port_num, bool loopbak);
-void mtk_os_hal_uart_set_hw_fc(UART_PORT port_num, u8 hw_fc);
-void mtk_os_hal_uart_disable_sw_fc(UART_PORT port_num);
-void mtk_os_hal_uart_set_sw_fc(UART_PORT port_num,
-	u8 xon1, u8 xoff1, u8 xon2, u8 xoff2, u8 escape_data);
+#define HWREG(x)        (*((volatile unsigned long *)(x)))
 
-int mtk_os_hal_uart_clear_irq_status(UART_PORT port_num);
-void mtk_os_hal_uart_set_irq(UART_PORT port_num, u8 irq_flag);
-
-u32 mtk_os_hal_uart_dma_send_data(UART_PORT port_num,
-	u8 *data, u32 len, bool vff_mode);
-u32 mtk_os_hal_uart_dma_get_data(UART_PORT port_num,
-	u8 *data, u32 len, bool vff_mode);
 
 #endif
+                                
