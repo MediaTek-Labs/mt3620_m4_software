@@ -16,6 +16,7 @@ Please refer to the [MT3620 M4 API Rerference Manual](https://support.mediatek.c
     * [AVNET MT3620 Starter Kit](https://www.avnet.com/shop/us/products/avnet-engineering-services/aes-ms-mt3620-sk-g-3074457345636825680/)
         * Connect PC UART Rx to AVNET MT3620 Starter Kit Tx of Click #1
         * ![image](https://github.com/LawranceLiu/Azure-Sphere-MT3620-M4-Samples/blob/master/MT3620_M4_Sample_Code/BareMetal/MT3620_RTApp_BareMetal_HelloWorld/pic/avnet.jpg)
+        * ![image](https://github.com/LawranceLiu/Azure-Sphere-MT3620-M4-Samples/blob/master/MT3620_M4_Sample_Code/BareMetal/MT3620_RTApp_BareMetal_HelloWorld/pic/avnet_connect.jpg)
     * or [Seeed MT3620 Development Kit](https://aka.ms/azurespheredevkits)
         * Connect PC UART Rx to Seeed MT3620 Development Kit GPIO 26 / TXD0
         * ![image](https://github.com/LawranceLiu/Azure-Sphere-MT3620-M4-Samples/blob/master/MT3620_M4_Sample_Code/BareMetal/MT3620_RTApp_BareMetal_HelloWorld/pic/seeed.jpg)
