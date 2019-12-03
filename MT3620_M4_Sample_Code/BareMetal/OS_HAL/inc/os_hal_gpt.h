@@ -40,12 +40,12 @@
 #include "mhal_gpt.h"
 
 enum gpt_timer_id {
-	GPT_ID_0 = 0,
-	GPT_ID_1,
-	GPT_ID_2,
-	GPT_ID_3,
-	GPT_ID_4,
-	GPT_ID_MAX_NUM
+	OS_HAL_GPT0 = 0,
+	OS_HAL_GPT1,
+	OS_HAL_GPT2,
+	OS_HAL_GPT3,
+	OS_HAL_GPT4,
+	OS_HAL_GPT_MAX_NUM
 };
 
 struct os_gpt_int {

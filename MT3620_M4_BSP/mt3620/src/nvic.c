@@ -43,6 +43,12 @@
 #include "type_def.h"
 #include "vector_table.h"
 
+volatile uint32_t sys_tick_in_ms = 0;
+void Sys_Tick_Handler(void)
+{
+	sys_tick_in_ms++;
+}
+
 int NVIC_Register(int irqn, NVIC_IRQ_Handler handler)
 {
 	NVIC_DisableIRQ(irqn);
@@ -70,8 +76,14 @@ void NVIC_SetupVectorTable(void)
 	SCB->VTOR = (uint32_t)__isr_vector;
 	__asm volatile( "dsb" );
 	__asm volatile( "isb" );
-}
 
+	// Set Core Clock to 200MHz
+	DRV_Reg32(CM4_HCLK_CK_CTRL) &= 0xFFFF00FF;
+	DRV_Reg32(CM4_HCLK_CK_CTRL) |= 0x00000200;
+
+	// Enable System Tick
+	SysTick_Config(200000);
+}
 
 void NVIC_SWInt(unsigned int source)
 {

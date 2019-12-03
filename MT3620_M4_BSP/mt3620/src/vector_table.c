@@ -64,7 +64,10 @@ void __attribute__((weak, alias("DefaultExceptionHandler"))) Sys_Tick_Handler(vo
 
 // The exception vector table contains a stack pointer, 15 exception handlers, and an entry for
 // each interrupt.
-uintptr_t __isr_vector[] __attribute__((section(".vector_table"))) __attribute__((used)) = {
+#define INTERRUPT_COUNT 100
+#define EXCEPTION_COUNT (16 + INTERRUPT_COUNT)
+#define INT_TO_EXC(i_) (16 + (i_))
+uintptr_t __isr_vector[EXCEPTION_COUNT] __attribute__((section(".vector_table"))) __attribute__((used)) = {
 	[0] = (uintptr_t)&StackTop,				/* Top of Stack */
 	[1] = (uintptr_t)RTCoreMain,			/* Reset Handler */
 	[2] = (uintptr_t)NMI_Handler,			/* NMI Handler */
@@ -76,5 +79,7 @@ uintptr_t __isr_vector[] __attribute__((section(".vector_table"))) __attribute__
 	[12] = (uintptr_t)Debug_Monitor_Handler,/* Debug Monitor Handler */
 	[14] = (uintptr_t)Pend_SV__Handler,		/* PendSV Handler */
 	[15] = (uintptr_t)Sys_Tick_Handler,		/* SysTick Handler */
+
+	[INT_TO_EXC(0)... INT_TO_EXC(INTERRUPT_COUNT - 1)] = (uintptr_t)DefaultExceptionHandler
 };
 

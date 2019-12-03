@@ -11,8 +11,8 @@
 /******************************************************************************/
 /* Configurations */
 /******************************************************************************/
-static const uint8_t uart_port_num = UART_ISU_0;
-static const uint8_t gpt_timer_id = GPT_ID_0;
+static const uint8_t uart_port_num = OS_HAL_UART_ISU0;
+static const uint8_t gpt_timer_id = OS_HAL_GPT0;
 static const uint32_t gpt_timer_val = 500;			// 500ms
 static const char *gpt_cb_data="Hello World";
 #define MAX_UART_LOG_BUFFER 64
@@ -21,7 +21,6 @@ static const char *gpt_cb_data="Hello World";
 /******************************************************************************/
 /* Functions */
 /******************************************************************************/
-void unused(void){}
 static void LogToUart(const char *format, ...)
 {
 	static char print_buffer[MAX_UART_LOG_BUFFER] = {0};

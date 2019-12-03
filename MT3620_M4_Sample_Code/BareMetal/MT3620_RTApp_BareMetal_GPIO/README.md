@@ -18,3 +18,13 @@ Please refer to the [MT3620 M4 API Rerference Manual](https://support.mediatek.c
 
 * **Software**
     * Refer to [Azure Sphere software installation guide](https://docs.microsoft.com/en-ca/azure-sphere/install/overview).
+
+## How to build and run the sample
+1. Start Visual Studio.  
+2. From **File** menu, select **Open > CMake...** and navigate to the folder that contains this sample.  
+3. Select **CMakeList.txt** and then click **Open**.  
+4. Wait few seconds until Visual Studio finish create the project files.
+5. From **Build** menu, select **Build ALL (Ctrl+Shift+B)**.  
+6. Click **Select Start Item** and then select **GDB Debugger (RTCore)** as following.  
+    ![image](https://github.com/LawranceLiu/Azure-Sphere-MT3620-M4-Samples/blob/master/MT3620_M4_Sample_Code/BareMetal/MT3620_RTApp_BareMetal_HelloWorld/pic/select_start_item.jpg)  
+7. Press **F5** to start the application with debugging.  

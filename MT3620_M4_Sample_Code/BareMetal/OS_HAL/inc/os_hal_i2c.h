@@ -40,12 +40,12 @@
 #include "mhal_i2c.h"
 
 typedef enum {
-	I2C_ISU_0,
-	I2C_ISU_1,
-	I2C_ISU_2,
-	I2C_ISU_3,
-	I2C_ISU_4,
-	I2C_MAX_BUS
+	OS_HAL_I2C_ISU0,
+	OS_HAL_I2C_ISU1,
+	OS_HAL_I2C_ISU2,
+	OS_HAL_I2C_ISU3,
+	OS_HAL_I2C_ISU4,
+	OS_HAL_I2C_MAX_BUS
 } I2C_BUS;
 
 int mtk_os_hal_i2c_ctrl_init(int bus_num);

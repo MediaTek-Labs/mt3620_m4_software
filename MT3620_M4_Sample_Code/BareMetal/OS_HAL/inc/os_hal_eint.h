@@ -38,6 +38,18 @@
 
 #include "mhal_eint.h"
 
+typedef enum {
+	OS_HAL_EINT_DB_TIME_1 = 1,
+	OS_HAL_EINT_DB_TIME_2 = 2,
+	OS_HAL_EINT_DB_TIME_4 = 4,
+	OS_HAL_EINT_DB_TIME_8 = 8,
+	OS_HAL_EINT_DB_TIME_16 = 16,
+	OS_HAL_EINT_DB_TIME_32 = 32,
+	OS_HAL_EINT_DB_TIME_64 = 64,
+	OS_HAL_EINT_DB_TIME_128 = 128,
+	OS_HAL_EINT_DB_TIME_MAX = OS_HAL_EINT_DB_TIME_128
+} os_hal_eint_debounce_time;
+
 #define IRQ_EDGE_TRIGGER        0x00
 #define IRQ_LEVEL_TRIGGER       0x01
 #define IRQ_EDGE2LVL_TRIGGER    0x02

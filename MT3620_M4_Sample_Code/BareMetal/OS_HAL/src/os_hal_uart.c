@@ -119,9 +119,9 @@ static struct mtk_uart_controller_rtos
 static void _mtk_os_hal_uart_config_gpio(UART_PORT port_num)
 {
 	switch (port_num) {
-	case UART_PORT0:
+	case OS_HAL_UART_PORT0:
 		break;
-	case UART_ISU_0:
+	case OS_HAL_UART_ISU0:
 		mtk_os_hal_gpio_request(OS_HAL_GPIO_26);
 		mtk_os_hal_gpio_pmx_set_mode(OS_HAL_GPIO_26, OS_HAL_MODE_1);
 		mtk_os_hal_gpio_request(OS_HAL_GPIO_27);
@@ -131,7 +131,7 @@ static void _mtk_os_hal_uart_config_gpio(UART_PORT port_num)
 		mtk_os_hal_gpio_request(OS_HAL_GPIO_29);
 		mtk_os_hal_gpio_pmx_set_mode(OS_HAL_GPIO_29, OS_HAL_MODE_1);
 		break;
-	case UART_ISU_1:
+	case OS_HAL_UART_ISU1:
 		mtk_os_hal_gpio_request(OS_HAL_GPIO_31);
 		mtk_os_hal_gpio_pmx_set_mode(OS_HAL_GPIO_31, OS_HAL_MODE_1);
 		mtk_os_hal_gpio_request(OS_HAL_GPIO_32);
@@ -141,7 +141,7 @@ static void _mtk_os_hal_uart_config_gpio(UART_PORT port_num)
 		mtk_os_hal_gpio_request(OS_HAL_GPIO_34);
 		mtk_os_hal_gpio_pmx_set_mode(OS_HAL_GPIO_34, OS_HAL_MODE_1);
 		break;
-	case UART_ISU_2:
+	case OS_HAL_UART_ISU2:
 		mtk_os_hal_gpio_request(OS_HAL_GPIO_36);
 		mtk_os_hal_gpio_pmx_set_mode(OS_HAL_GPIO_36, OS_HAL_MODE_1);
 		mtk_os_hal_gpio_request(OS_HAL_GPIO_37);
@@ -151,7 +151,7 @@ static void _mtk_os_hal_uart_config_gpio(UART_PORT port_num)
 		mtk_os_hal_gpio_request(OS_HAL_GPIO_39);
 		mtk_os_hal_gpio_pmx_set_mode(OS_HAL_GPIO_39, OS_HAL_MODE_1);
 		break;
-	case UART_ISU_3:
+	case OS_HAL_UART_ISU3:
 		mtk_os_hal_gpio_request(OS_HAL_GPIO_66);
 		mtk_os_hal_gpio_pmx_set_mode(OS_HAL_GPIO_66, OS_HAL_MODE_1);
 		mtk_os_hal_gpio_request(OS_HAL_GPIO_67);
@@ -161,7 +161,7 @@ static void _mtk_os_hal_uart_config_gpio(UART_PORT port_num)
 		mtk_os_hal_gpio_request(OS_HAL_GPIO_69);
 		mtk_os_hal_gpio_pmx_set_mode(OS_HAL_GPIO_69, OS_HAL_MODE_1);
 		break;
-	case UART_ISU_4:
+	case OS_HAL_UART_ISU4:
 		mtk_os_hal_gpio_request(OS_HAL_GPIO_71);
 		mtk_os_hal_gpio_pmx_set_mode(OS_HAL_GPIO_71, OS_HAL_MODE_1);
 		mtk_os_hal_gpio_request(OS_HAL_GPIO_72);
@@ -171,7 +171,7 @@ static void _mtk_os_hal_uart_config_gpio(UART_PORT port_num)
 		mtk_os_hal_gpio_request(OS_HAL_GPIO_74);
 		mtk_os_hal_gpio_pmx_set_mode(OS_HAL_GPIO_74, OS_HAL_MODE_1);
 		break;
-	case UART_MAX_PORT:
+	case OS_HAL_UART_MAX_PORT:
 		break;
 	}
 }
@@ -179,39 +179,39 @@ static void _mtk_os_hal_uart_config_gpio(UART_PORT port_num)
 static void _mtk_os_hal_uart_free_gpio(UART_PORT port_num)
 {
 	switch (port_num) {
-	case UART_PORT0:
+	case OS_HAL_UART_PORT0:
 		break;
-	case UART_ISU_0:
+	case OS_HAL_UART_ISU0:
 		mtk_os_hal_gpio_free(OS_HAL_GPIO_26);
 		mtk_os_hal_gpio_free(OS_HAL_GPIO_27);
 		mtk_os_hal_gpio_free(OS_HAL_GPIO_28);
 		mtk_os_hal_gpio_free(OS_HAL_GPIO_29);
 		break;
-	case UART_ISU_1:
+	case OS_HAL_UART_ISU1:
 		mtk_os_hal_gpio_free(OS_HAL_GPIO_31);
 		mtk_os_hal_gpio_free(OS_HAL_GPIO_32);
 		mtk_os_hal_gpio_free(OS_HAL_GPIO_33);
 		mtk_os_hal_gpio_free(OS_HAL_GPIO_34);
 		break;
-	case UART_ISU_2:
+	case OS_HAL_UART_ISU2:
 		mtk_os_hal_gpio_free(OS_HAL_GPIO_36);
 		mtk_os_hal_gpio_free(OS_HAL_GPIO_37);
 		mtk_os_hal_gpio_free(OS_HAL_GPIO_38);
 		mtk_os_hal_gpio_free(OS_HAL_GPIO_39);
 		break;
-	case UART_ISU_3:
+	case OS_HAL_UART_ISU3:
 		mtk_os_hal_gpio_free(OS_HAL_GPIO_66);
 		mtk_os_hal_gpio_free(OS_HAL_GPIO_67);
 		mtk_os_hal_gpio_free(OS_HAL_GPIO_68);
 		mtk_os_hal_gpio_free(OS_HAL_GPIO_69);
 		break;
-	case UART_ISU_4:
+	case OS_HAL_UART_ISU4:
 		mtk_os_hal_gpio_free(OS_HAL_GPIO_71);
 		mtk_os_hal_gpio_free(OS_HAL_GPIO_72);
 		mtk_os_hal_gpio_free(OS_HAL_GPIO_73);
 		mtk_os_hal_gpio_free(OS_HAL_GPIO_74);
 		break;
-	case UART_MAX_PORT:
+	case OS_HAL_UART_MAX_PORT:
 		break;
 	}
 }

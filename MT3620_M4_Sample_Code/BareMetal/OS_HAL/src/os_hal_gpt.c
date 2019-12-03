@@ -257,13 +257,13 @@ int mtk_os_hal_gpt_config(unsigned char timer_id, unsigned char speed_32us,
 
 static void _mtk_os_gpt_register_irq(void)
 {
-	NVIC_Register(gpt_dev.irq_id[0], _mtk_os_hal_gpt_gpt_isr);
-	NVIC_SetPriority(gpt_dev.irq_id[0], CM4_GPT_PRI);
 	/* the common int pin for gpt0 & gpt1 is always on */
-	NVIC_EnableIRQ(gpt_dev.irq_id[0]);
+	CM4_Install_NVIC(gpt_dev.irq_id[0], CM4_GPT_PRI, IRQ_LEVEL_TRIGGER,
+			 _mtk_os_hal_gpt_gpt_isr, true);
 
-	NVIC_Register(gpt_dev.irq_id[1], _mtk_os_hal_gpt_gpt3_isr);
-	NVIC_SetPriority(gpt_dev.irq_id[1], CM4_GPT_PRI);
+	/* config GPT3 irq */
+	CM4_Install_NVIC(gpt_dev.irq_id[1], CM4_GPT_PRI, IRQ_LEVEL_TRIGGER,
+			 _mtk_os_hal_gpt_gpt3_isr, false);
 }
 
 void mtk_os_hal_gpt_init(void)

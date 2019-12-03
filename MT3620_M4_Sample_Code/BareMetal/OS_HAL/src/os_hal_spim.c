@@ -352,7 +352,7 @@ int mtk_os_hal_spim_ctlr_init(spim_num bus_num)
 	ctlr->dma_tx_chan = spim_dma_chan[bus_num][0];
 	ctlr->dma_rx_chan = spim_dma_chan[bus_num][1];
 
-	ctlr_rtos->xfer_completion = 1;
+	ctlr_rtos->xfer_completion = 0;
 
 	mtk_mhal_spim_dma_done_callback_register(ctlr,
 					 _mtk_os_hal_spim_dma_done_callback,

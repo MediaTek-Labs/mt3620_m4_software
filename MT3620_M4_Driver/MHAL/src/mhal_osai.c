@@ -33,16 +33,48 @@
  * MEDIATEK SOFTWARE AT ISSUE.
  */
 
+#include "mt3620.h"
 #include "mhal_osai.h"
 #include "os_hal_dma.h"
 
 #ifdef OSAI_BARE_METAL
 void osai_delay_us(u32 us)
 {
+	uint32_t current_tick;
+	uint32_t delta_tick;
+	uint32_t target_tick;
+
+	if (us >= 1000) {
+		osai_delay_ms(us/1000);
+	} else {
+		current_tick = SysTick->VAL;
+		delta_tick = us*(SysTick->LOAD)/1000;
+		if ( current_tick > delta_tick ) {
+			target_tick = current_tick - delta_tick;
+			while((SysTick->VAL)>target_tick){}
+		} else {
+			target_tick = SysTick->LOAD + current_tick - delta_tick;
+			while(SysTick->VAL > 100){}
+			while(SysTick->VAL > target_tick){}
+		}
+		return;
+	}
 }
 
 void osai_delay_ms(u32 ms)
 {
+	extern volatile uint32_t sys_tick_in_ms;
+	uint32_t current_ms = sys_tick_in_ms;
+	uint32_t target_ms = current_ms + ms;
+
+	if (target_ms >= current_ms) {
+		while(sys_tick_in_ms < target_ms){}
+	} else {
+		// delay until system_tic_in_ms over flow
+		while(sys_tick_in_ms >= current_ms){}
+		// delay until target_ms
+		while(sys_tick_in_ms < target_ms){}
+	}
 }
 
 u32 osai_readl(void __iomem* addr)
@@ -57,8 +89,7 @@ void osai_writel(u32 data, void __iomem* addr)
 
 unsigned long osai_get_phyaddr(void* vir_addr)
 {
-	return 0;
-
+	return (unsigned long) vir_addr;
 }
 #else
 void osai_delay_us(u32 us)
