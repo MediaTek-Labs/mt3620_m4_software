@@ -38,6 +38,7 @@
 
 #include <stdio.h>
 #include <string.h>
+#include <stdbool.h>
 
 /**
   * This section introduces the Macro definition
@@ -83,18 +84,6 @@ typedef unsigned long long u64;
  */
 #define BITS(m, n)           (~(BIT(m) - 1) & ((BIT(n) - 1) | BIT(n)))
 #endif /* BIT */
-
-#ifndef true
-#define true 1
-#endif
-
-#ifndef false
-#define false 0
-#endif
-
-#ifndef bool
-#define bool u32
-#endif
 
 /**
  *@brief  This function is used to delay miscrosecond.\n
