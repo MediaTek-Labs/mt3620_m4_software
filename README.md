@@ -1,5 +1,10 @@
 # MediaTek MT3620 M4 Driver & Real-Time Application Sample Code (Beta)
 
+### Current Status
+* FreeRTOS BSP is supported.
+* Available **Bare Metal** sample codes: GPIO / Hello World
+* Available **FreeRTOS** sample codes: GPIO / UART
+
 ### To clone this repository:
 ```
 git clone https://github.com/LawranceLiu/Azure-Sphere-MT3620-M4-Samples.git
@@ -10,7 +15,7 @@ This repository maintains the MT3620 M4 driver and real-time application sample 
 
 * **MT3620_M4_BSP/**
     * This folder includes the CMSIS-Core APIs and the configuration of interrupt vector table.
-    * Current BSP only supports **Bare Metal**, and **FreeRTOS** BSP is under development and coming soon.
+    * Current BSP supports **Bare Metal** and **FreeRTOS**.
 
 * **MT3620_M4_Driver/**
     * The MT3620 M4 driver provides the APIs to access the peripheral interfaces, ex GPIO / SPI / I2S / I2C / UART...
@@ -20,7 +25,7 @@ This repository maintains the MT3620 M4 driver and real-time application sample 
 
 * **MT3620_M4_Sample_Code/**
     * This is the executable CMake project sample code which utilizes the M-HAL APIs to access the peripheral interfaces.
-    * Current available sample code is only for **Bare Metal**, and **FreeRTOS** sample is under development and coming soon.
+    * Bot **Bare Metal** and **FreeRTOS** sample code are included.
     
 
 Please refer to the **[MT3620 M4 API Reference Manual](https://support.mediatek.com/AzureSphere/mt3620/M4_API_Reference_Manual)** for the detailed API description.
