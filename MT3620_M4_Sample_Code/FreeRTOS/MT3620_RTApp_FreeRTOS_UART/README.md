@@ -1,12 +1,13 @@
-# Sample: MT3620 M4 real-time application - Bare Metal Hello World
+# Sample: MT3620 M4 real-time application -FreeRTOS UART
 
 ### Description
 
 This sample app repeatedly transmits a simple message over a UART. By default, it uses the ISU0 UART interface. If your hardware doesn't expose this UART's TX pin, you could modify the sample code to use a different UART.  
+(Note, to use M4 dedicate UART port, modify the main.c UART port number from **OS_HAL_UART_ISU0** to **OS_HAL_UART_PORT0**)  
 
 Please refer to the [MT3620 M4 API Rerference Manual](https://support.mediatek.com/AzureSphere/mt3620/M4_API_Reference_Manual) for the detailed API description.
     
-## Prerequisites
+### Prerequisites
 * **Hardware**
     * [AVNET MT3620 Starter Kit](https://www.avnet.com/shop/us/products/avnet-engineering-services/aes-ms-mt3620-sk-g-3074457345636825680/)
     * or [Seeed MT3620 Development Kit](https://aka.ms/azurespheredevkits)
@@ -15,7 +16,8 @@ Please refer to the [MT3620 M4 API Rerference Manual](https://support.mediatek.c
     * Refer to [Azure Sphere software installation guide](https://docs.microsoft.com/en-ca/azure-sphere/install/overview).
     * A terminal emulator (such as Telnet or [PuTTY](https://www.chiark.greenend.org.uk/~sgtatham/putty/) to display the output).
 
-## How to build and run the sample
+### How to build and run the sample
+0. Important Note! To reuse the official GCC Cortex-M4F port, the gcc compiler flag should be modified to use FPU instructions. **Please copy the *AzureSphereRTCoreToolchainVFP.cmake* file into the Azure Sphere SDK install folder.** (Default path is *C:\Program Files (x86)\Microsoft Azure Sphere SDK\CMakeFiles*)
 1. Start Visual Studio.  
 2. From **File** menu, select **Open > CMake...** and navigate to the folder that contains this sample.  
 3. Select **CMakeList.txt** and then click **Open**.  
@@ -25,7 +27,8 @@ Please refer to the [MT3620 M4 API Rerference Manual](https://support.mediatek.c
     ![image](https://github.com/LawranceLiu/Azure-Sphere-MT3620-M4-Samples/blob/master/MT3620_M4_Sample_Code/BareMetal/MT3620_RTApp_BareMetal_HelloWorld/pic/select_start_item.jpg)  
 7. Press **F5** to start the application with debugging.  
 
-## Hardware configuration
+
+### Hardware configuration
 * [AVNET MT3620 Starter Kit](https://www.avnet.com/shop/us/products/avnet-engineering-services/aes-ms-mt3620-sk-g-3074457345636825680/)
     * Connect PC UART Rx to AVNET MT3620 Starter Kit Tx of Click #1  
         ![image](https://github.com/LawranceLiu/Azure-Sphere-MT3620-M4-Samples/blob/master/MT3620_M4_Sample_Code/BareMetal/MT3620_RTApp_BareMetal_HelloWorld/pic/avnet.jpg)  
@@ -33,4 +36,4 @@ Please refer to the [MT3620 M4 API Rerference Manual](https://support.mediatek.c
 * [Seeed MT3620 Development Kit](https://aka.ms/azurespheredevkits)
     * Connect PC UART Rx to Seeed MT3620 Development Kit GPIO 26 / TXD0  
         ![image](https://github.com/LawranceLiu/Azure-Sphere-MT3620-M4-Samples/blob/master/MT3620_M4_Sample_Code/BareMetal/MT3620_RTApp_BareMetal_HelloWorld/pic/seeed.jpg)  
-        ![image](https://github.com/LawranceLiu/Azure-Sphere-MT3620-M4-Samples/blob/master/MT3620_M4_Sample_Code/BareMetal/MT3620_RTApp_BareMetal_HelloWorld/pic/seeed_connect.jpg)     
+        ![image](https://github.com/LawranceLiu/Azure-Sphere-MT3620-M4-Samples/blob/master/MT3620_M4_Sample_Code/BareMetal/MT3620_RTApp_BareMetal_HelloWorld/pic/seeed_connect.jpg)  

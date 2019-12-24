@@ -1,14 +1,14 @@
-# Sample: MT3620 M4 real-time application - FreeRTos GPIO
+# Sample: MT3620 M4 real-time application - FreeRTOS GPIO
 
 ### Description
 
-This sample demonstrates how to use GPIO on an MT3620 real-time core.
+This sample demonstrates how to use GPIO on an MT3620 real-time core.  
 
-- GPIO_8 and GPIO_9 for on-board LED control (Red and Green).
-- GPIO_12 and GPIO_13 for on-board Button control (Button A and Button B).
+- GPIO_8 and GPIO_9 for on-board LED control (Red and Green).  
+- GPIO_12 and GPIO_13 for on-board Button control (Button A and Button B).  
+- ISU0 UART interface is used for printing debugging log.  
 
-
-It runs directly on one of the MT3620 real-time cores(M4) instead of the high-level core(A7).
+It runs directly on one of the MT3620 real-time cores(M4) instead of the high-level core(A7).  
 Please refer to the [MT3620 M4 API Rerference Manual](https://support.mediatek.com/AzureSphere/mt3620/M4_API_Reference_Manual) for the detailed API description.
 
 ### Prerequisites
@@ -30,3 +30,13 @@ Please refer to the [MT3620 M4 API Rerference Manual](https://support.mediatek.c
 6. Click **Select Start Item** and then select **GDB Debugger (RTCore)** as following.  
     ![image](https://github.com/LawranceLiu/Azure-Sphere-MT3620-M4-Samples/blob/master/MT3620_M4_Sample_Code/BareMetal/MT3620_RTApp_BareMetal_HelloWorld/pic/select_start_item.jpg)  
 7. Press **F5** to start the application with debugging.  
+
+### Hardware configuration
+* [AVNET MT3620 Starter Kit](https://www.avnet.com/shop/us/products/avnet-engineering-services/aes-ms-mt3620-sk-g-3074457345636825680/)
+    * Connect PC UART Rx to AVNET MT3620 Starter Kit Tx of Click #1  
+        ![image](https://github.com/LawranceLiu/Azure-Sphere-MT3620-M4-Samples/blob/master/MT3620_M4_Sample_Code/BareMetal/MT3620_RTApp_BareMetal_HelloWorld/pic/avnet.jpg)  
+        ![image](https://github.com/LawranceLiu/Azure-Sphere-MT3620-M4-Samples/blob/master/MT3620_M4_Sample_Code/BareMetal/MT3620_RTApp_BareMetal_HelloWorld/pic/avnet_connect.jpg)  
+* [Seeed MT3620 Development Kit](https://aka.ms/azurespheredevkits)
+    * Connect PC UART Rx to Seeed MT3620 Development Kit GPIO 26 / TXD0  
+        ![image](https://github.com/LawranceLiu/Azure-Sphere-MT3620-M4-Samples/blob/master/MT3620_M4_Sample_Code/BareMetal/MT3620_RTApp_BareMetal_HelloWorld/pic/seeed.jpg)  
+        ![image](https://github.com/LawranceLiu/Azure-Sphere-MT3620-M4-Samples/blob/master/MT3620_M4_Sample_Code/BareMetal/MT3620_RTApp_BareMetal_HelloWorld/pic/seeed_connect.jpg)  

@@ -2,12 +2,11 @@
 
 ### Description
 
-This sample demonstrates how to use GPIO on an MT3620 real-time core.
+This sample demonstrates how to use GPIO on an MT3620 real-time core.  
 
-- It provides access to one of the LEDs on the MT3620 development board using GPIO.
-- It uses a button to change the blink rate of the LED.
+- It provides the access to one of the LEDs on the MT3620 development board using GPIO.  
+- A button is used to change the blink rate of the LED.  
 
-It runs directly on one of the MT3620 real-time cores(M4) instead of the high-level core(A7).
 Please refer to the [MT3620 M4 API Rerference Manual](https://support.mediatek.com/AzureSphere/mt3620/M4_API_Reference_Manual) for the detailed API description.
 
 ### Prerequisites
