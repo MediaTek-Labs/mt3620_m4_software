@@ -2,7 +2,7 @@
 
 ### Description
 
-This sample app for an MT3620 real-time core repeatedly transmits a simple message over a UART. These messages can be read in terminal application on a PC using a USB-to-serial adapter. By default, it uses the ISU0 UART interface. If your hardware doesn't expose this UART's TX pin, you could modify the sample code to use a different UART.  
+This sample app repeatedly transmits a simple message over a UART. By default, it uses the ISU0 UART interface. If your hardware doesn't expose this UART's TX pin, you could modify the sample code to use a different UART.  
 
 Please refer to the [MT3620 M4 API Rerference Manual](https://support.mediatek.com/AzureSphere/mt3620/M4_API_Reference_Manual) for the detailed API description.
     

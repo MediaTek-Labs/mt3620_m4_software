@@ -2,7 +2,7 @@
 
 ### Description
 
-This sample app for an MT3620 real-time core repeatedly transmits a simple message over a UART. These messages can be read in terminal application on a PC using a USB-to-serial adapter. By default, it uses the ISU0 UART interface, but if your hardware doesn't expose this UART's TX pin, then the sample can be altered to use a different UART.  
+This sample app repeatedly transmits a simple message over a UART. By default, it uses the ISU0 UART interface, but if your hardware doesn't expose this UART's TX pin, then the sample can be altered to use a different UART.  
 
 Output example:  
 ![image](https://github.com/LawranceLiu/Azure-Sphere-MT3620-M4-Samples/blob/master/MT3620_M4_Sample_Code/BareMetal/MT3620_RTApp_BareMetal_HelloWorld/pic/hello_world.jpg)
