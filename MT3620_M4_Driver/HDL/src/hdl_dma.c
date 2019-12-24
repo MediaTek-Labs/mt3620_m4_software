@@ -526,7 +526,7 @@ void mtk_hdl_dma_clock_enable(void __iomem *dma_base, u8 chn)
 		val = osai_readl(DMA_CH_EN_SET(dma_base));
 		val |= (1 << chn);
 		osai_writel(val, DMA_CH_EN_SET(dma_base));
-		dma_err("%s: %p, 0x%08x\n", __func__,
+		dma_debug("%s: %p, 0x%08x\n", __func__,
 			   (DMA_CH_EN_SET(dma_base)), (u32)(val));
 	} else {
 		dma_err("%s: ERROR! DMA CH(%d) clock enable\n", __func__,
@@ -544,7 +544,7 @@ void mtk_hdl_dma_clock_disable(void __iomem *dma_base, u8 chn)
 		val = osai_readl(DMA_CH_EN_CLR(dma_base));
 		val |= (1 << chn);
 		osai_writel(val, DMA_CH_EN_CLR(dma_base));
-		dma_err("%s: %p, 0x%08x\n", __func__,
+		dma_debug("%s: %p, 0x%08x\n", __func__,
 			   (DMA_CH_EN_CLR(dma_base)), (u32)(val));
 	} else {
 		dma_err("%s: ERROR! DMA CH(%d) clock gatting\n",

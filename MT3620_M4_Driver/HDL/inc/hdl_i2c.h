@@ -252,7 +252,6 @@ enum mtk_trans_op {
 #define OFFSET_S_FIFO_DATA		0xF0
 #define I2C_S_DATA_WR_REG_MASK		BITS(0, 7)
 
-void mtk_hdl_i2c_set_reg(void __iomem *i2c_base, u32 data, u32 offset);
 u32 mtk_hdl_i2c_get_pad_con0(void __iomem *i2c_base);
 void mtk_hdl_i2c_enable_clk(void __iomem *clk_base);
 void mtk_hdl_i2c_disable_clk(void __iomem *clk_base);

@@ -689,67 +689,6 @@
  *      return 0;
  *  }
  *
- *  #define I2C_SLAVE_TX 0xF1
- *  #define I2C_SLAVE_RX 0XF0
- *  #define I2C_SLV_CMD_LEN 2
- *
- *  int mtk_os_hal_i2c_slave_tx_rx(u8 bus_num, u8 *wr_buf, u8 *rd_buf,
- *                   u16 wr_buf_size, u16 *rd_len, u32 time_out)
- *  {
- *      u8 cmd_buf[2] = {0};
- *      int ret = 0;
- *
- *      ret = mtk_os_hal_i2c_slave_rx(bus_num, cmd_buf,
- *                        I2C_SLV_CMD_LEN, time_out);
- *
- *      if (ret < 0) {
- *          printf("i2c slave receive command fail\n");
- *          return ret;
- *      }
- *
- *      switch (cmd_buf[0]) {
- *      case I2C_SLAVE_TX:
- *          if (!wr_buf) {
- *              printf("I2C slave TX buffer NULL!\n");
- *              return -I2C_EPTR;
- *          }
- *
- *          if (wr_buf_size < cmd_buf[1]) {
- *              printf("i2c slave buffer length(%d) less than
- *              master will Read length(%d)!\n",
- *                  wr_buf_size, cmd_buf[1]);
- *              return -I2C_EINVAL;
- *          }
- *
- *          ret = mtk_os_hal_i2c_slave_tx(bus_num, wr_buf,
- *                            cmd_buf[1], time_out);
- *          if (ret < 0)
- *              printf("i2c slave Tx data to master fail!\n");
- *
- *          break;
- *
- *      case I2C_SLAVE_RX:
- *          if (rd_buf == NULL)
- *              return -I2C_EPTR;
- *          else
- *              memset(rd_buf, 0, cmd_buf[1]);
- *
- *          *rd_len = cmd_buf[1];
- *
- *          ret = mtk_os_hal_i2c_slave_rx(bus_num, rd_buf,
- *                            cmd_buf[1], time_out);
- *          if (ret < 0)
- *              printf("i2c slave receive data fail!\n");
- *
- *          break;
- *
- *      default:
- *          printf("i2c slave receive command not support!\n");
- *      }
- *
- *      return ret;
- *
- *  }
  *    @endcode
  *
  *
@@ -777,10 +716,6 @@
  *  -Call the mtk_os_hal_i2c_slave_tx() API to send data to master.
  *
  *  -Call the mtk_os_hal_i2c_slave_rx() API to receive data from master.
- *
- *  -Call the mtk_os_hal_i2c_slave_tx_rx() API to receive command from master
- *  and then i2c slave receives/sends data from/to the master device according
- *  to the command.
  *
  *    @endcode
 * @}
@@ -839,7 +774,7 @@
  */
 enum i2c_speed_kHz {
 	/**Transmit data with 50 kbps.*/
-	I2C_SCL_50kHZ = 1,
+	I2C_SCL_50kHz = 1,
 	/**Transmit data with 100 kbps.*/
 	I2C_SCL_100kHz = 2,
 	/**Transmit data with 200 kbps.*/

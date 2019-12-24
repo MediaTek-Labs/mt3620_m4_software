@@ -6,33 +6,31 @@
  * This MT3620 driver software/firmware and related documentation
  * ("MediaTek Software") are protected under relevant copyright laws.
  * The information contained herein is confidential and proprietary to
- * MediaTek Inc. ("MediaTek").
- * You may only use, reproduce, modify, or distribute (as applicable)
- * MediaTek Software if you have agreed to and been bound by this
- * Statement and the applicable license agreement with MediaTek
+ * MediaTek Inc. ("MediaTek"). You may only use, reproduce, modify, or
+ * distribute (as applicable) MediaTek Software if you have agreed to and been
+ * bound by this Statement and the applicable license agreement with MediaTek
  * ("License Agreement") and been granted explicit permission to do so within
- * the License Agreement ("Permitted User").  If you are not a Permitted User,
+ * the License Agreement ("Permitted User"). If you are not a Permitted User,
  * please cease any access or use of MediaTek Software immediately.
-
+ *
  * BY OPENING THIS FILE, RECEIVER HEREBY UNEQUIVOCALLY ACKNOWLEDGES AND AGREES
- * THAT MEDIATEK SOFTWARE RECEIVED FROM MEDIATEK AND/OR ITS REPRESENTATIVES
- * ARE PROVIDED TO RECEIVER ON AN "AS-IS" BASIS ONLY.
- * MEDIATEK EXPRESSLY DISCLAIMS ANY AND ALL WARRANTIES,
- * EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE IMPLIED WARRANTIES OF
- * MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE OR NONINFRINGEMENT.
- * NEITHER DOES MEDIATEK PROVIDE ANY WARRANTY WHATSOEVER WITH RESPECT TO THE
- * SOFTWARE OF ANY THIRD PARTY WHICH MAY BE USED BY, INCORPORATED IN, OR
- * SUPPLIED WITH MEDIATEK SOFTWARE, AND RECEIVER AGREES TO LOOK ONLY TO SUCH
- * THIRD PARTY FOR ANY WARRANTY CLAIM RELATING THERETO. RECEIVER EXPRESSLY
- * ACKNOWLEDGES THAT IT IS RECEIVER'S SOLE RESPONSIBILITY TO OBTAIN FROM ANY
- * THIRD PARTY ALL PROPER LICENSES CONTAINED IN MEDIATEK SOFTWARE.
- * MEDIATEK SHALL ALSO NOT BE RESPONSIBLE FOR ANY MEDIATEK SOFTWARE RELEASES
- * MADE TO RECEIVER'S SPECIFICATION OR TO CONFORM TO A PARTICULAR STANDARD OR
- * OPEN FORUM. RECEIVER'S SOLE AND EXCLUSIVE REMEDY AND MEDIATEK'S ENTIRE AND
- * CUMULATIVE LIABILITY WITH RESPECT TO MEDIATEK SOFTWARE RELEASED HEREUNDER
- * WILL BE ANY SOFTWARE LICENSE FEES OR SERVICE CHARGE PAID BY RECEIVER
- * TO MEDIATEK DURING THE PRECEDING TWELVE (12) MONTHS FOR SUCH MEDIATEK
- * SOFTWARE AT ISSUE.
+ * THAT MEDIATEK SOFTWARE RECEIVED FROM MEDIATEK AND/OR ITS REPRESENTATIVES ARE
+ * PROVIDED TO RECEIVER ON AN "AS-IS" BASIS ONLY. MEDIATEK EXPRESSLY DISCLAIMS
+ * ANY AND ALL WARRANTIES, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE
+ * IMPLIED WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE OR
+ * NONINFRINGEMENT. NEITHER DOES MEDIATEK PROVIDE ANY WARRANTY WHATSOEVER WITH
+ * RESPECT TO THE SOFTWARE OF ANY THIRD PARTY WHICH MAY BE USED BY,
+ * INCORPORATED IN, OR SUPPLIED WITH MEDIATEK SOFTWARE, AND RECEIVER AGREES TO
+ * LOOK ONLY TO SUCH THIRD PARTY FOR ANY WARRANTY CLAIM RELATING THERETO.
+ * RECEIVER EXPRESSLY ACKNOWLEDGES THAT IT IS RECEIVER'S SOLE RESPONSIBILITY TO
+ * OBTAIN FROM ANY THIRD PARTY ALL PROPER LICENSES CONTAINED IN MEDIATEK
+ * SOFTWARE. MEDIATEK SHALL ALSO NOT BE RESPONSIBLE FOR ANY MEDIATEK SOFTWARE
+ * RELEASES MADE TO RECEIVER'S SPECIFICATION OR TO CONFORM TO A PARTICULAR
+ * STANDARD OR OPEN FORUM. RECEIVER'S SOLE AND EXCLUSIVE REMEDY AND MEDIATEK'S
+ * ENTIRE AND CUMULATIVE LIABILITY WITH RESPECT TO MEDIATEK SOFTWARE RELEASED
+ * HEREUNDER WILL BE ANY SOFTWARE LICENSE FEES OR SERVICE CHARGE PAID BY
+ * RECEIVER TO MEDIATEK DURING THE PRECEDING TWELVE (12) MONTHS FOR SUCH
+ * MEDIATEK SOFTWARE AT ISSUE.
  */
 
 #include "hdl_gpio.h"
@@ -228,7 +226,7 @@ static u32 _mtk_mhal_gpio_adc_map(
 				PAD_GPIO_ADC2_MASK, PAD_GPIO_ADC3_MASK,
 				PAD_GPIO_ADC4_MASK, PAD_GPIO_ADC5_MASK,
 				PAD_GPIO_ADC6_MASK, PAD_GPIO_ADC7_MASK};
-	shift = pin % 8;
+	shift = (pin - 41) % 8;
 
 	mask = gpio_masks[shift];
 	baseaddr = (u32)pctl->base[MHAL_CM4_ADC_BASE] + base_addr;
@@ -293,18 +291,8 @@ static int _mtk_mhal_gpio_reg_map(
 		if (base_addr == 0x04)
 			base_addr = 0x0;
 
-		if (count ==  2)
-			base_addr = base_addr + 0x10;
-		if (count ==  3)
-			base_addr = base_addr + 0x20;
-		if (count ==  4)
-			base_addr = base_addr + 0x30;
-		if (count ==  5)
-			base_addr = base_addr + 0x40;
-		if (count ==  6)
-			base_addr = base_addr + 0x50;
-		if (count ==  7)
-			base_addr = base_addr + 0x60;
+		if ((count >= 2) && (count <= 7))
+			base_addr += 0x10 * (count - 1);
 	}
 
 	if (((pin >= 26) && (pin <= 40))
@@ -314,9 +302,10 @@ static int _mtk_mhal_gpio_reg_map(
 	}
 
 	if ((pin >= 56) && (pin <= 65)) {
-		base_addr = base_addr + 0x100;
 		if (base_addr == 0x04)
 			base_addr = 0x0;
+
+		base_addr = base_addr + 0x100;
 	}
 
 	switch (pin) {
@@ -404,7 +393,7 @@ int mtk_mhal_gpio_free(struct mtk_pinctrl_controller *pctl, u32 pin)
 		pctl->mtk_pins[pin].pinctrl_free = false;
 	} else if (pctl->mtk_pins[pin].pinctrl_free == false) {
 		mtk_mhal_gpio_pmx_get_mode(pctl, pin, &value);
-		gpio_err("pin is free as mode %d fail\n", value);
+		gpio_err("pin[%d] is free as mode %d fail\n", pin, value);
 		return -EFREE;
 	}
 
@@ -416,7 +405,7 @@ int mtk_mhal_gpio_get_input(struct mtk_pinctrl_controller *pctl,
 {
 	u32 i;
 
-	if (!pctl)
+	if ((!pctl) || (pvalue == NULL))
 		return -EINVAL;
 
 	for (i = 0; i < MHAL_GPIO_REG_BASE_MAX; i++) {
@@ -472,7 +461,7 @@ int mtk_mhal_gpio_get_output(struct mtk_pinctrl_controller *pctl,
 {
 	u32 i;
 
-	if (!pctl)
+	if ((!pctl) || (pvalue == NULL))
 		return -EINVAL;
 
 	for (i = 0; i < MHAL_GPIO_REG_BASE_MAX; i++) {
@@ -488,6 +477,8 @@ int mtk_mhal_gpio_get_output(struct mtk_pinctrl_controller *pctl,
 
 	/* DOUT + 0x10 */
 	*pvalue = _mtk_mhal_gpio_reg_map(pctl, 0x10, pin, 0x0);
+	gpio_debug("GPIO%d get ouput value = 0x%x\n", pin, *pvalue);
+
 	return 0;
 }
 
@@ -533,7 +524,7 @@ int mtk_mhal_gpio_get_direction(struct mtk_pinctrl_controller *pctl,
 {
 	u32 i;
 
-	if (!pctl)
+	if ((!pctl) || (pvalue == NULL))
 		return -EINVAL;
 
 	for (i = 0; i < MHAL_GPIO_REG_BASE_MAX; i++) {
@@ -668,7 +659,7 @@ int mtk_mhal_gpio_pmx_get_mode(struct mtk_pinctrl_controller *pctl,
 	u32 reg_val;
 	u32 mask;
 
-	if (!pctl)
+	if ((!pctl) || (pvalue == NULL))
 		return -EINVAL;
 
 	for (i = 0; i < MHAL_GPIO_REG_BASE_MAX; i++) {

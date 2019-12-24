@@ -87,9 +87,6 @@
 #define	I2S_EXT_MASK			0x00000020
 #define	I2S_EXT_SHFT			5
 
-#define	I2S_EXT_LRSW_MASK		0x00000040
-#define	I2S_EXT_LRSW_SHFT		6
-
 #define	I2S_DL_LRSW_MASK		0x00000080
 #define	I2S_DL_LRSW_SHFT		7
 
@@ -437,9 +434,6 @@
 #define	I2S_EXT_EN			1
 #define	I2S_EXT_DIS			0
 
-#define	I2S_EXT_LRSW_EN			1
-#define	I2S_EXT_LRSW_DIS		0
-
 #define	I2S_DL_LRSW_EN			1
 #define	I2S_DL_LRSW_DIS			0
 
@@ -474,11 +468,6 @@
 #define	I2S_CLK_SEL_26M			0x1
 #define	I2S_CLK_SEL_XPLL_16M		0x2
 #define	I2S_CLK_SEL_EXT_BCLK		0x3
-
-#define	I2S_CODEC_26M_EN		1
-#define	I2S_CODEC_26M_DIS		0
-#define	I2S_CODEC_26M_MASK		0x00020000
-#define	I2S_CODEC_26M_SHFT		17
 
 #define	I2S_26M_SEL_XPLL		1
 #define	I2S_26M_SEL_XTAL		0
@@ -679,8 +668,6 @@ struct i2s_gbl_cfg {
 	u8		i2s_clk_inv_en;
 	/**bit 18 X26M_SEL 26M, clock source selection*/
 	u8		i2s_26m_sel;
-	/**Reserved*/
-	u8		i2s_codec_26m_en;
 	/**bit 12 I2S_OUT_CLK_EN, Enable I2S out clock*/
 	u8		i2s_out_clk_en;
 	/**bit 11 I2S_IN_CLK_EN, Enable I2S in clock*/
@@ -695,9 +682,7 @@ struct i2s_gbl_cfg {
 	u8		i2s_dl_mono_stereo_sel;
 	/**bit 7 DL_LRSW, DL with LR switch*/
 	u8		i2s_dl_swap_lr;
-	/**bit 6 EXT_LRSW, External codec with LR switch*/
-	u8		i2s_ext_swap_lr;
-	/**Reserved*/
+	/**bit 5 EXT,External codec select*/
 	u8		i2s_ext_codec_sel;
 };
 

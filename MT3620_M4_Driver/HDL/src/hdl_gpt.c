@@ -33,7 +33,7 @@
  * MEDIATEK SOFTWARE AT ISSUE.
  */
 
-#include <hdl_gpt.h>
+#include "hdl_gpt.h"
 
 /* GPT0 & GPT1: down + irq (1k, 32k) */
 #define GPT_ISR				0x000
@@ -81,14 +81,14 @@
 
 /** error return: need to be consistent with mhal_gpt.h */
 /** Invalid argument. It means the input pointer is NULL */
-#define EPTR		1
+#define GPT_EPTR		1
 /** Invalid argument. It means the HW unit does not exist. */
-#define ENODEV		2
+#define GPT_ENODEV		2
 /**
   * Permission denied.
   * It means the configuration is not supported by HW design.
   */
-#define EACCES		3
+#define GPT_EACCES		3
 
 #define gpt_read_reg(__base, __offset)		osai_readl((__base) + \
 							(__offset))
@@ -127,7 +127,7 @@ int mtk_hdl_gpt_set_compare(void __iomem *gpt_reg_base,
 		return 0;
 	}
 
-	return -EACCES;
+	return -GPT_EACCES;
 }
 
 int mtk_hdl_gpt_config_mode(void __iomem *gpt_reg_base,
@@ -150,7 +150,7 @@ int mtk_hdl_gpt_config_mode(void __iomem *gpt_reg_base,
 			return 0;
 	}
 
-	return -EACCES;
+	return -GPT_EACCES;
 }
 
 int mtk_hdl_gpt_enable_irq(void __iomem *gpt_reg_base,
@@ -165,7 +165,7 @@ int mtk_hdl_gpt_enable_irq(void __iomem *gpt_reg_base,
 		return 0;
 	}
 
-	return -EACCES;
+	return -GPT_EACCES;
 }
 
 int mtk_hdl_gpt_disable_irq(void __iomem *gpt_reg_base,
@@ -181,7 +181,7 @@ int mtk_hdl_gpt_disable_irq(void __iomem *gpt_reg_base,
 		return 0;
 	}
 
-	return -EACCES;
+	return -GPT_EACCES;
 }
 
 int mtk_hdl_gpt_get_irq_status(void __iomem *gpt_reg_base,
@@ -202,7 +202,7 @@ int mtk_hdl_gpt_get_irq_status(void __iomem *gpt_reg_base,
 
 	*int_sta = 0;
 
-	return -EACCES;
+	return -GPT_EACCES;
 }
 
 int mtk_hdl_gpt_clear_irq_status(void __iomem *gpt_reg_base,
@@ -224,7 +224,7 @@ int mtk_hdl_gpt_clear_irq_status(void __iomem *gpt_reg_base,
 		_mtk_hdl_gpt_cm4_reg_write(gpt_reg_base, GPT3_CTRL,
 					   gpt_status & (~GPT3_ICLR));
 	} else
-		return -EACCES;
+		return -GPT_EACCES;
 
 	return 0;
 }

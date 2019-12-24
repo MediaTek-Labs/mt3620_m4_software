@@ -36,7 +36,6 @@
 #ifndef __MHAL_I2S_H__
 #define __MHAL_I2S_H__
 
-#include "hdl_i2s.h"
 #include "mhal_osai.h"
 
 /**
@@ -55,7 +54,7 @@
  * |\b DMA                        | Direct Memory Access.|
  * |\b FIFO                       | First In, First Out.|
  * |\b ISR                        | Interrupt Service Routine.|
- * |\b I2S                        | Inter-IC Sound.|
+ * |\b I2S                        | Integrated Interchip Sound.|
  *
  * @section Features_Chapter Supported Features
  * - Two I2S interfaces share the same XPLL clock source.\n
@@ -181,7 +180,7 @@
  *		int result = 0;
  *
  *		if (i2s_port >= MTK_I2S_MAX_PORT_NUMBER)
- *			return -EPTR;
+ *			return -I2S_EPTR;
  *		if (i2s_port == MHAL_I2S0) {
  *			i2s_ctrl_cfg = &i2s0_ctlr_cfg;
  *			i2s_ctrl_cfg->i2s_ctrl.mdata = &i2s0_mdata;
@@ -198,7 +197,7 @@
  *				i2s_dma_ch_num[i2s_port][1];
  *		result = mtk_mhal_i2s_alloc_vfifo_ch(&i2s_ctrl_cfg->i2s_ctrl);
  *		if (result != 0) {
- *			return -EPTR;
+ *			return -I2S_EPTR;
  *		}
  *
  *		if (i2s_port == MHAL_I2S0) {
@@ -243,7 +242,7 @@
  *		int result = 0;
  *
  *		if (i2s_port >= MTK_I2S_MAX_PORT_NUMBER)
- *			return -EPTR;
+ *			return -I2S_EPTR;
  *		if (i2s_port == MHAL_I2S0) {
  *			i2s_ctrl_cfg = &i2s0_ctlr_cfg;
  *			i2s_ctrl_cfg->i2s_ctrl.mdata = &i2s0_mdata;
@@ -257,7 +256,7 @@
  *					i2s_dma_ch_num[i2s_port][1];
  *		result = mtk_mhal_i2s_release_vfifo_ch(&i2s_ctrl_cfg->i2s_ctrl);
  *		if (result != 0) {
- *			return -EPTR;
+ *			return -I2S_EPTR;
  *		}
  *
  *		if (i2s_port == MHAL_I2S0) {
@@ -282,7 +281,7 @@
  *		int result = 0;
  *
  *		if (i2s_port >= MTK_I2S_MAX_PORT_NUMBER || !parameter)
- *			return -EPTR;
+ *			return -I2S_EPTR;
  *		if (i2s_port == MHAL_I2S0) {
  *			i2s_ctrl_cfg = &i2s0_ctlr_cfg;
  *			i2s_ctrl_cfg->i2s_ctrl.mdata = &i2s0_mdata;
@@ -343,7 +342,7 @@
  *		i2s_ctrl_cfg->rx_period_len = parameter->rx_period_len;
  *		if (parameter->tx_callback_func == NULL ||
  *		    parameter->rx_callback_func == NULL) {
- *			return -EPTR;
+ *			return -I2S_EPTR;
  *		}
  *		i2s_ctrl_cfg->tx_callback_func = parameter->tx_callback_func;
  *		i2s_ctrl_cfg->rx_callback_func = parameter->rx_callback_func;
@@ -397,7 +396,7 @@
  *		int result = 0;
  *
  *		if (i2s_port >= MTK_I2S_MAX_PORT_NUMBER)
- *			return -EPTR;
+ *			return -I2S_EPTR;
  *		if (i2s_port == MHAL_I2S0) {
  *			i2s_ctrl_cfg = &i2s0_ctlr_cfg;
  *			i2s_ctrl_cfg->i2s_ctrl.mdata = &i2s0_mdata;
@@ -429,7 +428,7 @@
  *		int result = 0;
  *
  *		if (i2s_port >= MTK_I2S_MAX_PORT_NUMBER)
- *			return -EPTR;
+ *			return -I2S_EPTR;
  *		if (i2s_port == MHAL_I2S0) {
  *			i2s_ctrl_cfg = &i2s0_ctlr_cfg;
  *			i2s_ctrl_cfg->i2s_ctrl.mdata = &i2s0_mdata;
@@ -709,9 +708,9 @@ typedef void (*i2s_dma_callback_func) (void *user_data);
   */
 
 /** Invalid argument, it means the transfer length isn't supported. */
-#define ELENGTH		2
+#define I2S_ELENGTH		2
 /** Invalid argument, it means a wrong parameter is given. */
-#define EPTR		1
+#define I2S_EPTR		1
 
 /**
   * @}
@@ -828,7 +827,7 @@ typedef enum {
 	/** I2S external TDM mode */
 	MHAL_I2S_TYPE_EXTERNAL_TDM_MODE = 1,
 	/** I2S internal loopback mode */
-	MHAL_I2S_TYPE_INTERNAL_LOOPBACK_MODE = 3
+	MHAL_I2S_TYPE_INTERNAL_LOOPBACK_MODE = 2
 } hal_i2s_initial_type;
 
 /** @brief I2S sample rate define.
@@ -921,31 +920,7 @@ struct hal_i2s_config {
  */
 struct mtk_i2s_private {
 	/*for recording value from setting of user*/
-	enum_i2s_dl_mono_stereo_mode		i2s_dl_mono_stereo;
-	/*for recording value from setting of user*/
-	enum_i2s_dl_sample_rate			i2s_dl_sample_rate;
-	/*for recording value from setting of user*/
-	enum_i2s_ul_sample_rate			i2s_ul_sample_rate;
-	/*for recording value from setting of user*/
-	enum_i2s_dl_bit_per_sample_rate		i2s_dl_bit_per_sample_rate;
-	/*for recording value from setting of user*/
-	enum_i2s_ul_bit_per_sample_rate		i2s_ul_bit_per_sample_rate;
-	/*for recording value from setting of user*/
-	enum_i2s_dl_ch_per_sample		i2s_dl_ch_per_sample;
-	/*for recording value from setting of user*/
-	enum_i2s_ul_ch_per_sample		i2s_ul_ch_per_sample;
-	/*for recording value from setting of user*/
-	enum_i2s_initial_type			i2s_initial_type;
-	/*for recording value from setting of user*/
-	u8					i2s_dl_mono_dup_en;
-	/*for recording value from setting of user*/
-	u8					i2s_down_rate_en;
-	/*for original driver backup global control register setting*/
-	struct i2s_gbl_cfg			i2s_gbl_cfg;
-	/*for original driver backup DL control register setting*/
-	struct i2s_dl_cfg			i2s_dl_cfg;
-	/*for original driver backup UL control register setting*/
-	struct i2s_ul_cfg			i2s_ul_cfg;
+	hal_i2s_initial_type			i2s_initial_type;
 	/* backup user config */
 	struct hal_i2s_config			i2s_user_config;
 	/* backup TX DMA config */
@@ -987,14 +962,10 @@ struct mtk_i2s_ctlr {
  */
 
 /**
- * @brief     Initialize the I2S parameter for I2S initial type.
+ * @brief     Configure I2S type.
  * @brief     Usage: OS-HAL driver should call it in the initialization flow.\n
- * The main sequence is mentioned below:\n
- *   1.Call this function to Initialize the I2S parameter first.\n
- *   2.Set I2S protocol parameter to hal_i2s_config struct\n
- *   3.Call mtk_mhal_i2s_set_config() to configure I2S HW\n
  * @param[in] ctlr : I2S port and base address.
- * @param[in] i2s_initial_type : Initial configuration parameter.
+ * @param[in] i2s_initial_type : Initial configuration type.
  *
  * @par       Example
  * @code
@@ -1019,7 +990,7 @@ struct mtk_i2s_ctlr {
  *
  * @return
  *      Return "0" if parameter setting is sucessfully.\n
- *      Return -#EPTR if the ctlr or config is NULL.
+ *      Return -#I2S_EPTR if the ctlr or config is NULL.
  *
  * @note      Set i2s_initial_type as MHAL_I2S_TYPE_EXTERNAL_MODE
  *            when using external codec component in the application.
@@ -1033,9 +1004,22 @@ int mtk_mhal_i2s_cfg_type(struct mtk_i2s_ctlr *ctlr,
  * @param[in] ctlr : I2S port and base address.
  * @return
  *      Return "0" if I2S reset is sucessfully.\n
- *      Return -#EPTR if the ctlr is NULL.
+ *      Return -#I2S_EPTR if the ctlr is NULL.
  */
 int mtk_mhal_i2s_reset(struct mtk_i2s_ctlr *ctlr);
+/**
+ * @brief     enable the I2S clock.
+ * @brief     Usage: OS-HAL driver can use this function to enable or
+ *            disable MCLK output, I2S out and I2S in clock.\n
+ *            MCLK output, I2S out and I2S in clock will be enable after
+ *            step3 on section How to Use This Driver.
+ * @param[in] ctlr : I2S port and base address.
+ * @param[in] en : enable or disable clock.
+ * @return
+ *      Return "0" if I2S reset is sucessfully.\n
+ *      Return -#I2S_EPTR if the ctlr is NULL.
+ */
+int mtk_mhal_i2s_clk_en(struct mtk_i2s_ctlr *ctlr, i2s_fnen en);
 /**
  * @brief     Set the I2S configuration in detail.
  * @brief     Usage: OS-HAL driver can call this function to configure I2S.\n
@@ -1047,7 +1031,7 @@ int mtk_mhal_i2s_reset(struct mtk_i2s_ctlr *ctlr);
  * @param[in] config : Link configuration of the I2S module.
  * @return
  *      Return "0" if configure I2S HW is sucessfully.\n
- *      Return -#EPTR if the ctlr is NULL or configuration
+ *      Return -#I2S_EPTR if the ctlr is NULL or configuration
  *      parameter is invalid.
  */
 int mtk_mhal_i2s_set_config(struct mtk_i2s_ctlr *ctlr,
@@ -1060,7 +1044,7 @@ int mtk_mhal_i2s_set_config(struct mtk_i2s_ctlr *ctlr,
  * @param[in] ctlr : I2S port and base address.
  * @return
  *      Return "0" if enable I2S top is sucessfully.\n
- *      Return -#EPTR if the ctlr is NULL.
+ *      Return -#I2S_EPTR if the ctlr is NULL.
  */
 int mtk_mhal_i2s_enable_audio_top(struct mtk_i2s_ctlr *ctlr);
 /**
@@ -1071,7 +1055,7 @@ int mtk_mhal_i2s_enable_audio_top(struct mtk_i2s_ctlr *ctlr);
  * @param[in] ctlr : I2S port and base address.
  * @return
  *      Return "0" if disable I2S top is sucessfully.\n
- *      Return -#EPTR if the ctlr is NULL.
+ *      Return -#I2S_EPTR if the ctlr is NULL.
  */
 int mtk_mhal_i2s_disable_audio_top(struct mtk_i2s_ctlr *ctlr);
 /**
@@ -1087,7 +1071,7 @@ int mtk_mhal_i2s_disable_audio_top(struct mtk_i2s_ctlr *ctlr);
  * @param[in] callback_func : callback function.
  * @return
  *      Return "0" if configure I2S Tx DMA interrupt enable is sucessfully.\n
- *      Return -#EPTR if the ctlr is NULL.
+ *      Return -#I2S_EPTR if the ctlr is NULL.
  */
 int mtk_mhal_i2s_cfg_tx_dma_irq_enable(struct mtk_i2s_ctlr *ctlr,
 				       i2s_dma_callback_func callback_func);
@@ -1098,7 +1082,7 @@ int mtk_mhal_i2s_cfg_tx_dma_irq_enable(struct mtk_i2s_ctlr *ctlr,
  * @param[in] ctlr : I2S port and base address.
  * @return
  *      Return "0" if configure I2S Rx DMA interrupt disable is sucessfully.\n
- *      Return -#EPTR if the ctlr is NULL.
+ *      Return -#I2S_EPTR if the ctlr is NULL.
  */
 int mtk_mhal_i2s_cfg_tx_dma_irq_disable(struct mtk_i2s_ctlr *ctlr);
 /**
@@ -1114,7 +1098,7 @@ int mtk_mhal_i2s_cfg_tx_dma_irq_disable(struct mtk_i2s_ctlr *ctlr);
  * @param[in] callback_func : callback function.
  * @return
  *      Return "0" if configure I2S Rx DMA interrupt enable is sucessfully.\n
- *      Return -#EPTR if the ctlr is NULL.
+ *      Return -#I2S_EPTR if the ctlr is NULL.
  */
 int mtk_mhal_i2s_cfg_rx_dma_irq_enable(struct mtk_i2s_ctlr *ctlr,
 				       i2s_dma_callback_func callback_func);
@@ -1125,7 +1109,7 @@ int mtk_mhal_i2s_cfg_rx_dma_irq_enable(struct mtk_i2s_ctlr *ctlr,
  * @param[in] ctlr : I2S port and base address.
  * @return
  *      Return "0" if configure I2S Rx DMA interrupt disable is sucessfully.\n
- *      Return -#EPTR if the ctlr is NULL.
+ *      Return -#I2S_EPTR if the ctlr is NULL.
  */
 int mtk_mhal_i2s_cfg_rx_dma_irq_disable(struct mtk_i2s_ctlr *ctlr);
 /**
@@ -1144,8 +1128,8 @@ int mtk_mhal_i2s_cfg_rx_dma_irq_disable(struct mtk_i2s_ctlr *ctlr);
  * @param[in] buffer_length : The size of memory buffer for Tx VFIFO.
  * @return
  *      Return "0" if setup I2S Tx VFIFO DMA is sucessfully.\n
- *      Return -#EPTR if the ctlr is NULL.\n
- *      Return -#ELENGTH if the threshold and buffer_length is invalid.
+ *      Return -#I2S_EPTR if the ctlr is NULL.\n
+ *      Return -#I2S_ELENGTH if the threshold and buffer_length is invalid.
  */
 int mtk_mhal_i2s_start_tx_vfifo(struct mtk_i2s_ctlr *ctlr,
 					     u32 *buffer,
@@ -1160,7 +1144,7 @@ int mtk_mhal_i2s_start_tx_vfifo(struct mtk_i2s_ctlr *ctlr,
  * @param[in] ctlr : I2S port and base address.
  * @return
  *      Return "0" if stop I2S Tx VFIFO DMA is sucessfully.\n
- *      Return -#EPTR if the ctlr is NULL.
+ *      Return -#I2S_EPTR if the ctlr is NULL.
  */
 int mtk_mhal_i2s_stop_tx_vfifo(struct mtk_i2s_ctlr *ctlr);
 /**
@@ -1178,8 +1162,8 @@ int mtk_mhal_i2s_stop_tx_vfifo(struct mtk_i2s_ctlr *ctlr);
  * @param[in] buffer_length : The size of array to memory buffer for Rx VFIFO.
  * @return
  *      Return "0" if setup I2S Rx VFIFO DMA is sucessfully.\n
- *      Return -#EPTR if the ctlr is NULL.\n
- *      Return -#ELENGTH if the threshold and buffer_length is invalid.
+ *      Return -#I2S_EPTR if the ctlr is NULL.\n
+ *      Return -#I2S_ELENGTH if the threshold and buffer_length is invalid.
  */
 int mtk_mhal_i2s_start_rx_vfifo(struct mtk_i2s_ctlr *ctlr,
 					     u32 *buffer,
@@ -1194,7 +1178,7 @@ int mtk_mhal_i2s_start_rx_vfifo(struct mtk_i2s_ctlr *ctlr,
  * @param[in] ctlr : I2S port and base address.
  * @return
  *      Return "0" if stop I2S Rx VFIFO DMA is sucessfully.\n
- *      Return -#EPTR if the ctlr is NULL.
+ *      Return -#I2S_EPTR if the ctlr is NULL.
  */
 int mtk_mhal_i2s_stop_rx_vfifo(struct mtk_i2s_ctlr *ctlr);
 /**
@@ -1204,7 +1188,7 @@ int mtk_mhal_i2s_stop_rx_vfifo(struct mtk_i2s_ctlr *ctlr);
  * @param[in] ctlr : I2S port and base address.
  * @return
  *      Return "0" if enable I2S Tx is sucessfully.\n
- *      Return -#EPTR if the ctlr is NULL.
+ *      Return -#I2S_EPTR if the ctlr is NULL.
  */
 int mtk_mhal_i2s_enable_tx(struct mtk_i2s_ctlr *ctlr);
 /**
@@ -1214,7 +1198,7 @@ int mtk_mhal_i2s_enable_tx(struct mtk_i2s_ctlr *ctlr);
  * @param[in] ctlr : I2S port and base address.
  * @return
  *      Return "0" if disable I2S Tx is sucessfully.\n
- *      Return -#EPTR if the ctlr is NULL.
+ *      Return -#I2S_EPTR if the ctlr is NULL.
  */
 int mtk_mhal_i2s_disable_tx(struct mtk_i2s_ctlr *ctlr);
 /**
@@ -1224,7 +1208,7 @@ int mtk_mhal_i2s_disable_tx(struct mtk_i2s_ctlr *ctlr);
  * @param[in] ctlr : I2S port and base address.
  * @return
  *      Return "0" if enable I2S Rx is sucessfully.\n
- *      Return -#EPTR if the ctlr is NULL.
+ *      Return -#I2S_EPTR if the ctlr is NULL.
  */
 int mtk_mhal_i2s_enable_rx(struct mtk_i2s_ctlr *ctlr);
 /**
@@ -1234,7 +1218,7 @@ int mtk_mhal_i2s_enable_rx(struct mtk_i2s_ctlr *ctlr);
  * @param[in] ctlr : I2S port and base address.
  * @return
  *      Return "0" if disable I2S Rx is sucessfully.\n
- *      Return -#EPTR if the ctlr is NULL.
+ *      Return -#I2S_EPTR if the ctlr is NULL.
  */
 int mtk_mhal_i2s_disable_rx(struct mtk_i2s_ctlr *ctlr);
 
@@ -1247,7 +1231,7 @@ int mtk_mhal_i2s_disable_rx(struct mtk_i2s_ctlr *ctlr);
  * @param[in] buffer_length : move pointer count.
  * @return
  *      Return "0" if setup I2S Tx VFIFO DMA is sucessfully.\n
- *      Return -#EPTR if the ctlr is NULL.\n
+ *      Return -#I2S_EPTR if the ctlr is NULL.\n
  */
 int mtk_mhal_i2s_move_tx_point(struct mtk_i2s_ctlr *ctlr,
 			       u32 buffer_length);
@@ -1260,7 +1244,7 @@ int mtk_mhal_i2s_move_tx_point(struct mtk_i2s_ctlr *ctlr,
  * @param[in] buffer_length : move pointer count.
  * @return
  *      Return "0" if setup I2S Rx VFIFO DMA is sucessfully.\n
- *      Return -#EPTR if the ctlr is NULL.\n
+ *      Return -#I2S_EPTR if the ctlr is NULL.\n
  */
 int mtk_mhal_i2s_move_rx_point(struct mtk_i2s_ctlr *ctlr,
 			       u32 buffer_length);
@@ -1271,7 +1255,7 @@ int mtk_mhal_i2s_move_rx_point(struct mtk_i2s_ctlr *ctlr,
  * @param[in] ctlr : I2S port and base address.
  * @return
  *      Return "0" if allocate memory sucessfully.\n
- *      Return -#EPTR if allocate channel fail or the ctlr is NULL.
+ *      Return -#I2S_EPTR if allocate channel fail or the ctlr is NULL.
  */
 int mtk_mhal_i2s_alloc_vfifo_ch(struct mtk_i2s_ctlr *ctlr);
 
@@ -1282,7 +1266,7 @@ int mtk_mhal_i2s_alloc_vfifo_ch(struct mtk_i2s_ctlr *ctlr);
  * @param[in] ctlr : I2S port and base address.
  * @return
  *      Return "0" if allocate memory sucessfully.\n
- *      Return -#EPTR if release channel fail or the ctlr is NULL.
+ *      Return -#I2S_EPTR if release channel fail or the ctlr is NULL.
  */
 int mtk_mhal_i2s_release_vfifo_ch(struct mtk_i2s_ctlr *ctlr);
 

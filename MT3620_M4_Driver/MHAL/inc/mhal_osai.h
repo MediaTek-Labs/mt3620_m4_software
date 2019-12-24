@@ -40,6 +40,10 @@
 #include <string.h>
 #include <stdbool.h>
 
+#ifdef OSAI_FREERTOS
+#include "printf.h"
+#endif
+
 /**
   * This section introduces the Macro definition
   * that OSAI provided to mapping different OS.
@@ -60,10 +64,6 @@
  * It's the wrapper of print log function between different OS.
  */
 #define osai_print printf
-
-#ifdef OSAI_BARE_METAL
-#define printf(...)
-#endif
 
 /**
   * This section introduces the typedef to mapping

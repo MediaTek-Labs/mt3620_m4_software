@@ -19,7 +19,7 @@ Please refer to the [MT3620 M4 API Rerference Manual](https://support.mediatek.c
 * **Software**
     * Refer to [Azure Sphere software installation guide](https://docs.microsoft.com/en-ca/azure-sphere/install/overview).
 
-## How to build and run the sample
+### How to build and run the sample
 1. Start Visual Studio.  
 2. From **File** menu, select **Open > CMake...** and navigate to the folder that contains this sample.  
 3. Select **CMakeList.txt** and then click **Open**.  

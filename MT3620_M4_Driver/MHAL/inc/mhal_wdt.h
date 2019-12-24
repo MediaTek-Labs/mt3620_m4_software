@@ -110,6 +110,12 @@
  *	};
  *
  *	// defined in os_hal_wdt.h
+ *	enum os_wdt_mode {
+ *		OS_WDT_TRIGGER_RESET = 0,
+ *		OS_WDT_TRIGGER_IRQ = 1,
+ *	};
+ *
+ *	// defined in os_hal_wdt.h
  *	enum os_wdt_rst_sta {
  *		OS_WDT_NONE_RST = 0,
  *		OS_WDT_SW_RST = 1,
@@ -178,7 +184,7 @@
  *	int mtk_os_hal_wdt_set_timeout(unsigned int sec)
  *	{
  *		if (!_mtk_os_hal_wdt_is_inited(&wdt_dev))
- *			return -EPTR;
+ *			return -WDT_EPTR;
  *
  *		return mtk_mhal_wdt_set_timeout(&(wdt_dev.hal_dev), sec);
  *	}
@@ -214,12 +220,12 @@
  *		return wdt_dev.reset_status;
  *	}
  *
- *	void mtk_os_hal_wdt_config(unsigned char irq)
+ *	void mtk_os_hal_wdt_config(enum os_wdt_mode mode)
  *	{
  *		if (!_mtk_os_hal_wdt_is_inited(&wdt_dev))
  *			return;
  *
- *		mtk_mhal_wdt_config(&(wdt_dev.hal_dev), irq);
+ *		mtk_mhal_wdt_config(&(wdt_dev.hal_dev), mode);
  *	}
  *
  *	void mtk_os_hal_wdt_register_irq(struct os_wdt_int *wdt_int)
@@ -284,10 +290,12 @@
  *        interrupt callback handle and user data. (If input NULL to
  *        mtk_os_hal_wdt_register_irq(), the default callback handle will be
  *        registered which will reset system immediately.)
- *      - Call mtk_os_hal_wdt_config(1) to sec WDT as interrupt mode.
+ *      - Call mtk_os_hal_wdt_config(OS_WDT_TRIGGER_IRQ) to sec WDT as
+ *        interrupt mode.
  *
  *    - Configure WDT as reset mode:
- *      - Call mtk_os_hal_wdt_config(0) to sec WDT as reset mode.
+ *      - Call mtk_os_hal_wdt_config(OS_WDT_TRIGGER_RESET) to sec WDT as
+ *        reset mode.
  *
  *    - Enable/disable WDT:
  *      - Call mtk_os_hal_wdt_enable() and mtk_os_hal_wdt_disable() to enable/
@@ -319,11 +327,11 @@
   */
 
 /** Invalid argument. It means the input pointer is NULL */
-#define EPTR		1
+#define WDT_EPTR		1
 /** Invalid argument. It means the input value is illegal */
-#define EINVAL		2
+#define WDT_EINVAL		2
 /** Fault return. It means some fault occurred. */
-#define EFAULT		3
+#define WDT_EFAULT		3
 
 /**
   * @}
@@ -361,7 +369,8 @@ struct hal_wdt_dev {
  *  @param [in] en : Disable (= 0) or enable (= 1) WDT.
  *  @return
  *	0: Success.\n
- *	-#EPTR: Failure if wdt_dev or wdt_dev->cm4_wdt_base is NULL pointer.\n
+ *	-#WDT_EPTR: Failure if wdt_dev or wdt_dev->cm4_wdt_base is NULL
+ *		pointer.\n
  */
 int mtk_mhal_wdt_enable(struct hal_wdt_dev *wdt_dev,
 			u32 en);
@@ -372,7 +381,8 @@ int mtk_mhal_wdt_enable(struct hal_wdt_dev *wdt_dev,
  *  @param [in] irq : WDT trigger reset (= 0) or trigger irq (= 1) event.
  *  @return
  *	0: Success.\n
- *	-#EPTR: Failure if wdt_dev or wdt_dev->cm4_wdt_base is NULL pointer.\n
+ *	-#WDT_EPTR: Failure if wdt_dev or wdt_dev->cm4_wdt_base is NULL
+ *		pointer.\n
  */
 int mtk_mhal_wdt_config(struct hal_wdt_dev *wdt_dev,
 			u8 irq);
@@ -383,8 +393,9 @@ int mtk_mhal_wdt_config(struct hal_wdt_dev *wdt_dev,
  *  @param [in] sec : WDT timeout value (unit: second).
  *  @return
  *	0: Success.\n
- *	-#EPTR: Failure if wdt_dev or wdt_dev->cm4_wdt_base is NULL pointer.\n
- *	-#EINVAL: Failure if timeout value exceeds HW setting limitation.\n
+ *	-#WDT_EPTR: Failure if wdt_dev or wdt_dev->cm4_wdt_base is NULL
+ *		pointer.\n
+ *	-#WDT_EINVAL: Failure if timeout value exceeds HW setting limitation.\n
  */
 int mtk_mhal_wdt_set_timeout(struct hal_wdt_dev *wdt_dev,
 			     u32 sec);
@@ -394,7 +405,8 @@ int mtk_mhal_wdt_set_timeout(struct hal_wdt_dev *wdt_dev,
  *  @param [in] wdt_dev : A pointer of struct hal_wdt_dev.
  *  @return
  *	0: Success.\n
- *	-#EPTR: Failure if wdt_dev or wdt_dev->cm4_wdt_base is NULL pointer.\n
+ *	-#WDT_EPTR: Failure if wdt_dev or wdt_dev->cm4_wdt_base is NULL
+ *		pointer.\n
  */
 int mtk_mhal_wdt_restart(struct hal_wdt_dev *wdt_dev);
 
@@ -403,8 +415,9 @@ int mtk_mhal_wdt_restart(struct hal_wdt_dev *wdt_dev);
  *  @param [in] wdt_dev : A pointer of struct hal_wdt_dev.
  *  @return
  *	never return by reset: Success.\n
- *	-#EPTR: Failure if wdt_dev or wdt_dev->cm4_wdt_base is NULL pointer.\n
- *	-#EFAULT: Failure if reset failure.
+ *	-#WDT_EPTR: Failure if wdt_dev or wdt_dev->cm4_wdt_base is NULL
+ *		pointer.\n
+ *	-#WDT_EFAULT: Failure if reset failure.
  */
 int mtk_mhal_wdt_hwrst(struct hal_wdt_dev *wdt_dev);
 
@@ -413,8 +426,9 @@ int mtk_mhal_wdt_hwrst(struct hal_wdt_dev *wdt_dev);
  *  @param [in] wdt_dev : A pointer of struct hal_wdt_dev.
  *  @return
  *	never return by reset: Success.\n
- *	-#EPTR: Failure if wdt_dev or wdt_dev->cm4_wdt_base is NULL pointer.\n
- *	-#EFAULT: Failure if reset failure.
+ *	-#WDT_EPTR: Failure if wdt_dev or wdt_dev->cm4_wdt_base is NULL
+ *		pointer.\n
+ *	-#WDT_EFAULT: Failure if reset failure.
  */
 int mtk_mhal_wdt_swrst(struct hal_wdt_dev *wdt_dev);
 
@@ -428,7 +442,7 @@ int mtk_mhal_wdt_swrst(struct hal_wdt_dev *wdt_dev);
  *		2: Hardware reset (by WDT timeout) state.\n
  *  @return
  *	0: Get reset status successfully.\n
- *	-#EPTR: Failure if wdt_dev, wdt_dev->cm4_wdt_base or rst_sta is NULL
+ *	-#WDT_EPTR: Failure if wdt_dev, wdt_dev->cm4_wdt_base or rst_sta is NULL
  *		pointer.\n
  */
 int mtk_mhal_wdt_get_status(struct hal_wdt_dev *wdt_dev,

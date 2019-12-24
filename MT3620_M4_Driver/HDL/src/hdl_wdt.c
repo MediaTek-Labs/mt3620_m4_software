@@ -79,7 +79,7 @@ static inline void _mtk_hdl_wdt_cm4_reg_write(void __iomem *wdt_reg_base,
 					      u32 offset, u32 val)
 {
 	wdt_write_reg(wdt_reg_base, offset, val);
-	osai_delay_us(20);
+	osai_delay_us(50);
 }
 
 void mtk_hdl_wdt_set_enable(void __iomem *wdt_reg_base, u32 en)
@@ -132,12 +132,6 @@ u32 mtk_hdl_wdt_get_status(void __iomem *wdt_reg_base)
 {
 	return (_mtk_hdl_wdt_cm4_reg_read(wdt_reg_base, WDT_STA) &
 		(WDT_STA_WDT | WDT_STA_SW_WDT));
-}
-
-u32 mtk_hdl_wdt_get_current_mode(void __iomem *wdt_reg_base)
-{
-	return (_mtk_hdl_wdt_cm4_reg_read(wdt_reg_base, WDT_MODE) &
-		WDT_MODE_MASK);
 }
 
 void mtk_hdl_wdt_swrst(void __iomem *wdt_reg_base)

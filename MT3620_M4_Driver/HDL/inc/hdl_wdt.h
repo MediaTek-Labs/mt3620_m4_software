@@ -52,7 +52,6 @@ void mtk_hdl_wdt_set_length(void __iomem *wdt_reg_base, u32 tick);
 void mtk_hdl_wdt_restart(void __iomem *wdt_reg_base);
 
 u32 mtk_hdl_wdt_get_status(void __iomem *wdt_reg_base);
-u32 mtk_hdl_wdt_get_current_mode(void __iomem *wdt_reg_base);
 
 void mtk_hdl_wdt_swrst(void __iomem *wdt_reg_base);
 

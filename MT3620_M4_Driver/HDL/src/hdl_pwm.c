@@ -472,12 +472,6 @@ void mtk_hdl_pwm_group_query(void __iomem *base, u8 pwm_num,
 		on_time = (on_time >> PWM_PARAM_S0_PWM_ON_TIME_OFFSET);
 		off_time = (reg_val & PWM_PARAM_S0_PWM_OFF_TIME_MASK);
 		off_time = (off_time >> PWM_PARAM_S0_PWM_OFF_TIME_OFFSET);
-	} else {
-		reg_val = _mtk_hdl_pwm_readl(base, pwm_num, PWM_PARAM_S1);
-		on_time = (reg_val & PWM_PARAM_S1_PWM_ON_TIME_MASK);
-		on_time = (on_time >> PWM_PARAM_S1_PWM_ON_TIME_OFFSET);
-		off_time = (reg_val & PWM_PARAM_S1_PWM_OFF_TIME_MASK);
-		off_time = (off_time >> PWM_PARAM_S1_PWM_OFF_TIME_OFFSET);
 	}
 
 	pwm_step = on_time + off_time;

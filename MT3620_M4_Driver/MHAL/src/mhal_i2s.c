@@ -33,60 +33,47 @@
  * MEDIATEK SOFTWARE AT ISSUE.
  */
 
+#include "hdl_i2s.h"
 #include "mhal_i2s.h"
 
-int _mtk_mhal_i2s_is_sample_rate(
-			hal_i2s_sample_rate sample_rate,
-			struct mtk_i2s_private *p_i2s_internal_cfg,
-			u8 is_rx);
+enum_i2s_dl_sample_rate _mtk_mhal_i2s_tx_sample_rate(hal_i2s_sample_rate
+						     sample_rate);
+enum_i2s_ul_sample_rate _mtk_mhal_i2s_rx_sample_rate(hal_i2s_sample_rate
+						     sample_rate);
 
 int mtk_mhal_i2s_cfg_type(struct mtk_i2s_ctlr *ctlr,
 			  hal_i2s_initial_type i2s_initial_type)
 {
 	struct mtk_i2s_private *p_i2s_internal_cfg;
-	struct i2s_gbl_cfg *p_i2sgblcfg;
-	struct i2s_dl_cfg *p_i2sdlcfg;
-	struct i2s_ul_cfg *p_i2sulcfg;
 
 	if (!ctlr)
-		return -EPTR;
+		return -I2S_EPTR;
 	/*----set default value----*/
 	p_i2s_internal_cfg = ctlr->mdata;
 	memset(p_i2s_internal_cfg, 0, sizeof(struct mtk_i2s_private));
-	p_i2sgblcfg = &p_i2s_internal_cfg->i2s_gbl_cfg;
-	p_i2sdlcfg = &p_i2s_internal_cfg->i2s_dl_cfg;
-	p_i2sulcfg = &p_i2s_internal_cfg->i2s_ul_cfg;
 
-	switch (i2s_initial_type) {
-	/*---only for test case use----*/
-	case MHAL_I2S_TYPE_INTERNAL_LOOPBACK_MODE:
-		p_i2s_internal_cfg->i2s_initial_type =
-		I2S_INTERNAL_LOOPBACK_MODE;
-	break;
-	/*---normal use,only support slave mode---*/
-	case MHAL_I2S_TYPE_EXTERNAL_MODE:
-		p_i2s_internal_cfg->i2s_initial_type = I2S_EXTERNAL_MODE;
-	break;
-	case MHAL_I2S_TYPE_EXTERNAL_TDM_MODE:
-		p_i2s_internal_cfg->i2s_initial_type = I2S_EXTERNAL_TDM_MODE;
-	break;
-	default:
+	if (i2s_initial_type <= MHAL_I2S_TYPE_INTERNAL_LOOPBACK_MODE)
+		p_i2s_internal_cfg->i2s_initial_type = i2s_initial_type;
+	else {
 		i2s_err("I2S config type initial fail\n");
-		return -EPTR;
+		return -I2S_EPTR;
 	}
-
-	mtk_hdl_i2s_cfg_init_setting(p_i2s_internal_cfg->i2s_initial_type,
-				     p_i2sgblcfg,
-				     p_i2sdlcfg,
-				     p_i2sulcfg);
 	return 0;
 }
 
 int mtk_mhal_i2s_reset(struct mtk_i2s_ctlr *ctlr)
 {
 	if (!ctlr)
-		return -EPTR;
+		return -I2S_EPTR;
 	mtk_hdl_i2s_reset(ctlr->base);
+	return 0;
+}
+
+int mtk_mhal_i2s_clk_en(struct mtk_i2s_ctlr *ctlr, i2s_fnen en)
+{
+	if (!ctlr)
+		return -I2S_EPTR;
+	mtk_hdl_i2s_clk_gating(ctlr->base, en);
 	return 0;
 }
 
@@ -94,213 +81,223 @@ int mtk_mhal_i2s_set_config(struct mtk_i2s_ctlr *ctlr,
 			    struct hal_i2s_config *config)
 {
 	struct mtk_i2s_private *p_i2s_internal_cfg;
-	struct i2s_gbl_cfg *p_i2sgblcfg;
-	struct i2s_dl_cfg *p_i2sdlcfg;
-	struct i2s_ul_cfg *p_i2sulcfg;
+	struct i2s_gbl_cfg i2sgblcfg;
+	struct i2s_dl_cfg i2sdlcfg;
+	struct i2s_ul_cfg i2sulcfg;
+	enum_i2s_dl_mono_stereo_mode i2s_dl_mono_stereo;
+	enum_i2s_dl_sample_rate i2s_dl_sample_rate;
+	enum_i2s_ul_sample_rate i2s_ul_sample_rate;
+	enum_i2s_dl_bit_per_sample_rate i2s_dl_bit_per_sample_rate;
+	enum_i2s_ul_bit_per_sample_rate i2s_ul_bit_per_sample_rate;
+	enum_i2s_dl_ch_per_sample i2s_dl_ch_per_sample;
+	enum_i2s_ul_ch_per_sample i2s_ul_ch_per_sample;
+	enum_i2s_initial_type i2s_initial_type;
+	u8 i2s_dl_mono_dup_en;
+	u8 i2s_down_rate_en;
 
 	if (!ctlr || !config)
-		return -EPTR;
+		return -I2S_EPTR;
 	p_i2s_internal_cfg = ctlr->mdata;
-	p_i2sgblcfg = &p_i2s_internal_cfg->i2s_gbl_cfg;
-	p_i2sdlcfg = &p_i2s_internal_cfg->i2s_dl_cfg;
-	p_i2sulcfg = &p_i2s_internal_cfg->i2s_ul_cfg;
 
+	switch (p_i2s_internal_cfg->i2s_initial_type) {
+	case MHAL_I2S_TYPE_INTERNAL_LOOPBACK_MODE:
+		i2s_initial_type = I2S_INTERNAL_LOOPBACK_MODE;
+	break;
+	case MHAL_I2S_TYPE_EXTERNAL_MODE:
+		i2s_initial_type = I2S_EXTERNAL_MODE;
+	break;
+	case MHAL_I2S_TYPE_EXTERNAL_TDM_MODE:
+		i2s_initial_type = I2S_EXTERNAL_TDM_MODE;
+	break;
+	default:
+		i2s_err("I2S config type initial fail\n");
+		return -I2S_EPTR;
+	}
+
+	mtk_hdl_i2s_cfg_init_setting(i2s_initial_type,
+				     &i2sgblcfg,
+				     &i2sdlcfg,
+				     &i2sulcfg);
 	/*set tx sample rate*/
+	if (config->i2s_out.sample_rate > MHAL_I2S_SAMPLE_RATE_48K)
+		return -I2S_EPTR;
+	i2s_dl_sample_rate =
+		_mtk_mhal_i2s_tx_sample_rate(config->i2s_out.sample_rate);
+	/*set rx sample rate*/
+	if (config->i2s_in.sample_rate > MHAL_I2S_SAMPLE_RATE_48K)
+		return -I2S_EPTR;
+	i2s_ul_sample_rate =
+		_mtk_mhal_i2s_rx_sample_rate(config->i2s_in.sample_rate);
 	if (config->i2s_out.sample_rate != config->i2s_in.sample_rate) {
 		i2s_err("tx/rx sample rate different\n");
-		return -EPTR;
+		return -I2S_EPTR;
 	}
-	if (_mtk_mhal_i2s_is_sample_rate(config->i2s_out.sample_rate,
-					 p_i2s_internal_cfg, I2S_FALSE) != 0)
-		return -EPTR;
-	/*set rx sample rate*/
-	if (_mtk_mhal_i2s_is_sample_rate(config->i2s_in.sample_rate,
-					 p_i2s_internal_cfg, I2S_TRUE) != 0)
-		return -EPTR;
-
 	/*set tx channel number*/
 	if (config->i2s_out.channel_number != config->i2s_in.channel_number) {
 		i2s_err("in/out channel num different\n");
-		return -EPTR;
+		return -I2S_EPTR;
 	}
 	switch (config->i2s_out.channel_number) {
 	case MHAL_I2S_MONO:
-		p_i2s_internal_cfg->i2s_dl_mono_stereo = I2S_DL_MONO_MODE;
+		i2s_dl_mono_stereo = I2S_DL_MONO_MODE;
 		p_i2s_internal_cfg->i2s_user_config.i2s_out.channel_number =
 		MHAL_I2S_MONO;
 	break;
 	case MHAL_I2S_STEREO:
-		p_i2s_internal_cfg->i2s_dl_mono_stereo = I2S_DL_STEREO_MODE;
+		i2s_dl_mono_stereo = I2S_DL_STEREO_MODE;
 		p_i2s_internal_cfg->i2s_user_config.i2s_out.channel_number =
 		MHAL_I2S_STEREO;
 	break;
 	default:
 		i2s_err("set tx channel number fail\n");
-		return -EPTR;
+		return -I2S_EPTR;
 	}
 	/*set rx down rate*/
 	switch (config->rx_down_rate) {
 	case MHAL_I2S_RX_DOWN_RATE_DISABLE:
-		p_i2s_internal_cfg->i2s_down_rate_en = I2S_UL_DOWN_RATE_DIS;
+		i2s_down_rate_en = I2S_UL_DOWN_RATE_DIS;
 		p_i2s_internal_cfg->i2s_user_config.rx_down_rate =
 		MHAL_I2S_RX_DOWN_RATE_DISABLE;
 	break;
 	case MHAL_I2S_RX_DOWN_RATE_ENABLE:
-		p_i2s_internal_cfg->i2s_down_rate_en = I2S_UL_DOWN_RATE_EN;
+		i2s_down_rate_en = I2S_UL_DOWN_RATE_EN;
 		p_i2s_internal_cfg->i2s_user_config.rx_down_rate =
 		MHAL_I2S_RX_DOWN_RATE_ENABLE;
 	break;
 	default:
 		i2s_err("set rx down rate fail\n");
-		return -EPTR;
+		return -I2S_EPTR;
 	}
 	/*set tx mode*/
 	switch (config->tx_mode) {
 	case MHAL_I2S_TX_MONO_DUPLICATE_DISABLE:
-		p_i2s_internal_cfg->i2s_dl_mono_dup_en =
-		I2S_DL_MONO_DUP_DIS;
+		i2s_dl_mono_dup_en = I2S_DL_MONO_DUP_DIS;
 		p_i2s_internal_cfg->i2s_user_config.tx_mode =
 		MHAL_I2S_TX_MONO_DUPLICATE_DISABLE;
 	break;
 	case MHAL_I2S_TX_MONO_DUPLICATE_ENABLE:
-		p_i2s_internal_cfg->i2s_dl_mono_dup_en =
-		I2S_DL_MONO_DUP_EN;
+		i2s_dl_mono_dup_en = I2S_DL_MONO_DUP_EN;
 		p_i2s_internal_cfg->i2s_user_config.tx_mode =
 		MHAL_I2S_TX_MONO_DUPLICATE_ENABLE;
 	break;
 	default:
 		i2s_err("set tx mode fail\n");
-		return -EPTR;
+		return -I2S_EPTR;
 	}
 	/*set TX LR swap*/
 	switch (config->i2s_out.lr_swap) {
 	case MHAL_FN_DIS:
-		p_i2s_internal_cfg->i2s_gbl_cfg.i2s_dl_swap_lr = 0;
+		i2sgblcfg.i2s_dl_swap_lr = 0;
 		p_i2s_internal_cfg->i2s_user_config.i2s_out.lr_swap =
 		MHAL_FN_DIS;
 	break;
 	case MHAL_FN_EN:
-		p_i2s_internal_cfg->i2s_gbl_cfg.i2s_dl_swap_lr = 1;
+		i2sgblcfg.i2s_dl_swap_lr = 1;
 		p_i2s_internal_cfg->i2s_user_config.i2s_out.lr_swap =
 		MHAL_FN_EN;
 	break;
 	default:
 		i2s_err("set TX LR swap fail\n");
-		return -EPTR;
+		return -I2S_EPTR;
 	}
 	/*set RX LR swap*/
 	switch (config->i2s_in.lr_swap) {
 	case MHAL_FN_DIS:
-		p_i2s_internal_cfg->i2s_ul_cfg.i2s_lr_swap = 0;
+		i2sulcfg.i2s_lr_swap = 0;
 		p_i2s_internal_cfg->i2s_user_config.i2s_in.lr_swap =
 		MHAL_FN_DIS;
 	break;
 	case MHAL_FN_EN:
-		p_i2s_internal_cfg->i2s_ul_cfg.i2s_lr_swap = 1;
+		i2sulcfg.i2s_lr_swap = 1;
 		p_i2s_internal_cfg->i2s_user_config.i2s_in.lr_swap =
 		MHAL_FN_EN;
 	break;
 	default:
 		i2s_err("set RX LR swap fail\n");
-		return -EPTR;
+		return -I2S_EPTR;
 	}
 
 	if (config->i2s_out.msb_offset < 128 &&
 	    config->i2s_in.msb_offset < 128) {
 		/*set TX msb_offset*/
-		p_i2s_internal_cfg->i2s_dl_cfg.i2s_msbo_ffset =
-		config->i2s_out.msb_offset;
+		i2sdlcfg.i2s_msbo_ffset = config->i2s_out.msb_offset;
 		/*set RX msb_offset*/
-		p_i2s_internal_cfg->i2s_ul_cfg.i2s_msbo_ffset =
-		config->i2s_in.msb_offset;
+		i2sulcfg.i2s_msbo_ffset = config->i2s_in.msb_offset;
 	} else {
 		i2s_err("msb_offset over maximum(127)\n");
-		return -EPTR;
+		return -I2S_EPTR;
 	}
 	/*set TX word_select_inverse*/
 	if (config->i2s_out.word_select_inverse <= MHAL_FN_EN)
-		p_i2s_internal_cfg->i2s_dl_cfg.i2s_word_sel_inv =
+		i2sdlcfg.i2s_word_sel_inv =
 		config->i2s_out.word_select_inverse;
 	else
-		return -EPTR;
+		return -I2S_EPTR;
 	/*set RX word_select_inverse*/
 	if (config->i2s_in.word_select_inverse <= MHAL_FN_EN)
-		p_i2s_internal_cfg->i2s_ul_cfg.i2s_word_sel_inv =
+		i2sulcfg.i2s_word_sel_inv =
 		config->i2s_in.word_select_inverse;
 	else
-		return -EPTR;
+		return -I2S_EPTR;
 	/*set tx bit per sample*/
-	if (config->i2s_out.bits_per_sample != config->i2s_in.bits_per_sample) {
-		i2s_err("set tx/rx bit per sample different\n");
-		return -EPTR;
-	}
 	switch (config->i2s_out.bits_per_sample) {
 	case MHAL_I2S_BITS_PER_SAMPLE_32:
-		p_i2s_internal_cfg->i2s_dl_bit_per_sample_rate =
-		I2S_DL_32BITS_PER_SAMPLE;
+		i2s_dl_bit_per_sample_rate = I2S_DL_32BITS_PER_SAMPLE;
 		p_i2s_internal_cfg->i2s_user_config.i2s_out.bits_per_sample =
 		MHAL_I2S_BITS_PER_SAMPLE_32;
 	break;
 	case MHAL_I2S_BITS_PER_SAMPLE_64:
-		p_i2s_internal_cfg->i2s_dl_bit_per_sample_rate =
-		I2S_DL_64BITS_PER_SAMPLE;
+		i2s_dl_bit_per_sample_rate = I2S_DL_64BITS_PER_SAMPLE;
 		p_i2s_internal_cfg->i2s_user_config.i2s_out.bits_per_sample =
 		MHAL_I2S_BITS_PER_SAMPLE_64;
 	break;
 	case MHAL_I2S_BITS_PER_SAMPLE_128:
-		p_i2s_internal_cfg->i2s_dl_bit_per_sample_rate =
-		I2S_DL_128BITS_PER_SAMPLE;
+		i2s_dl_bit_per_sample_rate = I2S_DL_128BITS_PER_SAMPLE;
 		p_i2s_internal_cfg->i2s_user_config.i2s_out.bits_per_sample =
 		MHAL_I2S_BITS_PER_SAMPLE_128;
 	break;
 	default:
 		i2s_err("set tx bit per sample fail\n");
-		return -EPTR;
+		return -I2S_EPTR;
 	}
 	/*set rx bit per sample*/
 	switch (config->i2s_in.bits_per_sample) {
 	case MHAL_I2S_BITS_PER_SAMPLE_32:
-		p_i2s_internal_cfg->i2s_ul_bit_per_sample_rate =
-		I2S_UL_32BITS_PER_SAMPLE;
+		i2s_ul_bit_per_sample_rate = I2S_UL_32BITS_PER_SAMPLE;
 		p_i2s_internal_cfg->i2s_user_config.i2s_in.bits_per_sample =
 		MHAL_I2S_BITS_PER_SAMPLE_32;
 	break;
 	case MHAL_I2S_BITS_PER_SAMPLE_64:
-		p_i2s_internal_cfg->i2s_ul_bit_per_sample_rate =
-		I2S_UL_64BITS_PER_SAMPLE;
+		i2s_ul_bit_per_sample_rate = I2S_UL_64BITS_PER_SAMPLE;
 		p_i2s_internal_cfg->i2s_user_config.i2s_in.bits_per_sample =
 		MHAL_I2S_BITS_PER_SAMPLE_64;
 	break;
 	case MHAL_I2S_BITS_PER_SAMPLE_128:
-		p_i2s_internal_cfg->i2s_ul_bit_per_sample_rate =
-		I2S_UL_128BITS_PER_SAMPLE;
+		i2s_ul_bit_per_sample_rate = I2S_UL_128BITS_PER_SAMPLE;
 		p_i2s_internal_cfg->i2s_user_config.i2s_in.bits_per_sample =
 		MHAL_I2S_BITS_PER_SAMPLE_128;
 	break;
 	default:
 		i2s_err("set rx bit per sample fail\n");
-		return -EPTR;
+		return -I2S_EPTR;
+	}
+	if (config->i2s_out.bits_per_sample != config->i2s_in.bits_per_sample) {
+		i2s_err("set tx/rx bit per sample different\n");
+		return -I2S_EPTR;
 	}
 
-	if (p_i2s_internal_cfg->i2s_initial_type == I2S_EXTERNAL_TDM_MODE) {
+	if (i2s_initial_type == I2S_EXTERNAL_TDM_MODE) {
 		/*set tx channel per sample*/
-		if (config->i2s_out.channels_per_sample !=
-		    config->i2s_in.channels_per_sample) {
-			i2s_err("TDM set tx/rx channel per sample different\n");
-			return -EPTR;
-		}
 		switch (config->i2s_out.channels_per_sample) {
 		case MHAL_I2S_LINK_CHANNLE_PER_SAMPLE_2:
-			p_i2s_internal_cfg->i2s_dl_ch_per_sample =
-			I2S_DL_2_CH_PER_SAMPLE;
+			i2s_dl_ch_per_sample = I2S_DL_2_CH_PER_SAMPLE;
 
 			p_i2s_internal_cfg->
 			i2s_user_config.i2s_out.channels_per_sample =
 			MHAL_I2S_LINK_CHANNLE_PER_SAMPLE_2;
 		break;
 		case MHAL_I2S_LINK_CHANNLE_PER_SAMPLE_4:
-			p_i2s_internal_cfg->i2s_dl_ch_per_sample =
-			I2S_DL_4_CH_PER_SAMPLE;
+			i2s_dl_ch_per_sample = I2S_DL_4_CH_PER_SAMPLE;
 
 			p_i2s_internal_cfg->
 			i2s_user_config.i2s_out.channels_per_sample =
@@ -308,21 +305,19 @@ int mtk_mhal_i2s_set_config(struct mtk_i2s_ctlr *ctlr,
 		break;
 		default:
 			i2s_err("TDM set tx channel per sample fail\n");
-			return -EPTR;
+			return -I2S_EPTR;
 		}
 		/*set rx channel per sample*/
 		switch (config->i2s_in.channels_per_sample) {
 		case MHAL_I2S_LINK_CHANNLE_PER_SAMPLE_2:
-			p_i2s_internal_cfg->i2s_ul_ch_per_sample =
-			I2S_UL_2_CH_PER_SAMPLE;
+			i2s_ul_ch_per_sample = I2S_UL_2_CH_PER_SAMPLE;
 
 			p_i2s_internal_cfg->
 			i2s_user_config.i2s_in.channels_per_sample =
 			MHAL_I2S_LINK_CHANNLE_PER_SAMPLE_2;
 		break;
 		case MHAL_I2S_LINK_CHANNLE_PER_SAMPLE_4:
-			p_i2s_internal_cfg->i2s_ul_ch_per_sample =
-			I2S_UL_4_CH_PER_SAMPLE;
+			i2s_ul_ch_per_sample = I2S_UL_4_CH_PER_SAMPLE;
 
 			p_i2s_internal_cfg->
 			i2s_user_config.i2s_in.channels_per_sample =
@@ -330,32 +325,40 @@ int mtk_mhal_i2s_set_config(struct mtk_i2s_ctlr *ctlr,
 		break;
 		default:
 			i2s_err("TDM set rx channel per sample fail\n");
-			return -EPTR;
+			return -I2S_EPTR;
 		}
+		if (config->i2s_out.channels_per_sample !=
+		    config->i2s_in.channels_per_sample) {
+			i2s_err("TDM set tx/rx channel per sample different\n");
+			return -I2S_EPTR;
+		}
+	} else {
+		i2s_dl_ch_per_sample = I2S_DL_2_CH_PER_SAMPLE;
+		i2s_ul_ch_per_sample = I2S_UL_2_CH_PER_SAMPLE;
 	}
 
 	mtk_hdl_i2s_cfg_sample_rate(
-				p_i2s_internal_cfg->i2s_dl_sample_rate,
-				p_i2s_internal_cfg->i2s_ul_sample_rate,
-				p_i2s_internal_cfg->i2s_down_rate_en,
-				p_i2sdlcfg, p_i2sulcfg);
+				i2s_dl_sample_rate,
+				i2s_ul_sample_rate,
+				i2s_down_rate_en,
+				&i2sdlcfg, &i2sulcfg);
 
 	mtk_hdl_i2s_cfg_mono_stereo(
-				p_i2s_internal_cfg->i2s_dl_mono_stereo,
-				p_i2s_internal_cfg->i2s_dl_mono_dup_en,
-				p_i2sgblcfg);
+				i2s_dl_mono_stereo,
+				i2s_dl_mono_dup_en,
+				&i2sgblcfg);
 
-	if (p_i2s_internal_cfg->i2s_initial_type == I2S_EXTERNAL_TDM_MODE)
+	if (i2s_initial_type == I2S_EXTERNAL_TDM_MODE)
 		mtk_hdl_i2s_cfg_tdm_ch_bit_per_sample(
-				p_i2s_internal_cfg->i2s_dl_ch_per_sample,
-				p_i2s_internal_cfg->i2s_ul_ch_per_sample,
-				p_i2s_internal_cfg->i2s_dl_bit_per_sample_rate,
-				p_i2s_internal_cfg->i2s_ul_bit_per_sample_rate,
-				p_i2sdlcfg, p_i2sulcfg);
+				i2s_dl_ch_per_sample,
+				i2s_ul_ch_per_sample,
+				i2s_dl_bit_per_sample_rate,
+				i2s_ul_bit_per_sample_rate,
+				&i2sdlcfg, &i2sulcfg);
 
-	mtk_hdl_i2s_gbl_cfg(ctlr->base, p_i2sgblcfg);
-	mtk_hdl_i2s_dl_cfg(ctlr->base, p_i2sdlcfg);
-	mtk_hdl_i2s_ul_cfg(ctlr->base, p_i2sulcfg);
+	mtk_hdl_i2s_gbl_cfg(ctlr->base, &i2sgblcfg);
+	mtk_hdl_i2s_dl_cfg(ctlr->base, &i2sdlcfg);
+	mtk_hdl_i2s_ul_cfg(ctlr->base, &i2sulcfg);
 
 	return 0;
 }
@@ -364,7 +367,7 @@ int mtk_mhal_i2s_enable_audio_top(struct mtk_i2s_ctlr *ctlr)
 {
 	/*----Enable  audio_top----*/
 	if (!ctlr)
-		return -EPTR;
+		return -I2S_EPTR;
 	mtk_hdl_i2s_clk_fifo_en(ctlr->base, I2S_TRUE);
 	return 0;
 }
@@ -373,7 +376,7 @@ int mtk_mhal_i2s_disable_audio_top(struct mtk_i2s_ctlr *ctlr)
 {
 	/*----Disable audio_top----*/
 	if (!ctlr)
-		return -EPTR;
+		return -I2S_EPTR;
 	mtk_hdl_i2s_clk_fifo_en(ctlr->base, I2S_FALSE);
 	return 0;
 }
@@ -385,7 +388,7 @@ int mtk_mhal_i2s_cfg_tx_dma_irq_enable(struct mtk_i2s_ctlr *ctlr,
 	struct osai_dma_config *p_dma_cfg;
 
 	if (!ctlr || !callback_func)
-		return -EPTR;
+		return -I2S_EPTR;
 	p_i2s_internal_cfg = ctlr->mdata;
 	p_dma_cfg = &p_i2s_internal_cfg->i2s_txdma_cfg;
 	/*----Enable DMA interrupt for TX----*/
@@ -401,7 +404,7 @@ int mtk_mhal_i2s_cfg_tx_dma_irq_disable(struct mtk_i2s_ctlr *ctlr)
 	struct osai_dma_config *p_dma_cfg;
 
 	if (!ctlr)
-		return -EPTR;
+		return -I2S_EPTR;
 	p_i2s_internal_cfg = ctlr->mdata;
 	p_dma_cfg = &p_i2s_internal_cfg->i2s_txdma_cfg;
 	/*----Disable DMA interrupt for TX---- */
@@ -417,7 +420,7 @@ int mtk_mhal_i2s_cfg_rx_dma_irq_enable(struct mtk_i2s_ctlr *ctlr,
 	struct osai_dma_config *p_dma_cfg;
 
 	if (!ctlr || !callback_func)
-		return -EPTR;
+		return -I2S_EPTR;
 	p_i2s_internal_cfg = ctlr->mdata;
 	p_dma_cfg = &p_i2s_internal_cfg->i2s_rxdma_cfg;
 	/*----Enable  DMA interrupt for RX---- */
@@ -432,7 +435,7 @@ int mtk_mhal_i2s_cfg_rx_dma_irq_disable(struct mtk_i2s_ctlr *ctlr)
 	struct osai_dma_config *p_dma_cfg;
 
 	if (!ctlr)
-		return -EPTR;
+		return -I2S_EPTR;
 	p_i2s_internal_cfg = ctlr->mdata;
 	p_dma_cfg = &p_i2s_internal_cfg->i2s_rxdma_cfg;
 	/*----Disable DMA interrupt for RX---- */
@@ -448,20 +451,20 @@ int mtk_mhal_i2s_move_tx_point(struct mtk_i2s_ctlr *ctlr,
 	u8 channel_num;
 
 	if (!ctlr)
-		return -EPTR;
+		return -I2S_EPTR;
 
 	channel_num = ctlr->i2s_txdma_chnum;
 	p_i2s_internal_cfg = ctlr->mdata;
 	p_dma_cfg = &p_i2s_internal_cfg->i2s_txdma_cfg;
 	if (buffer_length > p_dma_cfg->vfifo_size ||
 	    !buffer_length)
-		return -EPTR;
+		return -I2S_EPTR;
 
 	bresut = osai_dma_update_vfifo_swptr(channel_num, buffer_length);
 
 	if (bresut) {
 		i2s_err("TX DMA move point fail\n");
-		return -EPTR;
+		return -I2S_EPTR;
 	}
 	return 0;
 }
@@ -475,20 +478,20 @@ int mtk_mhal_i2s_move_rx_point(struct mtk_i2s_ctlr *ctlr,
 	u8 channel_num;
 
 	if (!ctlr)
-		return -EPTR;
+		return -I2S_EPTR;
 
 	channel_num = ctlr->i2s_rxdma_chnum;
 	p_i2s_internal_cfg = ctlr->mdata;
 	p_dma_cfg = &p_i2s_internal_cfg->i2s_rxdma_cfg;
 	if (buffer_length > p_dma_cfg->vfifo_size ||
 	    !buffer_length)
-		return -EPTR;
+		return -I2S_EPTR;
 
 	bresut = osai_dma_update_vfifo_swptr(channel_num, buffer_length);
 
 	if (bresut) {
 		i2s_err("RX DMA move point fail\n");
-		return -EPTR;
+		return -I2S_EPTR;
 	}
 	return 0;
 }
@@ -504,11 +507,11 @@ int mtk_mhal_i2s_start_tx_vfifo(struct mtk_i2s_ctlr *ctlr,
 	u8 channel_num;
 
 	if (!ctlr || buffer == NULL)
-		return -EPTR;
+		return -I2S_EPTR;
 	if (buffer_length < 1024)
-		return -ELENGTH;
+		return -I2S_ELENGTH;
 	if (threshold > buffer_length || threshold == 0)
-		return -ELENGTH;
+		return -I2S_ELENGTH;
 
 	channel_num = ctlr->i2s_txdma_chnum;
 	p_i2s_internal_cfg = ctlr->mdata;
@@ -528,7 +531,7 @@ int mtk_mhal_i2s_start_tx_vfifo(struct mtk_i2s_ctlr *ctlr,
 
 	if (bresut) {
 		i2s_err("TX DMA return fail\n");
-		return -EPTR;
+		return -I2S_EPTR;
 	}
 	return 0;
 }
@@ -544,11 +547,11 @@ int mtk_mhal_i2s_start_rx_vfifo(struct mtk_i2s_ctlr *ctlr,
 	u8 channel_num;
 
 	if (!ctlr || buffer == NULL)
-		return -EPTR;
+		return -I2S_EPTR;
 	if (buffer_length < 1024)
-		return -ELENGTH;
+		return -I2S_ELENGTH;
 	if (threshold > buffer_length || threshold == 0)
-		return -ELENGTH;
+		return -I2S_ELENGTH;
 
 	channel_num = ctlr->i2s_rxdma_chnum;
 	p_i2s_internal_cfg = ctlr->mdata;
@@ -568,7 +571,7 @@ int mtk_mhal_i2s_start_rx_vfifo(struct mtk_i2s_ctlr *ctlr,
 
 	if (bresut) {
 		i2s_err("RX DMA return fail\n");
-		return -EPTR;
+		return -I2S_EPTR;
 	}
 	return 0;
 }
@@ -579,12 +582,12 @@ int mtk_mhal_i2s_stop_tx_vfifo(struct mtk_i2s_ctlr *ctlr)
 	u8 channel_num;
 
 	if (!ctlr)
-		return -EPTR;
+		return -I2S_EPTR;
 	channel_num = ctlr->i2s_txdma_chnum;
 	bresut = osai_dma_stop(channel_num);
 	if (bresut) {
 		i2s_err("DMA channel stop return fail\n");
-		return -EPTR;
+		return -I2S_EPTR;
 	}
 	return 0;
 }
@@ -595,12 +598,12 @@ int mtk_mhal_i2s_stop_rx_vfifo(struct mtk_i2s_ctlr *ctlr)
 	u8 channel_num;
 
 	if (!ctlr)
-		return -EPTR;
+		return -I2S_EPTR;
 	channel_num = ctlr->i2s_rxdma_chnum;
 	bresut = osai_dma_stop(channel_num);
 	if (bresut) {
 		i2s_err("DMA channel stop return fail\n");
-		return -EPTR;
+		return -I2S_EPTR;
 	}
 	return 0;
 }
@@ -609,16 +612,16 @@ int mtk_mhal_i2s_alloc_vfifo_ch(struct mtk_i2s_ctlr *ctlr)
 	u8 bresut = 0;
 
 	if (!ctlr)
-		return -EPTR;
+		return -I2S_EPTR;
 	bresut = osai_dma_allocate_chan(ctlr->i2s_txdma_chnum);
 	if (bresut) {
 		i2s_err("TX DMA channel allocate return fail\n");
-		return -EPTR;
+		return -I2S_EPTR;
 	}
 	bresut = osai_dma_allocate_chan(ctlr->i2s_rxdma_chnum);
 	if (bresut) {
 		i2s_err("RX DMA channel allocate return fail\n");
-		return -EPTR;
+		return -I2S_EPTR;
 	}
 	return 0;
 }
@@ -627,16 +630,16 @@ int mtk_mhal_i2s_release_vfifo_ch(struct mtk_i2s_ctlr *ctlr)
 	u8 bresut = 0;
 
 	if (!ctlr)
-		return -EPTR;
+		return -I2S_EPTR;
 	bresut = osai_dma_release_chan(ctlr->i2s_txdma_chnum);
 	if (bresut) {
 		i2s_err("TX DMA channel release return fail\n");
-		return -EPTR;
+		return -I2S_EPTR;
 	}
 	bresut = osai_dma_release_chan(ctlr->i2s_rxdma_chnum);
 	if (bresut) {
 		i2s_err("RX DMA channel release return fail\n");
-		return -EPTR;
+		return -I2S_EPTR;
 	}
 	return 0;
 }
@@ -644,7 +647,7 @@ int mtk_mhal_i2s_release_vfifo_ch(struct mtk_i2s_ctlr *ctlr)
 int mtk_mhal_i2s_enable_tx(struct mtk_i2s_ctlr *ctlr)
 {
 	if (!ctlr)
-		return -EPTR;
+		return -I2S_EPTR;
 	mtk_hdl_i2s_dl_en(ctlr->base, true);
 	return 0;
 }
@@ -652,7 +655,7 @@ int mtk_mhal_i2s_enable_tx(struct mtk_i2s_ctlr *ctlr)
 int mtk_mhal_i2s_enable_rx(struct mtk_i2s_ctlr *ctlr)
 {
 	if (!ctlr)
-		return -EPTR;
+		return -I2S_EPTR;
 	mtk_hdl_i2s_ul_en(ctlr->base, true);
 	return 0;
 }
@@ -661,7 +664,7 @@ int mtk_mhal_i2s_disable_tx(struct mtk_i2s_ctlr *ctlr)
 {
 
 	if (!ctlr)
-		return -EPTR;
+		return -I2S_EPTR;
 	mtk_hdl_i2s_dl_en(ctlr->base, false);
 	return 0;
 }
@@ -669,62 +672,62 @@ int mtk_mhal_i2s_disable_tx(struct mtk_i2s_ctlr *ctlr)
 int mtk_mhal_i2s_disable_rx(struct mtk_i2s_ctlr *ctlr)
 {
 	if (!ctlr)
-		return -EPTR;
+		return -I2S_EPTR;
 	mtk_hdl_i2s_ul_en(ctlr->base, false);
 	return 0;
 }
 
-int _mtk_mhal_i2s_is_sample_rate(hal_i2s_sample_rate sample_rate,
-				 struct mtk_i2s_private *p_i2s_internal_cfg,
-				 u8 is_rx)
+enum_i2s_dl_sample_rate _mtk_mhal_i2s_tx_sample_rate(hal_i2s_sample_rate
+						     sample_rate)
 {
 	enum_i2s_dl_sample_rate dl_sample_rate = I2S_DL_SAMPLE_RATE_8K;
+
+	switch (sample_rate) {
+	case MHAL_I2S_SAMPLE_RATE_8K:
+		dl_sample_rate = I2S_DL_SAMPLE_RATE_8K;
+		break;
+	case MHAL_I2S_SAMPLE_RATE_12K:
+		dl_sample_rate = I2S_DL_SAMPLE_RATE_12K;
+		break;
+	case MHAL_I2S_SAMPLE_RATE_16K:
+		dl_sample_rate = I2S_DL_SAMPLE_RATE_16K;
+		break;
+	case MHAL_I2S_SAMPLE_RATE_24K:
+		dl_sample_rate = I2S_DL_SAMPLE_RATE_24K;
+		break;
+	case MHAL_I2S_SAMPLE_RATE_32K:
+		dl_sample_rate = I2S_DL_SAMPLE_RATE_32K;
+		break;
+	case MHAL_I2S_SAMPLE_RATE_48K:
+		dl_sample_rate = I2S_DL_SAMPLE_RATE_48K;
+		break;
+	}
+	return dl_sample_rate;
+}
+enum_i2s_ul_sample_rate _mtk_mhal_i2s_rx_sample_rate(hal_i2s_sample_rate
+						     sample_rate)
+{
 	enum_i2s_ul_sample_rate ul_sample_rate = I2S_UL_SAMPLE_RATE_8K;
 
 	switch (sample_rate) {
 	case MHAL_I2S_SAMPLE_RATE_8K:
-		if (is_rx)
-			ul_sample_rate = I2S_UL_SAMPLE_RATE_8K;
-		else
-			dl_sample_rate = I2S_DL_SAMPLE_RATE_8K;
+		ul_sample_rate = I2S_UL_SAMPLE_RATE_8K;
 		break;
 	case MHAL_I2S_SAMPLE_RATE_12K:
-		if (is_rx)
-			ul_sample_rate = I2S_UL_SAMPLE_RATE_12K;
-		else
-			dl_sample_rate = I2S_DL_SAMPLE_RATE_12K;
+		ul_sample_rate = I2S_UL_SAMPLE_RATE_12K;
 		break;
 	case MHAL_I2S_SAMPLE_RATE_16K:
-		if (is_rx)
-			ul_sample_rate = I2S_UL_SAMPLE_RATE_16K;
-		else
-			dl_sample_rate = I2S_DL_SAMPLE_RATE_16K;
+		ul_sample_rate = I2S_UL_SAMPLE_RATE_16K;
 		break;
 	case MHAL_I2S_SAMPLE_RATE_24K:
-		if (is_rx)
-			ul_sample_rate = I2S_UL_SAMPLE_RATE_24K;
-		else
-			dl_sample_rate = I2S_DL_SAMPLE_RATE_24K;
+		ul_sample_rate = I2S_UL_SAMPLE_RATE_24K;
 		break;
 	case MHAL_I2S_SAMPLE_RATE_32K:
-		if (is_rx)
-			ul_sample_rate = I2S_UL_SAMPLE_RATE_32K;
-		else
-			dl_sample_rate = I2S_DL_SAMPLE_RATE_32K;
+		ul_sample_rate = I2S_UL_SAMPLE_RATE_32K;
 		break;
 	case MHAL_I2S_SAMPLE_RATE_48K:
-		if (is_rx)
-			ul_sample_rate = I2S_UL_SAMPLE_RATE_48K;
-		else
-			dl_sample_rate = I2S_DL_SAMPLE_RATE_48K;
+		ul_sample_rate = I2S_UL_SAMPLE_RATE_48K;
 		break;
-	default:
-		return -EPTR;
 	}
-	if (is_rx)
-		p_i2s_internal_cfg->i2s_ul_sample_rate = ul_sample_rate;
-	else
-		p_i2s_internal_cfg->i2s_dl_sample_rate = dl_sample_rate;
-
-	return 0;
+	return ul_sample_rate;
 }

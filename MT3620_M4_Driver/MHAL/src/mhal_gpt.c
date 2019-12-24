@@ -33,17 +33,17 @@
  * MEDIATEK SOFTWARE AT ISSUE.
  */
 
-#include <hdl_gpt.h>
-#include <mhal_gpt.h>
+#include "hdl_gpt.h"
+#include "mhal_gpt.h"
 
 int mtk_mhal_gpt_set_compare(struct hal_gpt_dev *gpt_dev,
 			     enum gpt_num timer_id,
 			     u32 cmp_val)
 {
 	if (!gpt_dev || !gpt_dev->cm4_gpt_base)
-		return -EPTR;
+		return -GPT_EPTR;
 	if (timer_id >= GPT_MAX_NUM)
-		return -ENODEV;
+		return -GPT_ENODEV;
 
 	return mtk_hdl_gpt_set_compare(gpt_dev->cm4_gpt_base, (u8)timer_id,
 				       cmp_val);
@@ -54,9 +54,9 @@ int mtk_mhal_gpt_config_mode(struct hal_gpt_dev *gpt_dev,
 			     enum gpt_mode mode)
 {
 	if (!gpt_dev || !gpt_dev->cm4_gpt_base)
-		return -EPTR;
+		return -GPT_EPTR;
 	if (timer_id >= GPT_MAX_NUM)
-		return -ENODEV;
+		return -GPT_ENODEV;
 
 	return mtk_hdl_gpt_config_mode(gpt_dev->cm4_gpt_base, (u8)timer_id,
 				       (mode == GPT_REPEAT) ? 1 : 0);
@@ -66,9 +66,9 @@ int mtk_mhal_gpt_enable_irq(struct hal_gpt_dev *gpt_dev,
 			    enum gpt_num timer_id)
 {
 	if (!gpt_dev || !gpt_dev->cm4_gpt_base)
-		return -EPTR;
+		return -GPT_EPTR;
 	if (timer_id >= GPT_MAX_NUM)
-		return -ENODEV;
+		return -GPT_ENODEV;
 
 	return mtk_hdl_gpt_enable_irq(gpt_dev->cm4_gpt_base, (u8)timer_id);
 }
@@ -77,9 +77,9 @@ int mtk_mhal_gpt_disable_irq(struct hal_gpt_dev *gpt_dev,
 			     enum gpt_num timer_id)
 {
 	if (!gpt_dev || !gpt_dev->cm4_gpt_base)
-		return -EPTR;
+		return -GPT_EPTR;
 	if (timer_id >= GPT_MAX_NUM)
-		return -ENODEV;
+		return -GPT_ENODEV;
 
 	return mtk_hdl_gpt_disable_irq(gpt_dev->cm4_gpt_base, (u8)timer_id);
 }
@@ -89,9 +89,9 @@ int mtk_mhal_gpt_get_irq_status(struct hal_gpt_dev *gpt_dev,
 				unsigned int *int_sta)
 {
 	if (!gpt_dev || !gpt_dev->cm4_gpt_base || !int_sta)
-		return -EPTR;
+		return -GPT_EPTR;
 	if (timer_id >= GPT_MAX_NUM)
-		return -ENODEV;
+		return -GPT_ENODEV;
 
 	return mtk_hdl_gpt_get_irq_status(gpt_dev->cm4_gpt_base,
 					  (u8)timer_id, int_sta);
@@ -101,9 +101,9 @@ int mtk_mhal_gpt_clear_irq_status(struct hal_gpt_dev *gpt_dev,
 				  enum gpt_num timer_id)
 {
 	if (!gpt_dev || !gpt_dev->cm4_gpt_base)
-		return -EPTR;
+		return -GPT_EPTR;
 	if (timer_id >= GPT_MAX_NUM)
-		return -ENODEV;
+		return -GPT_ENODEV;
 
 	return mtk_hdl_gpt_clear_irq_status(gpt_dev->cm4_gpt_base,
 					    (u8)timer_id);
@@ -113,9 +113,9 @@ int mtk_mhal_gpt_start(struct hal_gpt_dev *gpt_dev,
 		       enum gpt_num timer_id)
 {
 	if (!gpt_dev || !gpt_dev->cm4_gpt_base)
-		return -EPTR;
+		return -GPT_EPTR;
 	if (timer_id >= GPT_MAX_NUM)
-		return -ENODEV;
+		return -GPT_ENODEV;
 
 	mtk_hdl_gpt_start(gpt_dev->cm4_gpt_base, (u8)timer_id);
 
@@ -126,9 +126,9 @@ int mtk_mhal_gpt_stop(struct hal_gpt_dev *gpt_dev,
 		      enum gpt_num timer_id)
 {
 	if (!gpt_dev || !gpt_dev->cm4_gpt_base)
-		return -EPTR;
+		return -GPT_EPTR;
 	if (timer_id >= GPT_MAX_NUM)
-		return -ENODEV;
+		return -GPT_ENODEV;
 
 	mtk_hdl_gpt_stop(gpt_dev->cm4_gpt_base, (u8)timer_id);
 
@@ -139,9 +139,9 @@ int mtk_mhal_gpt_restart_count(struct hal_gpt_dev *gpt_dev,
 			       enum gpt_num timer_id)
 {
 	if (!gpt_dev || !gpt_dev->cm4_gpt_base)
-		return -EPTR;
+		return -GPT_EPTR;
 	if (timer_id >= GPT_MAX_NUM)
-		return -ENODEV;
+		return -GPT_ENODEV;
 
 	mtk_hdl_gpt_restart_count(gpt_dev->cm4_gpt_base, (u8)timer_id);
 
@@ -153,9 +153,9 @@ int mtk_mhal_gpt_get_count(struct hal_gpt_dev *gpt_dev,
 			   u32 *cnt_val)
 {
 	if (!gpt_dev || !gpt_dev->cm4_gpt_base || !cnt_val)
-		return -EPTR;
+		return -GPT_EPTR;
 	if (timer_id >= GPT_MAX_NUM)
-		return -ENODEV;
+		return -GPT_ENODEV;
 
 	*cnt_val = mtk_hdl_gpt_get_count(gpt_dev->cm4_gpt_base, (u8)timer_id);
 	return 0;
@@ -166,9 +166,9 @@ int mtk_mhal_gpt_config_clk(struct hal_gpt_dev *gpt_dev,
 			    enum gpt_clk clk)
 {
 	if (!gpt_dev || !gpt_dev->cm4_gpt_base)
-		return -EPTR;
+		return -GPT_EPTR;
 	if (timer_id >= GPT_MAX_NUM)
-		return -ENODEV;
+		return -GPT_ENODEV;
 
 	mtk_hdl_gpt_config_clk(gpt_dev->cm4_gpt_base, (u8)timer_id, (u8)clk);
 

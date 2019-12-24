@@ -113,13 +113,13 @@ int mtk_mhal_i2c_dump_register(struct mtk_i2c_controller *i2c)
 	return I2C_OK;
 }
 
-static u16 _mtk_mhal_scl_freq_to_phase(enum i2c_speed_kHz eFreq, u32 oper_freq)
+static int _mtk_mhal_scl_freq_to_phase(enum i2c_speed_kHz eFreq, u32 oper_freq)
 {
 	u16 phase = 0;
 	u16 remainder = 0;
 
 	switch (eFreq) {
-	case I2C_SCL_50kHZ:
+	case I2C_SCL_50kHz:
 		phase = ((oper_freq / I2C_50kHz) / 4) - 1;
 		remainder = ((oper_freq / I2C_50kHz) % 4);
 		break;
@@ -704,6 +704,10 @@ int mtk_mhal_i2c_trigger_transfer(struct mtk_i2c_controller *i2c)
 			return -I2C_EINVAL;
 		}
 
+		if ((msgs->len == 0) || ((i2c->op == I2C_WRRD) &&
+			(msgs + 1)->len == 0))
+			return -I2C_EINVAL;
+
 		if ((msgs->len > I2C_FIFO_MAX_LEN) || ((i2c->op == I2C_WRRD) &&
 			((msgs + 1)->len > I2C_FIFO_MAX_LEN)))
 			i2c->dma_en = true;
@@ -727,6 +731,12 @@ int mtk_mhal_i2c_trigger_transfer(struct mtk_i2c_controller *i2c)
 				msgs->flags);
 			return -I2C_EINVAL;
 		}
+
+		if (msgs->len == 0)
+			return -I2C_EINVAL;
+
+		if (msgs->buf == NULL)
+			return -I2C_EPTR;
 
 		if (msgs->len > I2C_FIFO_MAX_LEN)
 			i2c->dma_en = true;
@@ -760,7 +770,7 @@ int mtk_mhal_i2c_init_slv_addr(struct mtk_i2c_controller *i2c, u8 slv_addr)
 		return -I2C_EINVAL;
 	}
 
-	if (slv_addr >= 0x7f || slv_addr <= 0x0) {
+	if (slv_addr >= 0x80 || slv_addr == 0x0) {
 		i2c_err("Invaild slave address slv_addr = 0x%x\n", slv_addr);
 		return -I2C_EINVAL;
 	}

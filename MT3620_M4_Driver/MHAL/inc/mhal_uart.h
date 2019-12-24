@@ -170,7 +170,7 @@
 *	switch (port_num) {
 *	case UART_PORT0:
 *		break;
-*	case UART_ISU_0:
+*	case OS_HAL_UART_ISU0:
 *		mtk_os_hal_gpio_request(OS_HAL_GPIO_26);
 *		mtk_os_hal_gpio_pmx_set_mode(OS_HAL_GPIO_26, OS_HAL_MODE_1);
 *		mtk_os_hal_gpio_request(OS_HAL_GPIO_27);
@@ -180,7 +180,7 @@
 *		mtk_os_hal_gpio_request(OS_HAL_GPIO_29);
 *		mtk_os_hal_gpio_pmx_set_mode(OS_HAL_GPIO_29, OS_HAL_MODE_1);
 *		break;
-*	case UART_ISU_1:
+*	case OS_HAL_UART_ISU1:
 *		mtk_os_hal_gpio_request(OS_HAL_GPIO_31);
 *		mtk_os_hal_gpio_pmx_set_mode(OS_HAL_GPIO_31, OS_HAL_MODE_1);
 *		mtk_os_hal_gpio_request(OS_HAL_GPIO_32);
@@ -190,7 +190,7 @@
 *		mtk_os_hal_gpio_request(OS_HAL_GPIO_34);
 *		mtk_os_hal_gpio_pmx_set_mode(OS_HAL_GPIO_34, OS_HAL_MODE_1);
 *		break;
-*	case UART_ISU_2:
+*	case OS_HAL_UART_ISU2:
 *		mtk_os_hal_gpio_request(OS_HAL_GPIO_36);
 *		mtk_os_hal_gpio_pmx_set_mode(OS_HAL_GPIO_36, OS_HAL_MODE_1);
 *		mtk_os_hal_gpio_request(OS_HAL_GPIO_37);
@@ -200,7 +200,7 @@
 *		mtk_os_hal_gpio_request(OS_HAL_GPIO_39);
 *		mtk_os_hal_gpio_pmx_set_mode(OS_HAL_GPIO_39, OS_HAL_MODE_1);
 *		break;
-*	case UART_ISU_3:
+*	case OS_HAL_UART_ISU3:
 *		mtk_os_hal_gpio_request(OS_HAL_GPIO_66);
 *		mtk_os_hal_gpio_pmx_set_mode(OS_HAL_GPIO_66, OS_HAL_MODE_1);
 *		mtk_os_hal_gpio_request(OS_HAL_GPIO_67);
@@ -210,7 +210,7 @@
 *		mtk_os_hal_gpio_request(OS_HAL_GPIO_69);
 *		mtk_os_hal_gpio_pmx_set_mode(OS_HAL_GPIO_69, OS_HAL_MODE_1);
 *		break;
-*	case UART_ISU_4:
+*	case OS_HAL_UART_ISU4:
 *		mtk_os_hal_gpio_request(OS_HAL_GPIO_71);
 *		mtk_os_hal_gpio_pmx_set_mode(OS_HAL_GPIO_71, OS_HAL_MODE_1);
 *		mtk_os_hal_gpio_request(OS_HAL_GPIO_72);
@@ -220,7 +220,7 @@
 *		mtk_os_hal_gpio_request(OS_HAL_GPIO_74);
 *		mtk_os_hal_gpio_pmx_set_mode(OS_HAL_GPIO_74, OS_HAL_MODE_1);
 *		break;
-*	case UART_MAX_PORT:
+*	case OS_HAL_UART_MAX_PORT:
 *		break;
 *	}
 *}
@@ -230,31 +230,31 @@
 *	switch (port_num) {
 *	case UART_PORT0:
 *		break;
-*	case UART_ISU_0:
+*	case OS_HAL_UART_ISU0:
 *		mtk_os_hal_gpio_free(OS_HAL_GPIO_26);
 *		mtk_os_hal_gpio_free(OS_HAL_GPIO_27);
 *		mtk_os_hal_gpio_free(OS_HAL_GPIO_28);
 *		mtk_os_hal_gpio_free(OS_HAL_GPIO_29);
 *		break;
-*	case UART_ISU_1:
+*	case OS_HAL_UART_ISU1:
 *		mtk_os_hal_gpio_free(OS_HAL_GPIO_31);
 *		mtk_os_hal_gpio_free(OS_HAL_GPIO_32);
 *		mtk_os_hal_gpio_free(OS_HAL_GPIO_33);
 *		mtk_os_hal_gpio_free(OS_HAL_GPIO_34);
 *		break;
-*	case UART_ISU_2:
+*	case OS_HAL_UART_ISU2:
 *		mtk_os_hal_gpio_free(OS_HAL_GPIO_36);
 *		mtk_os_hal_gpio_free(OS_HAL_GPIO_37);
 *		mtk_os_hal_gpio_free(OS_HAL_GPIO_38);
 *		mtk_os_hal_gpio_free(OS_HAL_GPIO_39);
 *		break;
-*	case UART_ISU_3:
+*	case OS_HAL_UART_ISU3:
 *		mtk_os_hal_gpio_free(OS_HAL_GPIO_66);
 *		mtk_os_hal_gpio_free(OS_HAL_GPIO_67);
 *		mtk_os_hal_gpio_free(OS_HAL_GPIO_68);
 *		mtk_os_hal_gpio_free(OS_HAL_GPIO_69);
 *		break;
-*	case UART_ISU_4:
+*	case OS_HAL_UART_ISU4:
 *		mtk_os_hal_gpio_free(OS_HAL_GPIO_71);
 *		mtk_os_hal_gpio_free(OS_HAL_GPIO_72);
 *		mtk_os_hal_gpio_free(OS_HAL_GPIO_73);
@@ -285,6 +285,7 @@
 *	ctlr->stop_bit = UART_STOP_1_BIT;
 *
 *	_mtk_os_hal_uart_config_gpio(port_num);
+*
 *	mtk_mhal_uart_sw_reset(ctlr_rtos->ctlr);
 *	mtk_mhal_uart_enable_clk(ctlr_rtos->ctlr);
 *
@@ -405,7 +406,7 @@
 *	return 0;
 *}
 
-*u32 mtk_os_hal_uart_dma_send_data(UART_PORT port_num,
+*int mtk_os_hal_uart_dma_send_data(UART_PORT port_num,
 *	u8 *data, u32 len, bool vff_mode)
 *{
 *	struct mtk_uart_controller_rtos *ctlr_rtos =
@@ -464,7 +465,7 @@
 *	return ctlr->mdata->tx_size;
 *}
 *
-*u32 mtk_os_hal_uart_dma_get_data(UART_PORT port_num,
+*int mtk_os_hal_uart_dma_get_data(UART_PORT port_num,
 *	u8 *data, u32 len, bool vff_mode)
 *{
 *	struct mtk_uart_controller_rtos *ctlr_rtos =
@@ -554,15 +555,15 @@
 *    @code
 *	//UART_ISU_0~4 support DMA mode, UART_PORT0 don't support DMA mode
 *	//First call this function to initialize UART_ISU_0 HW
-*	mtk_os_hal_uart_ctlr_init(UART_ISU_0);
+*	mtk_os_hal_uart_ctlr_init(OS_HAL_UART_ISU0);
 *
 *	u8 TX_Data[32], RX_Data[32], i;
 *
 *	//Set UART_ISU_0 baudrate to 115200
-*	mtk_os_hal_uart_set_baudrate(UART_ISU_0, 115200);
+*	mtk_os_hal_uart_set_baudrate(OS_HAL_UART_ISU0, 115200);
 *
 *	//Set UART_ISU_0 data format
-*	mtk_os_hal_uart_set_format(UART_ISU_0, UART_DATA_8_BITS,
+*	mtk_os_hal_uart_set_format(OS_HAL_UART_ISU0, UART_DATA_8_BITS,
 *		UART_NONE_PARITY, UART_STOP_1_BIT);
 *
 *	//Initialize TX_Data
@@ -570,10 +571,10 @@
 *		TX_Data[i] = i;
 *
 *	//Send TX_Data in half_size DMA mode
-*	mtk_os_hal_uart_dma_send_data(UART_ISU_0, TX_Data, 32, 0);
+*	mtk_os_hal_uart_dma_send_data(OS_HAL_UART_ISU0, TX_Data, 32, 0);
 *
 *	//Get 32bytes data in half_size DMA mode
-*	mtk_os_hal_uart_dma_get_data(UART_ISU_0, RX_Data, 32, 0);
+*	mtk_os_hal_uart_dma_get_data(OS_HAL_UART_ISU0, RX_Data, 32, 0);
 *
 *    @endcode
 *
@@ -790,8 +791,7 @@ struct mtk_uart_controller {
  * @param [in] ctlr : UART controller used with the device.
  * @return
  * Return "0" if enable UART clock success.\n
- * Return -#EPTR if ctlr is NULL.\n
- * Return -#EINVAL if argument is invalid.
+ * Return -#UART_EPTR if ctlr is NULL.
  */
 int mtk_mhal_uart_enable_clk(struct mtk_uart_controller *ctlr);
 
@@ -801,8 +801,7 @@ int mtk_mhal_uart_enable_clk(struct mtk_uart_controller *ctlr);
  * @param [in] ctlr : UART controller used with the device.
  * @return
  * Return "0" if disable UART clock success.\n
- * Return -#EPTR if ctlr is NULL.\n
- * Return -#EINVAL if argument is invalid.
+ * Return -#UART_EPTR if ctlr is NULL.
  */
 int mtk_mhal_uart_disable_clk(struct mtk_uart_controller *ctlr);
 
@@ -811,9 +810,8 @@ int mtk_mhal_uart_disable_clk(struct mtk_uart_controller *ctlr);
  * @brief Usage : It needs to be called to reset UART.
  * @param [in] ctlr : UART controller used with the device.
  * @return
- * Return "0" if disable UART clock success.\n
- * Return -#EPTR if ctlr is NULL.\n
- * Return -#EINVAL if argument is invalid.
+ * Return "0" if reset UART success.\n
+ * Return -#UART_EPTR if ctlr is NULL.
  */
 int mtk_mhal_uart_sw_reset(struct mtk_uart_controller *ctlr);
 
@@ -823,8 +821,7 @@ int mtk_mhal_uart_sw_reset(struct mtk_uart_controller *ctlr);
  * @param [in] ctlr : UART controller used with the device.
  * @return
  * Return "0" if dump UART register success.\n
- * Return -#EPTR if ctlr is NULL.\n
- * Return -#EINVAL if argument is invalid.
+ * Return -#UART_EPTR if ctlr is NULL.
  */
 int mtk_mhal_uart_dumpreg(struct mtk_uart_controller *ctlr);
 
@@ -834,8 +831,7 @@ int mtk_mhal_uart_dumpreg(struct mtk_uart_controller *ctlr);
  * OS-HAL must ensure UART clock is enabled before calling this function.
  * @param [in] ctlr : UART controller used with the device.
  * @return To indicate whether UART initialize success or not.\n
- *    If the return value is -#EINVAL, it means argument is invalid;\n
- *    If the return value is -#EPTR, it means ctlr is NULL;\n
+ *    If the return value is -#UART_EPTR, it means ctlr is NULL;\n
  *    if the return value is 0, it means success.\n
  */
 int mtk_mhal_uart_hw_init(struct mtk_uart_controller *ctlr);
@@ -846,8 +842,8 @@ int mtk_mhal_uart_hw_init(struct mtk_uart_controller *ctlr);
  * when only change UART baudrate.
  * @param [in] ctlr : UART controller used with the device.
  * @return To indicate whether UART config success or not.\n
- *    If the return value is -#EINVAL, it means argument is invalid;\n
- *    If the return value is -#EPTR, it means ctlr is NULL;\n
+ *    If the return value is -#UART_EINVAL, it means argument is invalid;\n
+ *    If the return value is -#UART_EPTR, it means ctlr is NULL;\n
  *    if the return value is 0, it means success.\n
  */
 int mtk_mhal_uart_set_baudrate(struct mtk_uart_controller *ctlr);
@@ -858,8 +854,8 @@ int mtk_mhal_uart_set_baudrate(struct mtk_uart_controller *ctlr);
  * when only configuring UART data format.
  * @param [in] ctlr : UART controller used with the device.
  * @return To indicate whether UART config success or not.\n
- *    If the return value is -#EINVAL, it means argument is invalid;\n
- *    If the return value is -#EPTR, it means ctlr is NULL;\n
+ *    If the return value is -#UART_EINVAL, it means argument is invalid;\n
+ *    If the return value is -#UART_EPTR, it means ctlr is NULL;\n
  *    if the return value is 0, it means success.\n
  */
 int mtk_mhal_uart_set_format(struct mtk_uart_controller *ctlr);
@@ -872,8 +868,8 @@ int mtk_mhal_uart_set_format(struct mtk_uart_controller *ctlr);
  * @param [in] hw_fc : Hardware flow control feature;
  * please refer to UART_EFR_HW_FC_XXX type definition.
  * @return To indicate whether setting hardware flow is successfull or not.\n
- *    If the return value is -#EINVAL, it means argument is invalid;\n
- *    If the return value is -#EPTR, it means ctlr is NULL;\n
+ *    If the return value is -#UART_EINVAL, it means argument is invalid;\n
+ *    If the return value is -#UART_EPTR, it means ctlr is NULL;\n
  *    if the return value is 0, it means success.\n
  */
 int mtk_mhal_uart_set_hw_fc(struct mtk_uart_controller *ctlr, u8 hw_fc);
@@ -884,8 +880,7 @@ int mtk_mhal_uart_set_hw_fc(struct mtk_uart_controller *ctlr, u8 hw_fc);
  * when disabling software flow control.
  * @param [in] ctlr : UART controller used with the device.
  * @return To indicate whether disable software flow is successfull or not.\n
- *    If the return value is -#EINVAL, it means argument is invalid;\n
- *    If the return value is -#EPTR, it means ctlr is NULL;\n
+ *    If the return value is -#UART_EPTR, it means ctlr is NULL;\n
  *    if the return value is 0, it means success.\n
  */
 int mtk_mhal_uart_disable_sw_fc(struct mtk_uart_controller *ctlr);
@@ -901,8 +896,8 @@ int mtk_mhal_uart_disable_sw_fc(struct mtk_uart_controller *ctlr);
  * @param [in] xoff2 : XOFF2 character for software flow control.
  * @param [in] escape_data : Escape character for software flow control.
  * @return To indicate whether set software flow is successfull or not.\n
- *    If the return value is -#EINVAL, it means argument is invalid;\n
- *    If the return value is -#EPTR, it means ctlr is NULL;\n
+ *    If the return value is -#UART_EINVAL, it means argument is invalid;\n
+ *    If the return value is -#UART_EPTR, it means ctlr is NULL;\n
  *    if the return value is 0, it means success.\n
  */
 int mtk_mhal_uart_set_sw_fc(struct mtk_uart_controller *ctlr,
@@ -914,8 +909,7 @@ int mtk_mhal_uart_set_sw_fc(struct mtk_uart_controller *ctlr,
  * @param [in] ctlr : UART controller used with the device.
  * @param [in] enable_dma : enable or disable UART DMA mode.
  * @return To indicate whether set dma and handshake successfull or not.\n
- *    If the return value is -#EINVAL, it means argument is invalid;\n
- *    If the return value is -#EPTR, it means ctlr is NULL;\n
+ *    If the return value is -#UART_EPTR, it means ctlr is NULL;\n
  *    if the return value is 0, it means success.\n
  */
 int mtk_mhal_uart_set_dma(struct mtk_uart_controller *ctlr, bool enable_dma);
@@ -925,9 +919,8 @@ int mtk_mhal_uart_set_dma(struct mtk_uart_controller *ctlr, bool enable_dma);
  * @brief Usage: OS-HAL driver should call it when get and clear UART IRQ.
  * @param [in] ctlr : UART controller used with the device.
  * @return To indicate whether set IRQ successfull or not.\n
- *    If the return value is -#EINVAL, it means argument is invalid;\n
- *    if the return value is -#EPTR, it means ctlr is NULL;\n
- *    if the return value is 0, it means success.\n
+ *    if the return value is -#UART_EPTR, it means ctlr is NULL;\n
+ *    otherwise, it means success and return IRQ status.\n
  */
 int mtk_mhal_uart_clear_irq_status(struct mtk_uart_controller *ctlr);
 
@@ -938,8 +931,7 @@ int mtk_mhal_uart_clear_irq_status(struct mtk_uart_controller *ctlr);
  * @param [in] int_flag : Set IRQ type or disable IRQ;
  * please refer to UART_INT_XXX type definition.
  * @return To indicate whether set IRQ successfull or not.\n
- *    If the return value is -#EINVAL, it means argument is invalid;\n
- *    if the return value is -#EPTR, it means ctlr is NULL;\n
+ *    if the return value is -#UART_EPTR, it means ctlr is NULL;\n
  *    if the return value is 0, it means success.\n
  */
 int mtk_mhal_uart_set_irq(struct mtk_uart_controller *ctlr, u8 int_flag);
@@ -951,7 +943,7 @@ int mtk_mhal_uart_set_irq(struct mtk_uart_controller *ctlr, u8 int_flag);
  * @param [in] data : Output data.
  * @return To indicate send data successfull or not.\n
  *    If the return value is -#EINVAL, it means argument is invalid;\n
- *    if the return value is -#EPTR, it means ctlr is NULL;\n
+ *    if the return value is -#UART_EPTR, it means ctlr is NULL;\n
  *    if the return value is 0, it means success.\n
  */
 int mtk_mhal_uart_putc(struct mtk_uart_controller *ctlr, u8 data);
@@ -962,7 +954,7 @@ int mtk_mhal_uart_putc(struct mtk_uart_controller *ctlr, u8 data);
  * @param [in] ctlr : UART controller used with the device.
  * @return To indicate get data successfull or not.\n
  *    If the return value is -#EINVAL, it means argument is invalid;\n
- *    If the return value is -#EPTR, it means ctlr is NULL;\n
+ *    If the return value is -#UART_EPTR, it means ctlr is NULL;\n
  *    otherwise, it means success and return received data.\n
  */
 int mtk_mhal_uart_getc(struct mtk_uart_controller *ctlr);
@@ -973,7 +965,7 @@ int mtk_mhal_uart_getc(struct mtk_uart_controller *ctlr);
  * @param [in] ctlr : UART controller used with the device.
  * @return To indicate get data successfull or not.\n
  *    If the return value is -#EINVAL, it means argument is invalid;\n
- *    If the return value is -#EPTR, it means ctlr is NULL;\n
+ *    If the return value is -#UART_EPTR, it means ctlr is NULL;\n
  *    otherwise, it means success and return received data.\n
  */
 int mtk_mhal_uart_getc_nowait(struct mtk_uart_controller *ctlr);
@@ -983,8 +975,8 @@ int mtk_mhal_uart_getc_nowait(struct mtk_uart_controller *ctlr);
  * @brief Usage: OS-HAL driver should call it to allocate DMA TX channel.
  * @param [in] ctlr : UART controller used with the device.
  * @return To indicate allocate DMA channel successfull or not.\n
- *    If the return value is -#EINVAL, it means argument is invalid;\n
- *    If the return value is -#EPTR, it means ctlr is NULL;\n
+ *    If the return value is -#UART_ENXIO, it means argument is invalid;\n
+ *    If the return value is -#UART_EPTR, it means ctlr is NULL;\n
  *    otherwise, it means success.\n
  */
 int mtk_mhal_uart_allocate_dma_tx_ch(struct mtk_uart_controller *ctlr);
@@ -994,8 +986,8 @@ int mtk_mhal_uart_allocate_dma_tx_ch(struct mtk_uart_controller *ctlr);
 * @brief Usage: OS-HAL driver should call it to allocate DMA RX channel.
 * @param [in] ctlr : UART controller used with the device.
 * @return To indicate allocate DMA channel successfull or not.\n
-*	 If the return value is -#EINVAL, it means argument is invalid;\n
-*	 If the return value is -#EPTR, it means ctlr is NULL;\n
+*	 If the return value is -#UART_ENXIO, it means argument is invalid;\n
+*	 If the return value is -#UART_EPTR, it means ctlr is NULL;\n
 *	 otherwise, it means success.\n
 */
 int mtk_mhal_uart_allocate_dma_rx_ch(struct mtk_uart_controller *ctlr);
@@ -1005,8 +997,8 @@ int mtk_mhal_uart_allocate_dma_rx_ch(struct mtk_uart_controller *ctlr);
 * @brief Usage: OS-HAL driver should call it to release DMA TX channel.
 * @param [in] ctlr : UART controller used with the device.
 * @return To indicate release DMA channel successfull or not.\n
-*	 If the return value is -#EINVAL, it means argument is invalid;\n
-*	 If the return value is -#EPTR, it means ctlr is NULL;\n
+*	 If the return value is -#UART_ENXIO, it means argument is invalid;\n
+*	 If the return value is -#UART_EPTR, it means ctlr is NULL;\n
 *	 otherwise, it means success.\n
 */
 int mtk_mhal_uart_release_dma_tx_ch(struct mtk_uart_controller *ctlr);
@@ -1016,8 +1008,8 @@ int mtk_mhal_uart_release_dma_tx_ch(struct mtk_uart_controller *ctlr);
 * @brief Usage: OS-HAL driver should call it to release DMA RX channel.
 * @param [in] ctlr : UART controller used with the device.
 * @return To indicate release DMA channel successfull or not.\n
-*	 If the return value is -#EINVAL, it means argument is invalid;\n
-*	 If the return value is -#EPTR, it means ctlr is NULL;\n
+*	 If the return value is -#UART_ENXIO, it means argument is invalid;\n
+*	 If the return value is -#UART_EPTR, it means ctlr is NULL;\n
 *	 otherwise, it means success.\n
 */
 int mtk_mhal_uart_release_dma_rx_ch(struct mtk_uart_controller *ctlr);
@@ -1027,8 +1019,8 @@ int mtk_mhal_uart_release_dma_rx_ch(struct mtk_uart_controller *ctlr);
 * @brief Usage: OS-HAL driver should call it to config DMA TX channel.
 * @param [in] ctlr : UART controller used with the device.
 * @return To indicate config DMA channel successfull or not.\n
-*	 If the return value is -#EINVAL, it means argument is invalid;\n
-*	 If the return value is -#EPTR, it means ctlr is NULL;\n
+*	 If the return value is -#UART_ENXIO, it means argument is invalid;\n
+*	 If the return value is -#UART_EPTR, it means ctlr is NULL;\n
 *	 otherwise, it means success.\n
 */
 int mtk_mhal_uart_dma_tx_config(struct mtk_uart_controller *ctlr);
@@ -1038,8 +1030,8 @@ int mtk_mhal_uart_dma_tx_config(struct mtk_uart_controller *ctlr);
 * @brief Usage: OS-HAL driver should call it to config DMA RX channel.
 * @param [in] ctlr : UART controller used with the device.
 * @return To indicate config DMA channel successfull or not.\n
-*	 If the return value is -#EINVAL, it means argument is invalid;\n
-*	 If the return value is -#EPTR, it means ctlr is NULL;\n
+*	 If the return value is -#UART_ENXIO, it means argument is invalid;\n
+*	 If the return value is -#UART_EPTR, it means ctlr is NULL;\n
 *	 otherwise, it means success.\n
 */
 int mtk_mhal_uart_dma_rx_config(struct mtk_uart_controller *ctlr);
@@ -1049,8 +1041,8 @@ int mtk_mhal_uart_dma_rx_config(struct mtk_uart_controller *ctlr);
 * @brief Usage: OS-HAL driver should call it to start DMA TX transaction.
 * @param [in] ctlr : UART controller used with the device.
 * @return To indicate start DMA channel transaction successfull or not.\n
-*	 If the return value is -#EINVAL, it means argument is invalid;\n
-*	 If the return value is -#EPTR, it means ctlr is NULL;\n
+*	 If the return value is -#UART_ENXIO, it means argument is invalid;\n
+*	 If the return value is -#UART_EPTR, it means ctlr is NULL;\n
 *	 otherwise, it means success.\n
 */
 int mtk_mhal_uart_start_dma_tx(struct mtk_uart_controller *ctlr);
@@ -1060,8 +1052,8 @@ int mtk_mhal_uart_start_dma_tx(struct mtk_uart_controller *ctlr);
 * @brief Usage: OS-HAL driver should call it to start DMA RX transaction.
 * @param [in] ctlr : UART controller used with the device.
 * @return To indicate start DMA channel transaction successfull or not.\n
-*	 If the return value is -#EINVAL, it means argument is invalid;\n
-*	 If the return value is -#EPTR, it means ctlr is NULL;\n
+*	 If the return value is -#UART_ENXIO, it means argument is invalid;\n
+*	 If the return value is -#UART_EPTR, it means ctlr is NULL;\n
 *	 otherwise, it means success.\n
 */
 int mtk_mhal_uart_start_dma_rx(struct mtk_uart_controller *ctlr);
@@ -1071,19 +1063,19 @@ int mtk_mhal_uart_start_dma_rx(struct mtk_uart_controller *ctlr);
 * @brief Usage: OS-HAL driver should call it to stop DMA TX transaction.
 * @param [in] ctlr : UART controller used with the device.
 * @return To indicate stop DMA channel transaction successfull or not.\n
-*	 If the return value is -#EINVAL, it means argument is invalid;\n
-*	 If the return value is -#EPTR, it means ctlr is NULL;\n
+*	 If the return value is -#UART_ENXIO, it means argument is invalid;\n
+*	 If the return value is -#UART_EPTR, it means ctlr is NULL;\n
 *	 otherwise, it means success.\n
 */
 int mtk_mhal_uart_stop_dma_tx(struct mtk_uart_controller *ctlr);
 
 /**
-* @brief This function is used to stop UART DMA TX transaction.
+* @brief This function is used to stop UART DMA RX transaction.
 * @brief Usage: OS-HAL driver should call it to stop DMA TX transaction.
 * @param [in] ctlr : UART controller used with the device.
 * @return To indicate stop DMA channel transaction successfull or not.\n
-*	 If the return value is -#EINVAL, it means argument is invalid;\n
-*	 If the return value is -#EPTR, it means ctlr is NULL;\n
+*	 If the return value is -#UART_ENXIO, it means argument is invalid;\n
+*	 If the return value is -#UART_EPTR, it means ctlr is NULL;\n
 *	 otherwise, it means success.\n
 */
 int mtk_mhal_uart_stop_dma_rx(struct mtk_uart_controller *ctlr);
@@ -1093,8 +1085,7 @@ int mtk_mhal_uart_stop_dma_rx(struct mtk_uart_controller *ctlr);
 * @brief Usage: OS-HAL driver should call it when DMA TX transaction fail.
 * @param [in] ctlr : UART controller used with the device.
 * @return To indicate update DMA channel information successfull or not.\n
-*	 If the return value is -#EINVAL, it means argument is invalid;\n
-*	 If the return value is -#EPTR, it means ctlr is NULL;\n
+*	 If the return value is -#UART_EPTR, it means ctlr is NULL;\n
 *	 otherwise, it means success.\n
 */
 int mtk_mhal_uart_update_dma_tx_info(struct mtk_uart_controller *ctlr);
@@ -1104,8 +1095,7 @@ int mtk_mhal_uart_update_dma_tx_info(struct mtk_uart_controller *ctlr);
 * @brief Usage: OS-HAL driver should call it when DMA RX transaction fail.
 * @param [in] ctlr : UART controller used with the device.
 * @return To indicate update DMA channel information successfull or not.\n
-*	 If the return value is -#EINVAL, it means argument is invalid;\n
-*	 If the return value is -#EPTR, it means ctlr is NULL;\n
+*	 If the return value is -#UART_EPTR, it means ctlr is NULL;\n
 *	 otherwise, it means success.\n
 */
 int mtk_mhal_uart_update_dma_rx_info(struct mtk_uart_controller *ctlr);
@@ -1128,9 +1118,7 @@ int mtk_mhal_uart_update_dma_rx_info(struct mtk_uart_controller *ctlr);
  *
  *@return
  * Return "0" if callback registers success;\n
- * Return -#EPTR if ctlr or user_data is NULL;\n
- * Return -#ETIMEDOUT if transmit timeout;\n
- * Return -#ENXIO if address is wrong.
+ * Return -#UART_EPTR if ctlr or user_data is NULL;\n
  */
 int mtk_mhal_uart_dma_tx_callback_register(
 		struct mtk_uart_controller *ctlr,
@@ -1155,9 +1143,7 @@ int mtk_mhal_uart_dma_tx_callback_register(
  *
  *@return
  * Return "0" if callback registers success;\n
- * Return -#EPTR if ctlr or user_data is NULL;\n
- * Return -#ETIMEDOUT if transmit timeout;\n
- * Return -#ENXIO if address is wrong.
+ * Return -#UART_EPTR if ctlr or user_data is NULL;\n
  */
 int mtk_mhal_uart_dma_rx_callback_register(
 		struct mtk_uart_controller *ctlr,

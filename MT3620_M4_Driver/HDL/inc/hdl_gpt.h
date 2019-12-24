@@ -36,7 +36,7 @@
 #ifndef __HDL_GPT_H__
 #define __HDL_GPT_H__
 
-#include <mhal_osai.h>
+#include "mhal_osai.h"
 
 int mtk_hdl_gpt_set_compare(void __iomem *gpt_reg_base,
 			    u8 timer_id,

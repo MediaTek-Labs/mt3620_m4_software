@@ -42,8 +42,6 @@ void mtk_hdl_i2s_gbl_cfg(void __iomem *base_address,
 
 	if (i2s_gbl_cfg->i2s_ext_codec_sel == I2S_EXT_EN)
 		reg |= BIT(I2S_EXT_SHFT);
-	if (i2s_gbl_cfg->i2s_ext_swap_lr == I2S_EXT_LRSW_EN)
-		reg |= BIT(I2S_EXT_LRSW_SHFT);
 	if (i2s_gbl_cfg->i2s_dl_swap_lr == I2S_DL_LRSW_EN)
 		reg |= BIT(I2S_DL_LRSW_SHFT);
 	if (i2s_gbl_cfg->i2s_dl_mono_stereo_sel == I2S_DL_MONO)
@@ -56,8 +54,6 @@ void mtk_hdl_i2s_gbl_cfg(void __iomem *base_address,
 		reg |= BIT(I2S_IN_CLK_SHFT);
 	if (i2s_gbl_cfg->i2s_out_clk_en == I2S_OUT_CLK_EN)
 		reg |= BIT(I2S_OUT_CLK_SHFT);
-	if (i2s_gbl_cfg->i2s_codec_26m_en == I2S_CODEC_26M_EN)
-		reg |= BIT(I2S_CODEC_26M_SHFT);
 	if (i2s_gbl_cfg->i2s_26m_sel == I2S_26M_SEL_XPLL)
 		reg |= BIT(I2S_26M_SEL_SHFT);
 	if (i2s_gbl_cfg->i2s_ul_empty_val_en == I2S_UL_EMPTY_VALUE_EN)
@@ -288,13 +284,11 @@ void mtk_hdl_i2s_cfg_init_setting(enum_i2s_initial_type initial_type,
 		i2s_gbl_cfg->i2s_dl_empty_val_en = I2S_DL_EMPTY_VALUE_DIS;
 		i2s_gbl_cfg->i2s_clk_inv_en = I2S_CK_INV_DIS;
 		i2s_gbl_cfg->i2s_negcap_en = I2S_NEG_CAP_DIS;
-		i2s_gbl_cfg->i2s_codec_26m_en =	I2S_CODEC_26M_DIS;
 		i2s_gbl_cfg->i2s_out_clk_en = I2S_OUT_CLK_EN;
 		i2s_gbl_cfg->i2s_in_clk_en	= I2S_IN_CLK_EN;
 		i2s_gbl_cfg->i2s_mclk_en = I2S_MCLK_OUT_EN;
 		i2s_gbl_cfg->i2s_26m_sel = I2S_26M_SEL_XTAL;
 		i2s_gbl_cfg->i2s_dl_swap_lr = I2S_DL_LRSW_DIS;
-		i2s_gbl_cfg->i2s_ext_swap_lr = I2S_EXT_LRSW_DIS;
 		i2s_gbl_cfg->i2s_ext_codec_sel = I2S_EXT_DIS;
 		i2s_dl_cfg->i2s_ch_per_sample = I2S_DL_CH_PER_S_2_CH;
 		i2s_dl_cfg->i2s_msbo_ffset = 0;
@@ -321,13 +315,11 @@ void mtk_hdl_i2s_cfg_init_setting(enum_i2s_initial_type initial_type,
 		i2s_gbl_cfg->i2s_dl_empty_val_en = I2S_DL_EMPTY_VALUE_DIS;
 		i2s_gbl_cfg->i2s_clk_inv_en = I2S_CK_INV_EN;
 		i2s_gbl_cfg->i2s_negcap_en = I2S_NEG_CAP_EN;
-		i2s_gbl_cfg->i2s_codec_26m_en =	I2S_CODEC_26M_DIS;
 		i2s_gbl_cfg->i2s_out_clk_en = I2S_OUT_CLK_EN;
 		i2s_gbl_cfg->i2s_in_clk_en	= I2S_IN_CLK_EN;
 		i2s_gbl_cfg->i2s_mclk_en = I2S_MCLK_OUT_EN;
 		i2s_gbl_cfg->i2s_26m_sel = I2S_26M_SEL_XTAL;
 		i2s_gbl_cfg->i2s_dl_swap_lr = I2S_DL_LRSW_DIS;
-		i2s_gbl_cfg->i2s_ext_swap_lr = I2S_EXT_LRSW_DIS;
 		i2s_gbl_cfg->i2s_ext_codec_sel = I2S_EXT_EN;
 		i2s_dl_cfg->i2s_ch_per_sample = I2S_DL_CH_PER_S_2_CH;
 		i2s_dl_cfg->i2s_msbo_ffset = 0;
@@ -354,13 +346,11 @@ void mtk_hdl_i2s_cfg_init_setting(enum_i2s_initial_type initial_type,
 		i2s_gbl_cfg->i2s_dl_empty_val_en = I2S_DL_EMPTY_VALUE_DIS;
 		i2s_gbl_cfg->i2s_negcap_en = I2S_NEG_CAP_EN;
 		i2s_gbl_cfg->i2s_clk_inv_en = I2S_CK_INV_DIS;
-		i2s_gbl_cfg->i2s_codec_26m_en =	I2S_CODEC_26M_DIS;
 		i2s_gbl_cfg->i2s_out_clk_en = I2S_OUT_CLK_EN;
 		i2s_gbl_cfg->i2s_in_clk_en	= I2S_IN_CLK_EN;
 		i2s_gbl_cfg->i2s_mclk_en = I2S_MCLK_OUT_EN;
 		i2s_gbl_cfg->i2s_26m_sel = I2S_26M_SEL_XTAL;
 		i2s_gbl_cfg->i2s_dl_swap_lr = I2S_DL_LRSW_DIS;
-		i2s_gbl_cfg->i2s_ext_swap_lr = I2S_EXT_LRSW_DIS;
 		i2s_gbl_cfg->i2s_ext_codec_sel = I2S_EXT_EN;
 		i2s_dl_cfg->i2s_msbo_ffset = 0;
 		i2s_dl_cfg->i2s_dl_fifo2deq = I2S_DL_FIFO_2DEQ_DIS;

@@ -36,7 +36,7 @@
 #ifndef __MHAL_GPT_H__
 #define __MHAL_GPT_H__
 
-#include <mhal_osai.h>
+#include "mhal_osai.h"
 
 /**
  * @addtogroup M-HAL
@@ -107,8 +107,8 @@
  * hardware. mtk_mhal_gpt_clear_irq_status() is necessary for it, but
  * mtk_mhal_gpt_enable_irq(), mtk_mhal_gpt_disable_irq() and
  * mtk_mhal_gpt_get_irq_status() are invalid for it, and always returns
- * -#EACCES. Enable or disable interrupt for GPT3 needs to unmask or mask the
- * signal of upper interrupt controller.\n
+ * -#GPT_EACCES. Enable or disable interrupt for GPT3 needs to unmask or mask
+ * the signal of upper interrupt controller.\n
  *
  * - \b The \b OS-HAL \b Driver \b Sample \b Code \b for \b FreeRTOS: \n
  *
@@ -116,10 +116,9 @@
  * provide driver APIs for User Application:\n
  *
  * @code
- *	#include <mhal_gpt.h>
- *	#include <os_hal_gpt.h>
- *	#include <nvic.h>
- *	#include <irq.h>
+ *	#include "os_hal_gpt.h"
+ *	#include "nvic.h"
+ *	#include "irq.h"
  *
  *	// defined in os_hal_gpt.h
  *	struct os_gpt_int {
@@ -151,7 +150,7 @@
  *	}
  *
  *	static bool _mtk_os_hal_gpt_check_timer_available(
- *				struct os_gpt_dev *dev, unsigned char timer_id)
+ *				struct os_gpt_dev *dev, enum gpt_num timer_id)
  *	{
  *		if (!_mtk_os_hal_gpt_is_inited(dev))
  *			return false;
@@ -167,30 +166,30 @@
  *	// internal functions for interrupt
  *
  *	static void _mtk_os_hal_gpt_enable_irq(struct os_gpt_dev *dev,
- *					       unsigned char timer_id)
+ *					       enum gpt_num timer_id)
  *	{
  *		if (timer_id <= GPT1 || timer_id == GPT3) {
  *			mtk_mhal_gpt_clear_irq_status(&(dev->hal_dev),
- *						      (enum gpt_num)timer_id);
+ *						      timer_id);
  *			if (timer_id <= GPT1)
  *				mtk_mhal_gpt_enable_irq(&(dev->hal_dev),
- *							(enum gpt_num)timer_id);
+ *							timer_id);
  *			else
  *				NVIC_EnableIRQ(dev->irq_id[1]);
  *		}
  *	}
  *
  *	static void _mtk_os_gpt_disable_irq(struct os_gpt_dev *dev,
- *					    unsigned char timer_id)
+ *					    enum gpt_num timer_id)
  *	{
  *		if (timer_id <= GPT1 || timer_id == GPT3) {
  *			if (timer_id <= GPT1)
  *				mtk_mhal_gpt_disable_irq(&(dev->hal_dev),
- *							(enum gpt_num)timer_id);
+ *							timer_id);
  *			else
  *				NVIC_DisableIRQ(dev->irq_id[1]);
  *			mtk_mhal_gpt_clear_irq_status(&(dev->hal_dev),
- *						      (enum gpt_num)timer_id);
+ *						      timer_id);
  *		}
  *	}
  *
@@ -200,10 +199,10 @@
  *	}
  *
  *	static void _mtk_os_hal_gpt_register_int(struct os_gpt_dev *dev,
- *						 unsigned char timer_id,
+ *						 enum gpt_num timer_id,
  *						 struct os_gpt_int *int_info)
  *	{
- *		unsigned char tmrint_id;
+ *		unsigned int tmrint_id;
  *
  *		if (timer_id >= 2 && timer_id != 3)
  *			return;
@@ -231,13 +230,12 @@
  *
  *		for (timer_id = GPT0; timer_id <= GPT1; timer_id++) {
  *			mtk_mhal_gpt_get_irq_status(&(gpt_dev.hal_dev),
- *						    (enum gpt_num)timer_id,
- *						    &int_sta);
+ *						    timer_id, &int_sta);
  *			if (!int_sta)
  *				continue;
  *
  *			mtk_mhal_gpt_clear_irq_status(&(gpt_dev.hal_dev),
- *						      (enum gpt_num)timer_id);
+ *						      timer_id);
  *			if (gpt_dev.gpt_int[timer_id].gpt_cb_hdl)
  *				gpt_dev.gpt_int[timer_id].gpt_cb_hdl(
  *					gpt_dev.gpt_int[timer_id].gpt_cb_data);
@@ -257,17 +255,16 @@
  *
  *	// external functions
  *
- *	int mtk_os_hal_gpt_start(unsigned char timer_id)
+ *	int mtk_os_hal_gpt_start(enum gpt_num timer_id)
  *	{
  *		int ret = 0;
  *
  *		if (!_mtk_os_hal_gpt_check_timer_available(&gpt_dev, timer_id))
- *			return -EACCES;
+ *			return -GPT_EACCES;
  *
  *		_mtk_os_hal_gpt_enable_irq(&gpt_dev, timer_id);
  *
- *		ret = mtk_mhal_gpt_start(&(gpt_dev.hal_dev),
- *					(enum gpt_num)timer_id);
+ *		ret = mtk_mhal_gpt_start(&(gpt_dev.hal_dev), timer_id);
  *		if (ret) {
  *			_mtk_os_gpt_disable_irq(&gpt_dev, timer_id);
  *			return ret;
@@ -277,16 +274,15 @@
  *		return ret;
  *	}
  *
- *	int mtk_os_hal_gpt_stop(unsigned char timer_id)
+ *	int mtk_os_hal_gpt_stop(enum gpt_num timer_id)
  *	{
  *		int ret = 0;
  *
  *		if (!_mtk_os_hal_gpt_is_inited(&gpt_dev) ||
  *		    !(gpt_dev.holden_bitmap & BIT(timer_id)))
- *			return -EACCES;
+ *			return -GPT_EACCES;
  *
- *		ret = mtk_mhal_gpt_stop(&(gpt_dev.hal_dev),
- *					(enum gpt_num)timer_id);
+ *		ret = mtk_mhal_gpt_stop(&(gpt_dev.hal_dev), timer_id);
  *		if (ret)
  *			return ret;
  *
@@ -296,49 +292,46 @@
  *		return ret;
  *	}
  *
- *	unsigned int mtk_os_hal_gpt_get_cur_count(unsigned char timer_id)
+ *	unsigned int mtk_os_hal_gpt_get_cur_count(enum gpt_num timer_id)
  *	{
  *		unsigned int cnt_val;
  *
  *		if (!_mtk_os_hal_gpt_is_inited(&gpt_dev))
  *			return 0;
  *
- *		mtk_mhal_gpt_get_count(&(gpt_dev.hal_dev),
- *					(enum gpt_num)timer_id, &cnt_val);
+ *		mtk_mhal_gpt_get_count(&(gpt_dev.hal_dev), timer_id, &cnt_val);
  *
  *		return cnt_val;
  *	}
  *
- *	int mtk_os_hal_gpt_restart(unsigned char timer_id)
+ *	int mtk_os_hal_gpt_restart(enum gpt_num timer_id)
  *	{
  *		if (!_mtk_os_hal_gpt_is_inited(&gpt_dev))
- *			return -EACCES;
+ *			return -GPT_EACCES;
  *
- *		return mtk_mhal_gpt_restart_count(&(gpt_dev.hal_dev),
- *						  (enum gpt_num)timer_id);
+ *		return mtk_mhal_gpt_restart_count(&(gpt_dev.hal_dev), timer_id);
  *	}
  *
- *	int mtk_os_hal_gpt_reset_timer(unsigned char timer_id,
+ *	int mtk_os_hal_gpt_reset_timer(enum gpt_num timer_id,
  *				       unsigned int count_val,
  *				       bool auto_repeat)
  *	{
  *		int ret = 0;
  *
  *		if (!_mtk_os_hal_gpt_check_timer_available(&gpt_dev, timer_id))
- *			return -EACCES;
+ *			return -GPT_EACCES;
  *
- *		ret = mtk_mhal_gpt_set_compare(&(gpt_dev.hal_dev),
- *					(enum gpt_num)timer_id, count_val);
+ *		ret = mtk_mhal_gpt_set_compare(&(gpt_dev.hal_dev), timer_id,
+ *						count_val);
  *		if (ret)
  *			return ret;
  *
- *		return mtk_mhal_gpt_config_mode(&(gpt_dev.hal_dev),
- *						(enum gpt_num)timer_id,
- *						(auto_repeat) ? GPT_REPEAT :
- *						GPT_ONE_SHOT);
+ *		return mtk_mhal_gpt_config_mode(&(gpt_dev.hal_dev), timer_id,
+ *						(auto_repeat) ?
+ *						GPT_REPEAT : GPT_ONE_SHOT);
  *	}
  *
- *	int mtk_os_hal_gpt_config(unsigned char timer_id,
+ *	int mtk_os_hal_gpt_config(enum gpt_num timer_id,
  *				  unsigned char speed_32us,
  *				  struct os_gpt_int *gpt_int)
  *	{
@@ -347,8 +340,7 @@
  *
  *		_mtk_os_hal_gpt_register_int(&gpt_dev, timer_id, gpt_int);
  *
- *		return mtk_mhal_gpt_config_clk(&(gpt_dev.hal_dev),
- *					       (enum gpt_num)timer_id,
+ *		return mtk_mhal_gpt_config_clk(&(gpt_dev.hal_dev), timer_id,
  *					       (speed_32us) ?
  *					       GPT_SPEED_32K : GPT_SPEED_1K);
  *	}
@@ -357,13 +349,13 @@
  *
  *	static void _mtk_os_gpt_register_irq(void)
  *	{
- *		NVIC_Register(gpt_dev.irq_id[0], _mtk_os_hal_gpt_gpt_isr);
- *		NVIC_SetPriority(gpt_dev.irq_id[0], CM4_GPT_PRI);
- *		// the common int pin for gpt0 & gpt1 is always on
- *		NVIC_EnableIRQ(gpt_dev.irq_id[0]);
+ *		CM4_Install_NVIC(gpt_dev.irq_id[0], CM4_GPT_PRI,
+ *				IRQ_LEVEL_TRIGGER,
+ *				_mtk_os_hal_gpt_gpt_isr, true);
  *
- *		NVIC_Register(gpt_dev.irq_id[1], _mtk_os_hal_gpt_gpt3_isr);
- *		NVIC_SetPriority(gpt_dev.irq_id[1], CM4_GPT_PRI);
+ *		CM4_Install_NVIC(gpt_dev.irq_id[1], CM4_GPT_PRI,
+ *				IRQ_LEVEL_TRIGGER,
+ *				_mtk_os_hal_gpt_gpt3_isr, false);
  *	}
  *
  *	void mtk_os_hal_gpt_init(void)
@@ -439,14 +431,14 @@
   */
 
 /** Invalid argument. It means the input pointer is NULL */
-#define EPTR		1
+#define GPT_EPTR		1
 /** Invalid argument. It means the HW unit does not exist. */
-#define ENODEV		2
+#define GPT_ENODEV		2
 /**
   * Permission denied.
   * It means the configuration is not supported by HW design.
   */
-#define EACCES		3
+#define GPT_EACCES		3
 
 /**
   * @}
@@ -464,11 +456,10 @@
  */
 enum gpt_num {
 	GPT0 = 0,
-	GPT1,
-	GPT2,
-	GPT3,
-	GPT4,
-	/** Total number of GPT timers */
+	GPT1 = 1,
+	GPT2 = 2,
+	GPT3 = 3,
+	GPT4 = 4,
 	GPT_MAX_NUM
 };
 
@@ -536,9 +527,10 @@ struct hal_gpt_dev {
  *		clock speed)
  *  @return
  *	0: Success.\n
- *	-#EPTR: Failure if gpt_dev or gpt_dev->cm4_gpt_base is NULL pointer.\n
- *	-#ENODEV: Failure if timer ID beyond the limitation.\n
- *	-#EACCES: Failure if this timer no need to set timeout value.\n
+ *	-#GPT_EPTR: Failure if gpt_dev or gpt_dev->cm4_gpt_base is NULL
+ *		pointer.\n
+ *	-#GPT_ENODEV: Failure if timer ID beyond the limitation.\n
+ *	-#GPT_EACCES: Failure if this timer no need to set timeout value.\n
  */
 int mtk_mhal_gpt_set_compare(struct hal_gpt_dev *gpt_dev,
 			     enum gpt_num timer_id,
@@ -551,9 +543,10 @@ int mtk_mhal_gpt_set_compare(struct hal_gpt_dev *gpt_dev,
  *  @param [in] mode : Mode as enum #gpt_mode.
  *  @return
  *	0: Success.\n
- *	-#EPTR: Failure if gpt_dev or gpt_dev->cm4_gpt_base is NULL pointer.\n
- *	-#ENODEV: Failure if timer ID beyond the limitation.\n
- *	-#EACCES: Failure if this timer cannot choose interrupt mode.\n
+ *	-#GPT_EPTR: Failure if gpt_dev or gpt_dev->cm4_gpt_base is NULL
+ *		pointer.\n
+ *	-#GPT_ENODEV: Failure if timer ID beyond the limitation.\n
+ *	-#GPT_EACCES: Failure if this timer cannot choose interrupt mode.\n
  */
 int mtk_mhal_gpt_config_mode(struct hal_gpt_dev *gpt_dev,
 			     enum gpt_num timer_id,
@@ -565,10 +558,11 @@ int mtk_mhal_gpt_config_mode(struct hal_gpt_dev *gpt_dev,
  *  @param [in] timer_id : Timer ID of current GPT device.
  *  @return
  *	0: Success.\n
- *	-#EPTR: Failure if gpt_dev or gpt_dev->cm4_gpt_base is NULL pointer.\n
- *	-#ENODEV: Failure if timer ID beyond the limitation.\n
- *	-#EACCES: Failure if this timer has no interrupt mode or cannot enable
- *		IRQ through GPT register.\n
+ *	-#GPT_EPTR: Failure if gpt_dev or gpt_dev->cm4_gpt_base is NULL
+ *		pointer.\n
+ *	-#GPT_ENODEV: Failure if timer ID beyond the limitation.\n
+ *	-#GPT_EACCES: Failure if this timer has no interrupt mode or cannot
+ *		enable IRQ through GPT register.\n
  */
 int mtk_mhal_gpt_enable_irq(struct hal_gpt_dev *gpt_dev,
 			    enum gpt_num timer_id);
@@ -579,10 +573,11 @@ int mtk_mhal_gpt_enable_irq(struct hal_gpt_dev *gpt_dev,
  *  @param [in] timer_id : Timer ID of current GPT device.
  *  @return
  *	0: Success.\n
- *	-#EPTR: Failure if gpt_dev or gpt_dev->cm4_gpt_base is NULL pointer.\n
- *	-#ENODEV: Failure if timer ID beyond the limitation.\n
- *	-#EACCES: Failure if this timer has no interrupt mode or cannot disable
- *		IRQ through GPT register.\n
+ *	-#GPT_EPTR: Failure if gpt_dev or gpt_dev->cm4_gpt_base is NULL
+ *		pointer.\n
+ *	-#GPT_ENODEV: Failure if timer ID beyond the limitation.\n
+ *	-#GPT_EACCES: Failure if this timer has no interrupt mode or cannot
+ *		disable	IRQ through GPT register.\n
  */
 int mtk_mhal_gpt_disable_irq(struct hal_gpt_dev *gpt_dev,
 			     enum gpt_num timer_id);
@@ -597,11 +592,11 @@ int mtk_mhal_gpt_disable_irq(struct hal_gpt_dev *gpt_dev,
  *		0: No interrupt status.
  *  @return
  *	0: Get timer's interrupt status successfully.\n
- *	-#EPTR: Failure if gpt_dev, gpt_dev->cm4_gpt_base or int_sta is NULL
+ *	-#GPT_EPTR: Failure if gpt_dev, gpt_dev->cm4_gpt_base or int_sta is NULL
  *		pointer.\n
- *	-#ENODEV: Failure if timer ID beyond the limitation.\n
- *	-#EACCES: Failure if this timer has no interrupt mode or cannot get IRQ
- *		status from GPT register.\n
+ *	-#GPT_ENODEV: Failure if timer ID beyond the limitation.\n
+ *	-#GPT_EACCES: Failure if this timer has no interrupt mode or cannot get
+ *		IRQ status from GPT register.\n
  */
 int mtk_mhal_gpt_get_irq_status(struct hal_gpt_dev *gpt_dev,
 				enum gpt_num timer_id,
@@ -613,10 +608,11 @@ int mtk_mhal_gpt_get_irq_status(struct hal_gpt_dev *gpt_dev,
  *  @param [in] timer_id : Timer ID of current GPT device.
  *  @return
  *	0: Success.\n
- *	-#EPTR: Failure if gpt_dev or gpt_dev->cm4_gpt_base is NULL pointer.\n
- *	-#ENODEV: Failure if timer ID beyond the limitation.\n
- *	-#EACCES: Failure if this timer has no interrupt mode and cannot clear
- *		IRQ status in GPT register.\n
+ *	-#GPT_EPTR: Failure if gpt_dev or gpt_dev->cm4_gpt_base is NULL
+ *		pointer.\n
+ *	-#GPT_ENODEV: Failure if timer ID beyond the limitation.\n
+ *	-#GPT_EACCES: Failure if this timer has no interrupt mode and cannot
+ *		clear IRQ status in GPT register.\n
  */
 int mtk_mhal_gpt_clear_irq_status(struct hal_gpt_dev *gpt_dev,
 				   enum gpt_num timer_id);
@@ -627,8 +623,9 @@ int mtk_mhal_gpt_clear_irq_status(struct hal_gpt_dev *gpt_dev,
  *  @param [in] timer_id : Timer ID of current GPT device.
  *  @return
  *	0: Success.\n
- *	-#EPTR: Failure if gpt_dev or gpt_dev->cm4_gpt_base is NULL pointer.\n
- *	-#ENODEV: Failure if timer ID beyond the limitation.\n
+ *	-#GPT_EPTR: Failure if gpt_dev or gpt_dev->cm4_gpt_base is NULL
+ *		pointer.\n
+ *	-#GPT_ENODEV: Failure if timer ID beyond the limitation.\n
  */
 int mtk_mhal_gpt_start(struct hal_gpt_dev *gpt_dev,
 		       enum gpt_num timer_id);
@@ -639,8 +636,9 @@ int mtk_mhal_gpt_start(struct hal_gpt_dev *gpt_dev,
  *  @param [in] timer_id : Timer ID of current GPT device.
  *  @return
  *	0: Success.\n
- *	-#EPTR: Failure if gpt_dev or gpt_dev->cm4_gpt_base is NULL pointer.\n
- *	-#ENODEV: Failure if timer ID beyond the limitation.\n
+ *	-#GPT_EPTR: Failure if gpt_dev or gpt_dev->cm4_gpt_base is NULL
+ *		pointer.\n
+ *	-#GPT_ENODEV: Failure if timer ID beyond the limitation.\n
  */
 int mtk_mhal_gpt_stop(struct hal_gpt_dev *gpt_dev,
 		      enum gpt_num timer_id);
@@ -651,8 +649,9 @@ int mtk_mhal_gpt_stop(struct hal_gpt_dev *gpt_dev,
  *  @param [in] timer_id : Timer ID of current GPT device.
  *  @return
  *	0: Success.\n
- *	-#EPTR: Failure if gpt_dev or gpt_dev->cm4_gpt_base is NULL pointer.\n
- *	-#ENODEV: Failure if timer ID beyond the limitation.\n
+ *	-#GPT_EPTR: Failure if gpt_dev or gpt_dev->cm4_gpt_base is NULL
+ *		pointer.\n
+ *	-#GPT_ENODEV: Failure if timer ID beyond the limitation.\n
  */
 int mtk_mhal_gpt_restart_count(struct hal_gpt_dev *gpt_dev,
 			       enum gpt_num timer_id);
@@ -665,9 +664,9 @@ int mtk_mhal_gpt_restart_count(struct hal_gpt_dev *gpt_dev,
  *			counter's value. (unit: one tick of timer clock speed)
  *  @return
  *	0: Success. And the timer counter's value is saved in *cnt_val.\n
- *	-#EPTR: Failure if gpt_dev, gpt_dev->cm4_gpt_base or cnt_val is NULL
+ *	-#GPT_EPTR: Failure if gpt_dev, gpt_dev->cm4_gpt_base or cnt_val is NULL
  *		pointer.\n
- *	-#ENODEV: Failure if timer ID beyond the limitation.\n
+ *	-#GPT_ENODEV: Failure if timer ID beyond the limitation.\n
  */
 int mtk_mhal_gpt_get_count(struct hal_gpt_dev *gpt_dev,
 			   enum gpt_num timer_id,
@@ -680,8 +679,9 @@ int mtk_mhal_gpt_get_count(struct hal_gpt_dev *gpt_dev,
  *  @param [in] clk : Clock speed as enum #gpt_clk.
  *  @return
  *	0: Success.\n
- *	-#EPTR: Failure if gpt_dev or gpt_dev->cm4_gpt_base is NULL pointer.\n
- *	-#ENODEV: Failure if timer ID beyond the limitation.\n
+ *	-#GPT_EPTR: Failure if gpt_dev or gpt_dev->cm4_gpt_base is NULL
+ *		pointer.\n
+ *	-#GPT_ENODEV: Failure if timer ID beyond the limitation.\n
  */
 int mtk_mhal_gpt_config_clk(struct hal_gpt_dev *gpt_dev,
 			    enum gpt_num timer_id,

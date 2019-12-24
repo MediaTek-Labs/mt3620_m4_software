@@ -1,6 +1,6 @@
 CMAKE_MINIMUM_REQUIRED(VERSION 3.11)
 
-INCLUDE_DIRECTORIES(./MHAL/inc ./HDL/inc ../MT3620_M4_Sample_Code/BareMetal/OS_HAL/inc ../MT3620_M4_BSP/CMSIS/include ../MT3620_M4_BSP/mt3620/inc)
+INCLUDE_DIRECTORIES(./MHAL/inc ./HDL/inc ../MT3620_M4_Sample_Code/BareMetal/OS_HAL/inc ../MT3620_M4_BSP/CMSIS/include ../MT3620_M4_BSP/mt3620/inc ../MT3620_M4_BSP/printf)
 
 ADD_LIBRARY(MT3620_M4_Driver_ADC ./MHAL/src/mhal_adc.c ./HDL/src/hdl_adc.c)
 ADD_LIBRARY(MT3620_M4_Driver_DMA ./MHAL/src/mhal_dma.c ./HDL/src/hdl_dma.c)

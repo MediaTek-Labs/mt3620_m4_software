@@ -101,9 +101,9 @@
  *	};
  *
  *	static const pwm_clk pwm_clock_source[MAX_GROUP_NUM] = {
- *		PWM_CLK_XTAL,
- *		PWM_CLK_XTAL,
- *		PWM_CLK_XTAL
+ *		PWM_CLOCK_XTAL,
+ *		PWM_CLOCK_XTAL,
+ *		PWM_CLOCK_XTAL
  *	};
 
  *	static const unsigned long group0_register[MAX_CHANNEL_NUM] = {
@@ -410,12 +410,12 @@
  *
  *		ctlr_rtos = _mtk_os_hal_pwm_get_ctlr(group_num);
  *		if (!ctlr_rtos)
- *			return -EPTR;
+ *			return -PWM_EPTR;
  *
  *		ctlr_rtos->ctlr = &g_pwm_controller[group_num];
  *
  *		if (!ctlr_rtos->ctlr)
- *			return -EPTR;
+ *			return -PWM_EPTR;
  *		printf("mtk_os_hal_pwm_ctlr_init\n");
  *		ctlr = ctlr_rtos->ctlr;
  *
@@ -445,7 +445,7 @@
  *
  *		ctlr_rtos = _mtk_os_hal_pwm_get_ctlr(group_num);
  *		if (!ctlr_rtos)
- *			return -EPTR;
+ *			return -PWM_EPTR;
  *
  *		ctlr = ctlr_rtos->ctlr;
  *		bit_map = channel_bit_map;
@@ -462,7 +462,7 @@
  *	}
  *
  *	int mtk_os_hal_pwm_config_freq_duty_normal(int group_num,
- *			pwm_channel channel_num,
+ *			pwm_channels channel_num,
  *			u32  frequency,
  *			u32  duty_cycle)
  *	{
@@ -472,7 +472,7 @@
  *
  *		ctlr_rtos = _mtk_os_hal_pwm_get_ctlr(group_num);
  *		if (!ctlr_rtos)
- *			return -EPTR;
+ *			return -PWM_EPTR;
  *
  *		ctlr = ctlr_rtos->ctlr;
  *
@@ -493,7 +493,7 @@
  *	}
  *
  *	int mtk_os_hal_pwm_feature_enable(int group_num,
- *			pwm_channel channel_num,
+ *			pwm_channels channel_num,
  *			bool global_kick_enable,
  *			bool io_ctrl_sel,
  *			bool polarity_set)
@@ -504,7 +504,7 @@
  *
  *		ctlr_rtos = _mtk_os_hal_pwm_get_ctlr(group_num);
  *		if (!ctlr_rtos)
- *			return -EPTR;
+ *			return -PWM_EPTR;
  *
  *		ctlr = ctlr_rtos->ctlr;
  *
@@ -520,7 +520,7 @@
  *	}
  *
  *	int mtk_os_hal_pwm_config_freq_duty_2_state(int group_num,
- *			pwm_channel channel_num,
+ *			pwm_channels channel_num,
  *			struct mtk_com_pwm_data state_config)
  *	{
  *		struct mtk_pwm_controller_rtos *ctlr_rtos;
@@ -529,7 +529,7 @@
  *
  *		ctlr_rtos = _mtk_os_hal_pwm_get_ctlr(group_num);
  *		if (!ctlr_rtos)
- *			return -EPTR;
+ *			return -PWM_EPTR;
  *
  *		ctlr = ctlr_rtos->ctlr;
  *		printf("state_config->frequency %d\n", state_config.frequency);
@@ -548,7 +548,7 @@
  *		return 0;
  *	}
  *	int mtk_os_hal_pwm_config_stay_cycle_2_state(int group_num,
- *			pwm_channel channel_num,
+ *			pwm_channels channel_num,
  *			struct mtk_com_pwm_data state_config)
  *	{
  *		struct mtk_pwm_controller_rtos *ctlr_rtos;
@@ -557,7 +557,7 @@
  *
  *		ctlr_rtos = _mtk_os_hal_pwm_get_ctlr(group_num);
  *		if (!ctlr_rtos)
- *			return -EPTR;
+ *			return -PWM_EPTR;
  *
  *		ctlr = ctlr_rtos->ctlr;
  *
@@ -578,14 +578,14 @@
  *	}
  *
  *	int mtk_os_hal_pwm_config_dpsel(int group_num,
- *		pwm_channel channel_num,
+ *		pwm_channels channel_num,
  *		pwm_differential_select mode)
  *	{
  *		struct mtk_pwm_controller_rtos *ctlr_rtos =
  *		    _mtk_os_hal_pwm_get_ctlr(group_num);
  *
  *		if (!ctlr_rtos)
- *			return -EPTR;
+ *			return -PWM_EPTR;
  *
  *		ctlr_rtos->ctlr->data->mode = mode;
  *
@@ -593,25 +593,25 @@
  *	}
  *
  *	int mtk_os_hal_pwm_start_normal(int group_num,
- *			pwm_channel channel_num)
+ *			pwm_channels channel_num)
  *	{
  *		struct mtk_pwm_controller_rtos *ctlr_rtos =
  *			_mtk_os_hal_pwm_get_ctlr(group_num);
  *
  *		if (!ctlr_rtos)
- *			return -EPTR;
+ *			return -PWM_EPTR;
  *
  *		return mtk_mhal_pwm_start(ctlr_rtos->ctlr, channel_num);
  *	}
  *
  *	int mtk_os_hal_pwm_stop_normal(int group_num,
- *			pwm_channel channel_num)
+ *			pwm_channels channel_num)
  *	{
  *		struct mtk_pwm_controller_rtos *ctlr_rtos =
  *			_mtk_os_hal_pwm_get_ctlr(group_num);
  *
  *		if (!ctlr_rtos)
- *			return -EPTR;
+ *			return -PWM_EPTR;
  *
  *		return mtk_mhal_pwm_stop(ctlr_rtos->ctlr, channel_num);
  *	}
@@ -665,7 +665,6 @@
  * @}
  */
 
-#include "hdl_pwm.h"
 #include "mhal_osai.h"
 
 /**
@@ -681,19 +680,19 @@
 * which is used as PWM M-HAL's API error return type.
 */
 
-#define EPTR		1
+#define PWM_EPTR		1
 /**< Invalid argument, it means the pointer is NULL */
-#define EPARAMETER	2
+#define PWM_EPARAMETER	2
 /**< Invalid argument, it means the parameter invalid */
-#define ENOMEM		3
+#define PWM_ENOMEM		3
 /**< Out of memory, it means memory malloc fail */
-#define EFAULT		4
+#define PWM_EFAULT		4
 /**< Bad address */
-#define EAGAIN		5
+#define PWM_EAGAIN		5
 /**< Try again */
-#define ETIMEOUT	6
+#define PWM_ETIMEOUT	6
 /**< Time out */
-#define ECLK	7
+#define PWM_ECLK	7
 /**< Clock select error */
 
 #define MAX_GROUP_NUM 3
@@ -722,7 +721,7 @@ typedef enum {
 	/**< PWM channel3 bit map*/
 	PWM_BITMAX
 	/**< PWM max channel <invalid>*/
-}	pwm_channel_bit_map;
+}	pwm_channels_bit_map;
 
 /** @brief Defines the PWM running status */
 typedef enum {
@@ -745,6 +744,40 @@ typedef enum  {
 	PWM_DP_NUM
 	/**< PWM differential mode  select max <invalid>*/
 } pwm_differential_select;
+
+/** @brief Defines the PWM channel number */
+typedef enum {
+	PWM_CHANNEL0  = 0,
+	/**< PWM channel0*/
+	PWM_CHANNEL1  = 1,
+	/**< PWM channel1*/
+	PWM_CHANNEL2  = 2,
+	/**< PWM channel2*/
+	PWM_CHANNEL3  = 3,
+	/**< PWM channel3*/
+	PWM_CHANNEL_MAX
+	/**< PWM max channel <invalid>*/
+}	pwm_channels;
+
+typedef enum {
+	PWM_CLOCK_32K = 0,
+	/**< 32K clock source */
+	PWM_CLOCK_2M,
+	/**< 2M clock source */
+	PWM_CLOCK_XTAL,
+	/**< xtal clock source */
+	PWM_CLOCK_NUM
+	/**< max clock source <invalid>*/
+} pwm_clks;
+
+typedef enum{
+	PWM_STAGE_S0 = 0,
+	/**< S0 stage*/
+	PWM_STAGE_S1,
+	/**< S1 stage */
+	PWM_STAGE_MAX
+	/**< max pwm 2-state stage <invalid>*/
+} pwm_s0_s1_stages;
 
 /**
   * @}
@@ -775,7 +808,7 @@ struct mtk_com_pwm_data {
 	/** Enable replay mode or one shot mode */
 	u8  replay_mode;
 	/** Select PWM S0 or S1 stage to configure */
-	pwm_s0_s1_stage stage;
+	pwm_s0_s1_stages stage;
 	/** PWM duty cycle,typical value(0~100) */
 	u32  duty_cycle;
 	/** PWM output frequency */
@@ -805,7 +838,7 @@ struct mtk_pwm_controller {
 	/** PWM controller group number */
 	char group_number;
 	/** Clock source of this PWM controller */
-	pwm_clk group_clock;
+	pwm_clks group_clock;
 	/** M-HAL pwm channel common structure information */
 	struct mtk_com_pwm_data *data;
 };
@@ -830,14 +863,13 @@ struct mtk_pwm_controller {
  * @brief This function is used to select PWM clock source of
  *	the PWM controller
  * @brief Usage: It must be called before operating hardware;
- *	Otherwise, it will use default clock source.
+ *	Otherwise, it will use dPWM_EFAULT clock source.
  * @param [in] ctlr : Abstract a PWM controller.
  * @return
  *	If return value is 0, it means success.\n
- *	If return value is -#EPTR , it means ctlr is NULL.
+ *	If return value is -#PWM_EPTR , it means ctlr is NULL.
  */
 int mtk_mhal_pwm_clock_select(struct mtk_pwm_controller *ctlr);
-
 
 /**
  * @brief This function is used to enable PWM clock before operating hardware.
@@ -847,26 +879,26 @@ int mtk_mhal_pwm_clock_select(struct mtk_pwm_controller *ctlr);
  * @param [in] ctlr :  Abstract a PWM controller.
  * @param [in] channel_num : PWM channel number(0~3).\n
  *	For more details about the parameter,
- *	please refer to #pwm_channel.
+ *	please refer to #pwm_channels.
  * @return
  *	If return value is 0, it means success.\n
- *	If return value is -#EPTR , it means ctlr is NULL.
+ *	If return value is -#PWM_EPTR , it means ctlr is NULL.
  */
 int mtk_mhal_pwm_enable_clk(struct mtk_pwm_controller *ctlr,
-		pwm_channel channel_num);
+		pwm_channels channel_num);
 
 /**
   * @brief This function is used to disable PWM clock.
   * @param [in] ctlr :  Abstract a PWM controller.
   * @param [in] channel_num : PWM channel number(0~3).\n
   *  For more details about the parameter,
-  *  please refer to #pwm_channel.
+  *  please refer to #pwm_channels.
   * @return
   *  If return value is 0, it means success.\n
-  *  If return value is -#EPTR , it means ctlr is NULL.
+  *  If return value is -#PWM_EPTR , it means ctlr is NULL.
  */
 int mtk_mhal_pwm_disable_clk(struct mtk_pwm_controller *ctlr,
-		pwm_channel channel_num);
+		pwm_channels channel_num);
 
 /**
  * @brief This function is used to initialize the PWM hardware.
@@ -878,8 +910,8 @@ int mtk_mhal_pwm_disable_clk(struct mtk_pwm_controller *ctlr,
  * @param [in] channel_bit_map : PWM channel bit map(0x0~0xF).\n
  * @return
  *	If return value is 0, it means success.\n
- *	If return value is -#EPTR , it means ctlr is NULL.\n
- *	If return value is -#EPARAMETER , it means channel_num is invalid.
+ *	If return value is -#PWM_EPTR , it means ctlr is NULL.\n
+ *	If return value is -#PWM_EPARAMETER , it means channel_num is invalid.
  */
 
 int mtk_mhal_pwm_init(struct mtk_pwm_controller *ctlr,
@@ -893,8 +925,8 @@ int mtk_mhal_pwm_init(struct mtk_pwm_controller *ctlr,
  * @param [in] channel_bit_map : PWM channel bit map(0x0~0xF).\n
  * @return
  *	If return value is 0, it means success.\n
- *	If return value is -#EPTR , it means ctlr is NULL.\n
- *	If return value is -#EPARAMETER , it means channel_num is invalid.
+ *	If return value is -#PWM_EPTR , it means ctlr is NULL.\n
+ *	If return value is -#PWM_EPARAMETER , it means channel_num is invalid.
  */
 
 int mtk_mhal_pwm_deinit(struct mtk_pwm_controller *ctlr,
@@ -908,15 +940,15 @@ int mtk_mhal_pwm_deinit(struct mtk_pwm_controller *ctlr,
  * @param [in] ctlr : Abstract a PWM controller.
  * @param [in] channel_num : PWM channel number(0~3).\n
  *	For more details about the parameter,
- *	please refer to #pwm_channel.
+ *	please refer to #pwm_channels.
  * @return
  *	If return value is 0, it means success.\n
- *	If return value is -#EPTR , it means ctlr is NULL.\n
- *	If return value is -#EPARAMETER , it means parameter invalid.
+ *	If return value is -#PWM_EPTR , it means ctlr is NULL.\n
+ *	If return value is -#PWM_EPARAMETER , it means parameter invalid.
 */
 
 int mtk_mhal_pwm_set_frequency(struct mtk_pwm_controller *ctlr,
-		pwm_channel channel_num);
+		pwm_channels channel_num);
 
 /**
  * @brief This function is used to set PWM  duty cycle.
@@ -926,15 +958,15 @@ int mtk_mhal_pwm_set_frequency(struct mtk_pwm_controller *ctlr,
  * @param [in] ctlr :  Abstract a PWM controller.
  * @param [in] channel_num : PWM channel number(0~3).\n
  *	For more details about the parameter,
- *	please refer to #pwm_channel.
+ *	please refer to #pwm_channels.
  * @return
  *	If return value is 0, it means success.\n
- *	If return value is -#EPTR , it means ctlr is NULL.\n
- *	If return value is -#EPARAMETER , it means parameter invalid.
+ *	If return value is -#PWM_EPTR , it means ctlr is NULL.\n
+ *	If return value is -#PWM_EPARAMETER , it means parameter invalid.
  */
 
 int mtk_mhal_pwm_set_duty_cycle(struct mtk_pwm_controller *ctlr,
-		pwm_channel channel_num);
+		pwm_channels channel_num);
 
 /**
  * @brief This function is used to start the PWM hardware.
@@ -946,15 +978,15 @@ int mtk_mhal_pwm_set_duty_cycle(struct mtk_pwm_controller *ctlr,
  * @param [in] ctlr :  Abstract a PWM controller.
  * @param [in] channel_num : PWM channel number(0~3).\n
  *	For more details about the parameter,
- *	please refer to #pwm_channel.
+ *	please refer to #pwm_channels.
  * @return
  *	If return value is 0, it means success.\n
- *	If return value is -#EPTR , it means ctlr is NULL.\n
- *	If return value is -#EPARAMETER , it means channel_num is invalid.
+ *	If return value is -#PWM_EPTR , it means ctlr is NULL.\n
+ *	If return value is -#PWM_EPARAMETER , it means channel_num is invalid.
  */
 
 int mtk_mhal_pwm_start(struct mtk_pwm_controller *ctlr,
-		pwm_channel channel_num);
+		pwm_channels channel_num);
 
 /**
  * @brief This function is used to stop the PWM hardware.
@@ -965,15 +997,15 @@ int mtk_mhal_pwm_start(struct mtk_pwm_controller *ctlr,
  * @param [in] ctlr : Abstract a PWM controller.
  * @param [in] channel_num : PWM channel number(0~3).\n
  *	For more details about the parameter,
- *	please refer to #pwm_channel.
+ *	please refer to #pwm_channels.
  * @return
  *	If return value is 0, it means success.\n
- *	If return value is -#EPTR , it means ctlr is NULL.\n
- *	If return value is -#EPARAMETER , it means channel_num is invalid.
+ *	If return value is -#PWM_EPTR , it means ctlr is NULL.\n
+ *	If return value is -#PWM_EPARAMETER , it means channel_num is invalid.
  */
 
 int mtk_mhal_pwm_stop(struct mtk_pwm_controller *ctlr,
-		pwm_channel channel_num);
+		pwm_channels channel_num);
 
 /**
  * @brief This function is used to get current frequency of the PWM
@@ -982,15 +1014,15 @@ int mtk_mhal_pwm_stop(struct mtk_pwm_controller *ctlr,
  * @param [in] ctlr :  Abstract a PWM controller.
  * @param [in] channel_num : PWM channel number(0~3).\n
  *	For more details about the parameter,
- *	please refer to #pwm_channel.
+ *	please refer to #pwm_channels.
  * @return
  *	If return value is 0, it means success.\n
- *	If return value is -#EPTR , it means parameter is NULL.\n
- *	If return value is -#EPARAMETER , it means parameter is invalid.
+ *	If return value is -#PWM_EPTR , it means parameter is NULL.\n
+ *	If return value is -#PWM_EPARAMETER , it means parameter is invalid.
  */
 
 int mtk_mhal_pwm_get_frequency(struct mtk_pwm_controller *ctlr,
-		pwm_channel channel_num);
+		pwm_channels channel_num);
 
 /**
  * @brief This function is used to get the current duty cycle of the PWM.
@@ -998,15 +1030,15 @@ int mtk_mhal_pwm_get_frequency(struct mtk_pwm_controller *ctlr,
  * @param [in] ctlr :  Abstract a PWM controller.
  * @param [in] channel_num : PWM channel number(0~3).\n
  *	For more details about the parameter,
- *	please refer to #pwm_channel.
+ *	please refer to #pwm_channels.
  * @return
  *	If return value is 0, it means success.\n
- *	If return value is -#EPTR , it means parameter is NULL.\n
- *	If return value is -#EPARAMETER , it means parameter is invalid.
+ *	If return value is -#PWM_EPTR , it means parameter is NULL.\n
+ *	If return value is -#PWM_EPARAMETER , it means parameter is invalid.
  */
 
 int mtk_mhal_pwm_get_duty_cycle(struct mtk_pwm_controller *ctlr,
-	pwm_channel channel_num);
+	pwm_channels channel_num);
 
 /**
  * @brief This function is used to get the current status of PWM.
@@ -1014,15 +1046,15 @@ int mtk_mhal_pwm_get_duty_cycle(struct mtk_pwm_controller *ctlr,
  * @param [in] ctlr :  Abstract a PWM controller.
  * @param [in] channel_num : PWM channel number(0~3).\n
  *	For more details about the parameter,
- *	please refer to #pwm_channel.
+ *	please refer to #pwm_channels.
  * @return
  *	If return value is 0, it means success.\n
- *	If return value is -#EPTR , it means parameter is NULL.\n
- *	If return value is -#EPARAMETER , it means parameter is invalid.
+ *	If return value is -#PWM_EPTR , it means parameter is NULL.\n
+ *	If return value is -#PWM_EPARAMETER , it means parameter is invalid.
  */
 
 int mtk_mhal_pwm_get_running_status(struct mtk_pwm_controller *ctlr,
-	pwm_channel channel_num);
+	pwm_channels channel_num);
 
 /**
  * @brief This function is used to select PWM global kick, IO ctrl,
@@ -1033,15 +1065,15 @@ int mtk_mhal_pwm_get_running_status(struct mtk_pwm_controller *ctlr,
  * @param [in] ctlr : Abstract a PWM controller.
  * @param [in] channel_num : PWM channel number(0~3).\n
  *	For more details about the parameter,
- *	please refer to #pwm_channel.
+ *	please refer to #pwm_channels.
  * @return
  *	If return value is 0, it means success.\n
- *	If return value is -#EPTR , it means ctrl is NULL.\n
- *	If return value is -#EPARAMETER , it means parameter is invalid.
+ *	If return value is -#PWM_EPTR , it means ctrl is NULL.\n
+ *	If return value is -#PWM_EPARAMETER , it means parameter is invalid.
  */
 
 int mtk_mhal_pwm_feature_enable(struct mtk_pwm_controller *ctlr,
-		pwm_channel channel_num);
+		pwm_channels channel_num);
 
 /**
  * @brief This function is used to set PWM  frequency and duty cycle
@@ -1055,15 +1087,15 @@ int mtk_mhal_pwm_feature_enable(struct mtk_pwm_controller *ctlr,
  * @param [in] ctlr : Abstract a PWM controller.
  * @param [in] channel_num : PWM channel number(0~3).\n
  *	For more details about the parameter,
- *	please refer to #pwm_channel.
+ *	please refer to #pwm_channels.
  * @return
  *	If return value is 0, it means success.\n
- *	If return value is -#EPTR , it means ctrl is NULL.\n
- *	If return value is -#EPARAMETER , it means parameter is invalid.
+ *	If return value is -#PWM_EPTR , it means ctrl is NULL.\n
+ *	If return value is -#PWM_EPARAMETER , it means parameter is invalid.
  */
 
 int mtk_mhal_pwm_config_s0_s1_freq_duty(struct mtk_pwm_controller *ctlr,
-		pwm_channel channel_num);
+		pwm_channels channel_num);
 
 /**
  * @brief This function is used to set PWM  stay cycles of S0 and S1
@@ -1076,14 +1108,14 @@ int mtk_mhal_pwm_config_s0_s1_freq_duty(struct mtk_pwm_controller *ctlr,
  * @param [in] ctlr : Abstract a PWM controller.
  * @param [in] channel_num : PWM channel number(0~3).\n
  *	For more details about the parameter,
- *	please refer to #pwm_channel.
+ *	please refer to #pwm_channels.
  * @return
  *	If return value is 0, it means success.\n
- *	If return value is -#EPTR , it means ctrl is NULL.\n
- *	If return value is -#EPARAMETER , it means parameter is invalid.
+ *	If return value is -#PWM_EPTR , it means ctrl is NULL.\n
+ *	If return value is -#PWM_EPARAMETER , it means parameter is invalid.
  */
 int mtk_mhal_pwm_s0_s1_stay_cycle_config(struct mtk_pwm_controller *ctlr,
-		pwm_channel channel_num);
+		pwm_channels channel_num);
 
 /**
  * @brief This function is used to kick PWM  hardware output waveform
@@ -1093,21 +1125,21 @@ int mtk_mhal_pwm_s0_s1_stay_cycle_config(struct mtk_pwm_controller *ctlr,
  * @param [in] ctlr : Abstract a PWM controller.
  * @param [in] channel_num : PWM channel number(0~3).\n
  *	For more details about the parameter,
- *	please refer to #pwm_channel.
+ *	please refer to #pwm_channels.
  * @return
  *	If return value is 0, it means success.\n
- *	If return value is -#EPTR , it means ctrl is NULL.\n
- *	If return value is -#EPARAMETER , it means channel_num is invalid.
+ *	If return value is -#PWM_EPTR , it means ctrl is NULL.\n
+ *	If return value is -#PWM_EPARAMETER , it means channel_num is invalid.
  */
 int mtk_mhal_pwm_kick(struct mtk_pwm_controller *ctlr,
-		pwm_channel channel_num);
+		pwm_channels channel_num);
 /**
  * @brief This function is used to reset PWM hardware by group.
  * @brief Usage: OS-HAL calls this API to reset PWM hardware by group.
  * @param [in] ctlr : Abstract a PWM controller.
  * @return
  *	If return value is 0, it means success.\n
- *	If return value is -#EPTR , it means ctrl is NULL.
+ *	If return value is -#PWM_EPTR , it means ctrl is NULL.
  */
 int mtk_mhal_pwm_global_kick(struct mtk_pwm_controller *ctlr);
 /**
@@ -1117,14 +1149,14 @@ int mtk_mhal_pwm_global_kick(struct mtk_pwm_controller *ctlr);
  * @param [in] ctlr : Abstract a PWM controller.
  * @param [in] channel_num : PWM channel number(0~3).\n
  *	For more details about the parameter,
- *	please refer to #pwm_channel.
+ *	please refer to #pwm_channels.
  * @return
  *	If return value is 0, it means success.\n
- *	If return value is -#EPTR , it means ctrl is NULL.\n
- *	If return value is -#EPARAMETER , it means parameter is invalid.
+ *	If return value is -#PWM_EPTR , it means ctrl is NULL.\n
+ *	If return value is -#PWM_EPARAMETER , it means parameter is invalid.
  */
 int mtk_mhal_pwm_dpsel(struct mtk_pwm_controller *ctlr,
-		pwm_channel channel_num);
+		pwm_channels channel_num);
 
 /**
   * @}

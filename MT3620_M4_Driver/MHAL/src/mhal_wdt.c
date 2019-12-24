@@ -42,7 +42,7 @@ int mtk_mhal_wdt_enable(struct hal_wdt_dev *wdt_dev,
 			u32 en)
 {
 	if (!wdt_dev || !wdt_dev->cm4_wdt_base)
-		return -EPTR;
+		return -WDT_EPTR;
 
 	mtk_hdl_wdt_set_enable(wdt_dev->cm4_wdt_base, en);
 	return 0;
@@ -52,7 +52,7 @@ int mtk_mhal_wdt_config(struct hal_wdt_dev *wdt_dev,
 			u8 irq)
 {
 	if (!wdt_dev || !wdt_dev->cm4_wdt_base)
-		return -EPTR;
+		return -WDT_EPTR;
 
 	mtk_hdl_wdt_set_irq_mode(wdt_dev->cm4_wdt_base, irq);
 
@@ -65,13 +65,13 @@ int mtk_mhal_wdt_set_timeout(struct hal_wdt_dev *wdt_dev,
 	int ret = 0;
 
 	if (!wdt_dev || !wdt_dev->cm4_wdt_base)
-		return -EPTR;
+		return -WDT_EPTR;
 
 	if (sec > WDT_LENGTH_SEC_MAX) {
 		wdt_warn("set_timeout: sec(%u) > MAX(%u),fix to MAX\n",
 			 sec, WDT_LENGTH_SEC_MAX);
 		sec = WDT_LENGTH_SEC_MAX;
-		ret = -EINVAL;
+		ret = -WDT_EINVAL;
 	}
 
 	mtk_hdl_wdt_set_length(wdt_dev->cm4_wdt_base, WDT_LENGTH_SEC2TICK(sec));
@@ -83,7 +83,7 @@ int mtk_mhal_wdt_set_timeout(struct hal_wdt_dev *wdt_dev,
 int mtk_mhal_wdt_restart(struct hal_wdt_dev *wdt_dev)
 {
 	if (!wdt_dev || !wdt_dev->cm4_wdt_base)
-		return -EPTR;
+		return -WDT_EPTR;
 
 	mtk_hdl_wdt_restart(wdt_dev->cm4_wdt_base);
 	return 0;
@@ -94,7 +94,7 @@ int mtk_mhal_wdt_hwrst(struct hal_wdt_dev *wdt_dev)
 	void __iomem *wdt_reg;
 
 	if (!wdt_dev || !wdt_dev->cm4_wdt_base)
-		return -EPTR;
+		return -WDT_EPTR;
 
 	wdt_reg = wdt_dev->cm4_wdt_base;
 
@@ -107,7 +107,7 @@ int mtk_mhal_wdt_hwrst(struct hal_wdt_dev *wdt_dev)
 	/* wait core reset by WDT hwrst */
 	osai_delay_ms(1000);
 
-	return -EFAULT; /* never return */
+	return -WDT_EFAULT; /* never return */
 }
 
 int mtk_mhal_wdt_swrst(struct hal_wdt_dev *wdt_dev)
@@ -115,7 +115,7 @@ int mtk_mhal_wdt_swrst(struct hal_wdt_dev *wdt_dev)
 	void __iomem *wdt_reg;
 
 	if (!wdt_dev || !wdt_dev->cm4_wdt_base)
-		return -EPTR;
+		return -WDT_EPTR;
 
 	wdt_reg = wdt_dev->cm4_wdt_base;
 
@@ -128,7 +128,7 @@ int mtk_mhal_wdt_swrst(struct hal_wdt_dev *wdt_dev)
 	/* wait core reset by WDT swrst */
 	osai_delay_ms(1000);
 
-	return -EFAULT; /* never return */
+	return -WDT_EFAULT; /* never return */
 }
 
 int mtk_mhal_wdt_get_status(struct hal_wdt_dev *wdt_dev,
@@ -137,7 +137,7 @@ int mtk_mhal_wdt_get_status(struct hal_wdt_dev *wdt_dev,
 	u32 sta_val;
 
 	if (!wdt_dev || !wdt_dev->cm4_wdt_base || !rst_sta)
-		return -EPTR;
+		return -WDT_EPTR;
 
 	sta_val = mtk_hdl_wdt_get_status(wdt_dev->cm4_wdt_base);
 	if (sta_val & WDT_HW_RST_STA)

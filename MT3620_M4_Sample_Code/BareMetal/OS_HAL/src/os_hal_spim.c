@@ -34,6 +34,7 @@
  */
 
 #include "nvic.h"
+
 #include "os_hal_gpio.h"
 #include "os_hal_dma.h"
 #include "os_hal_spim.h"
@@ -83,6 +84,10 @@ struct mtk_spi_controller_rtos {
 
 	/* the type based on OS */
 	volatile u8 xfer_completion;
+
+	/* used for async API */
+	spi_usr_complete_callback complete;
+	void *context;
 };
 
 static struct mtk_spi_controller_rtos g_spim_ctlr_rtos[OS_HAL_SPIM_ISU_MAX];
@@ -136,6 +141,8 @@ static void _mtk_os_hal_spim_request_gpio(int bus_num)
 		mtk_os_hal_gpio_pmx_set_mode(OS_HAL_GPIO_28, OS_HAL_MODE_0);
 		mtk_os_hal_gpio_request(OS_HAL_GPIO_29);
 		mtk_os_hal_gpio_pmx_set_mode(OS_HAL_GPIO_29, OS_HAL_MODE_0);
+		mtk_os_hal_gpio_request(OS_HAL_GPIO_30);
+		mtk_os_hal_gpio_pmx_set_mode(OS_HAL_GPIO_30, OS_HAL_MODE_0);
 		break;
 	case 1:
 		mtk_os_hal_gpio_request(OS_HAL_GPIO_31);
@@ -146,6 +153,8 @@ static void _mtk_os_hal_spim_request_gpio(int bus_num)
 		mtk_os_hal_gpio_pmx_set_mode(OS_HAL_GPIO_33, OS_HAL_MODE_0);
 		mtk_os_hal_gpio_request(OS_HAL_GPIO_34);
 		mtk_os_hal_gpio_pmx_set_mode(OS_HAL_GPIO_34, OS_HAL_MODE_0);
+		mtk_os_hal_gpio_request(OS_HAL_GPIO_35);
+		mtk_os_hal_gpio_pmx_set_mode(OS_HAL_GPIO_35, OS_HAL_MODE_0);
 		break;
 	case 2:
 		mtk_os_hal_gpio_request(OS_HAL_GPIO_36);
@@ -156,26 +165,32 @@ static void _mtk_os_hal_spim_request_gpio(int bus_num)
 		mtk_os_hal_gpio_pmx_set_mode(OS_HAL_GPIO_38, OS_HAL_MODE_0);
 		mtk_os_hal_gpio_request(OS_HAL_GPIO_39);
 		mtk_os_hal_gpio_pmx_set_mode(OS_HAL_GPIO_39, OS_HAL_MODE_0);
+		mtk_os_hal_gpio_request(OS_HAL_GPIO_40);
+		mtk_os_hal_gpio_pmx_set_mode(OS_HAL_GPIO_40, OS_HAL_MODE_0);
 		break;
 	case 3:
-		mtk_os_hal_gpio_request(OS_HAL_GPIO_41);
-		mtk_os_hal_gpio_pmx_set_mode(OS_HAL_GPIO_41, OS_HAL_MODE_0);
-		mtk_os_hal_gpio_request(OS_HAL_GPIO_42);
-		mtk_os_hal_gpio_pmx_set_mode(OS_HAL_GPIO_42, OS_HAL_MODE_0);
-		mtk_os_hal_gpio_request(OS_HAL_GPIO_43);
-		mtk_os_hal_gpio_pmx_set_mode(OS_HAL_GPIO_43, OS_HAL_MODE_0);
-		mtk_os_hal_gpio_request(OS_HAL_GPIO_44);
-		mtk_os_hal_gpio_pmx_set_mode(OS_HAL_GPIO_44, OS_HAL_MODE_0);
+		mtk_os_hal_gpio_request(OS_HAL_GPIO_66);
+		mtk_os_hal_gpio_pmx_set_mode(OS_HAL_GPIO_66, OS_HAL_MODE_0);
+		mtk_os_hal_gpio_request(OS_HAL_GPIO_67);
+		mtk_os_hal_gpio_pmx_set_mode(OS_HAL_GPIO_67, OS_HAL_MODE_0);
+		mtk_os_hal_gpio_request(OS_HAL_GPIO_68);
+		mtk_os_hal_gpio_pmx_set_mode(OS_HAL_GPIO_68, OS_HAL_MODE_0);
+		mtk_os_hal_gpio_request(OS_HAL_GPIO_69);
+		mtk_os_hal_gpio_pmx_set_mode(OS_HAL_GPIO_69, OS_HAL_MODE_0);
+		mtk_os_hal_gpio_request(OS_HAL_GPIO_70);
+		mtk_os_hal_gpio_pmx_set_mode(OS_HAL_GPIO_70, OS_HAL_MODE_0);
 		break;
 	case 4:
-		mtk_os_hal_gpio_request(OS_HAL_GPIO_46);
-		mtk_os_hal_gpio_pmx_set_mode(OS_HAL_GPIO_46, OS_HAL_MODE_0);
-		mtk_os_hal_gpio_request(OS_HAL_GPIO_47);
-		mtk_os_hal_gpio_pmx_set_mode(OS_HAL_GPIO_47, OS_HAL_MODE_0);
-		mtk_os_hal_gpio_request(OS_HAL_GPIO_48);
-		mtk_os_hal_gpio_pmx_set_mode(OS_HAL_GPIO_48, OS_HAL_MODE_0);
-		mtk_os_hal_gpio_request(OS_HAL_GPIO_49);
-		mtk_os_hal_gpio_pmx_set_mode(OS_HAL_GPIO_49, OS_HAL_MODE_0);
+		mtk_os_hal_gpio_request(OS_HAL_GPIO_71);
+		mtk_os_hal_gpio_pmx_set_mode(OS_HAL_GPIO_71, OS_HAL_MODE_0);
+		mtk_os_hal_gpio_request(OS_HAL_GPIO_72);
+		mtk_os_hal_gpio_pmx_set_mode(OS_HAL_GPIO_72, OS_HAL_MODE_0);
+		mtk_os_hal_gpio_request(OS_HAL_GPIO_73);
+		mtk_os_hal_gpio_pmx_set_mode(OS_HAL_GPIO_73, OS_HAL_MODE_0);
+		mtk_os_hal_gpio_request(OS_HAL_GPIO_74);
+		mtk_os_hal_gpio_pmx_set_mode(OS_HAL_GPIO_74, OS_HAL_MODE_0);
+		mtk_os_hal_gpio_request(OS_HAL_GPIO_75);
+		mtk_os_hal_gpio_pmx_set_mode(OS_HAL_GPIO_75, OS_HAL_MODE_0);
 		break;
 	}
 }
@@ -188,30 +203,35 @@ static void _mtk_os_hal_spim_free_gpio(int bus_num)
 		mtk_os_hal_gpio_free(OS_HAL_GPIO_27);
 		mtk_os_hal_gpio_free(OS_HAL_GPIO_28);
 		mtk_os_hal_gpio_free(OS_HAL_GPIO_29);
+		mtk_os_hal_gpio_free(OS_HAL_GPIO_30);
 		break;
 	case 1:
 		mtk_os_hal_gpio_free(OS_HAL_GPIO_31);
 		mtk_os_hal_gpio_free(OS_HAL_GPIO_32);
 		mtk_os_hal_gpio_free(OS_HAL_GPIO_33);
 		mtk_os_hal_gpio_free(OS_HAL_GPIO_34);
+		mtk_os_hal_gpio_free(OS_HAL_GPIO_35);
 		break;
 	case 2:
 		mtk_os_hal_gpio_free(OS_HAL_GPIO_36);
 		mtk_os_hal_gpio_free(OS_HAL_GPIO_37);
 		mtk_os_hal_gpio_free(OS_HAL_GPIO_38);
 		mtk_os_hal_gpio_free(OS_HAL_GPIO_39);
+		mtk_os_hal_gpio_free(OS_HAL_GPIO_40);
 		break;
 	case 3:
-		mtk_os_hal_gpio_free(OS_HAL_GPIO_41);
-		mtk_os_hal_gpio_free(OS_HAL_GPIO_42);
-		mtk_os_hal_gpio_free(OS_HAL_GPIO_43);
-		mtk_os_hal_gpio_free(OS_HAL_GPIO_44);
+		mtk_os_hal_gpio_free(OS_HAL_GPIO_66);
+		mtk_os_hal_gpio_free(OS_HAL_GPIO_67);
+		mtk_os_hal_gpio_free(OS_HAL_GPIO_68);
+		mtk_os_hal_gpio_free(OS_HAL_GPIO_69);
+		mtk_os_hal_gpio_free(OS_HAL_GPIO_70);
 		break;
 	case 4:
-		mtk_os_hal_gpio_free(OS_HAL_GPIO_46);
-		mtk_os_hal_gpio_free(OS_HAL_GPIO_47);
-		mtk_os_hal_gpio_free(OS_HAL_GPIO_48);
-		mtk_os_hal_gpio_free(OS_HAL_GPIO_49);
+		mtk_os_hal_gpio_free(OS_HAL_GPIO_71);
+		mtk_os_hal_gpio_free(OS_HAL_GPIO_72);
+		mtk_os_hal_gpio_free(OS_HAL_GPIO_73);
+		mtk_os_hal_gpio_free(OS_HAL_GPIO_74);
+		mtk_os_hal_gpio_free(OS_HAL_GPIO_75);
 		break;
 	}
 }
@@ -222,7 +242,6 @@ static int _mtk_os_hal_spim_irq_handler(spim_num bus_num)
 	struct mtk_spi_controller *ctlr;
 	struct mtk_spi_transfer *curr_xfer;
 
-	printf("now in spim%d_irq_handler\n", bus_num);
 
 	ctlr_rtos = _mtk_os_hal_spim_get_ctlr(bus_num);
 	if (!ctlr_rtos)
@@ -238,8 +257,18 @@ static int _mtk_os_hal_spim_irq_handler(spim_num bus_num)
 	 */
 	if (!curr_xfer->use_dma) {
 		mtk_mhal_spim_fifo_handle_rx(ctlr, curr_xfer);
-		ctlr_rtos->xfer_completion++;
+		if (ctlr_rtos->complete) {
+			/* async xfer */
+			ctlr_rtos->complete(ctlr_rtos->context);
+			ctlr_rtos->complete = NULL;
+			ctlr_rtos->context = NULL;
+			mtk_mhal_spim_disable_clk(ctlr_rtos->ctlr);
+		} else {
+			/* sync xfer */
+			ctlr_rtos->xfer_completion++;
+		}
 	}
+
 
 	return 0;
 }
@@ -325,7 +354,18 @@ static int _mtk_os_hal_spim_dma_done_callback(void *data)
 {
 	struct mtk_spi_controller_rtos *ctlr_rtos = data;
 
-	ctlr_rtos->xfer_completion++;
+	if (ctlr_rtos->complete) {
+		ctlr_rtos->complete(ctlr_rtos->context);
+		ctlr_rtos->complete = NULL;
+		ctlr_rtos->context = NULL;
+		mtk_mhal_spim_disable_clk(ctlr_rtos->ctlr);
+	} else {
+		/* while using DMA mode to do sync xfer,
+		 * release semaphore in this callback
+		 */
+		ctlr_rtos->xfer_completion++;
+	}
+
 	return 0;
 }
 
@@ -337,6 +377,8 @@ int mtk_os_hal_spim_ctlr_init(spim_num bus_num)
 	ctlr_rtos = _mtk_os_hal_spim_get_ctlr(bus_num);
 	if (!ctlr_rtos)
 		return -1;
+
+	memset(ctlr_rtos, 0, sizeof(struct mtk_spi_controller_rtos));
 
 	/* Must init first here  */
 	ctlr_rtos->ctlr = &g_spim_ctlr[bus_num];
@@ -392,7 +434,7 @@ static int _mtk_os_hal_spim_wait_for_completion_timeout(
 				struct mtk_spi_controller_rtos
 				*ctlr_rtos, int time_ms)
 {
-	while(ctlr_rtos->xfer_completion==0){}
+	while(ctlr_rtos->xfer_completion == 0) {}
 	ctlr_rtos->xfer_completion--;
 	return 0;
 }
@@ -432,6 +474,46 @@ int mtk_os_hal_spim_transfer(spim_num bus_num,
 
 err_xfer_fail:
 	mtk_mhal_spim_disable_clk(ctlr);
+
+	return ret;
+}
+
+int mtk_os_hal_spim_async_transfer(spim_num bus_num,
+				   struct mtk_spi_config *config,
+				   struct mtk_spi_transfer *xfer,
+				   spi_usr_complete_callback complete,
+				   void *context)
+{
+	struct mtk_spi_controller_rtos *ctlr_rtos;
+	struct mtk_spi_controller *ctlr;
+	int ret;
+
+	ctlr_rtos = _mtk_os_hal_spim_get_ctlr(bus_num);
+	if (!ctlr_rtos)
+		return -1;
+
+	/* async user private function */
+	ctlr_rtos->complete = complete;
+	ctlr_rtos->context = context;
+
+	ctlr = ctlr_rtos->ctlr;
+
+	mtk_mhal_spim_enable_clk(ctlr);
+
+	mtk_mhal_spim_prepare_hw(ctlr, config);
+	mtk_mhal_spim_prepare_transfer(ctlr, xfer);
+
+	if (xfer->use_dma)
+		ret = mtk_mhal_spim_dma_transfer_one(ctlr, xfer);
+	else
+		ret = mtk_mhal_spim_fifo_transfer_one(ctlr, xfer);
+
+	if (ret) {
+		printf("spi master async one fail.\n");
+		ctlr_rtos->complete = NULL;
+		ctlr_rtos->context = NULL;
+		mtk_mhal_spim_disable_clk(ctlr);
+	}
 
 	return ret;
 }

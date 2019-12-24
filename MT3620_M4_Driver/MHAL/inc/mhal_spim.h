@@ -245,6 +245,9 @@
  *			mtk_os_hal_gpio_request(OS_HAL_GPIO_29);
  *			mtk_os_hal_gpio_pmx_set_mode(OS_HAL_GPIO_29,
  *				OS_HAL_MODE_0);
+ *			mtk_os_hal_gpio_request(OS_HAL_GPIO_30);
+ *			mtk_os_hal_gpio_pmx_set_mode(OS_HAL_GPIO_30,
+ *				OS_HAL_MODE_0);
  *			break;
  *		case 1:
  *			mtk_os_hal_gpio_request(OS_HAL_GPIO_31);
@@ -258,6 +261,9 @@
  *				OS_HAL_MODE_0);
  *			mtk_os_hal_gpio_request(OS_HAL_GPIO_34);
  *			mtk_os_hal_gpio_pmx_set_mode(OS_HAL_GPIO_34,
+ *				OS_HAL_MODE_0);
+ *			mtk_os_hal_gpio_request(OS_HAL_GPIO_35);
+ *			mtk_os_hal_gpio_pmx_set_mode(OS_HAL_GPIO_35,
  *				OS_HAL_MODE_0);
  *			break;
  *		case 2:
@@ -273,33 +279,42 @@
  *			mtk_os_hal_gpio_request(OS_HAL_GPIO_39);
  *			mtk_os_hal_gpio_pmx_set_mode(OS_HAL_GPIO_39,
  *				OS_HAL_MODE_0);
+ *			mtk_os_hal_gpio_request(OS_HAL_GPIO_40);
+ *			mtk_os_hal_gpio_pmx_set_mode(OS_HAL_GPIO_40,
+ *				OS_HAL_MODE_0);
  *			break;
  *		case 3:
- *			mtk_os_hal_gpio_request(OS_HAL_GPIO_41);
- *			mtk_os_hal_gpio_pmx_set_mode(OS_HAL_GPIO_41,
+ *			mtk_os_hal_gpio_request(OS_HAL_GPIO_66);
+ *			mtk_os_hal_gpio_pmx_set_mode(OS_HAL_GPIO_66,
  *				OS_HAL_MODE_0);
- *			mtk_os_hal_gpio_request(OS_HAL_GPIO_42);
- *			mtk_os_hal_gpio_pmx_set_mode(OS_HAL_GPIO_42,
+ *			mtk_os_hal_gpio_request(OS_HAL_GPIO_67);
+ *			mtk_os_hal_gpio_pmx_set_mode(OS_HAL_GPIO_67,
  *				OS_HAL_MODE_0);
- *			mtk_os_hal_gpio_request(OS_HAL_GPIO_43);
- *			mtk_os_hal_gpio_pmx_set_mode(OS_HAL_GPIO_43,
+ *			mtk_os_hal_gpio_request(OS_HAL_GPIO_68);
+ *			mtk_os_hal_gpio_pmx_set_mode(OS_HAL_GPIO_68,
  *				OS_HAL_MODE_0);
- *			mtk_os_hal_gpio_request(OS_HAL_GPIO_44);
- *			mtk_os_hal_gpio_pmx_set_mode(OS_HAL_GPIO_44,
+ *			mtk_os_hal_gpio_request(OS_HAL_GPIO_69);
+ *			mtk_os_hal_gpio_pmx_set_mode(OS_HAL_GPIO_69,
+ *				OS_HAL_MODE_0);
+ *			mtk_os_hal_gpio_request(OS_HAL_GPIO_70);
+ *			mtk_os_hal_gpio_pmx_set_mode(OS_HAL_GPIO_70,
  *				OS_HAL_MODE_0);
  *			break;
  *		case 4:
- *			mtk_os_hal_gpio_request(OS_HAL_GPIO_46);
- *			mtk_os_hal_gpio_pmx_set_mode(OS_HAL_GPIO_46,
+ *			mtk_os_hal_gpio_request(OS_HAL_GPIO_71);
+ *			mtk_os_hal_gpio_pmx_set_mode(OS_HAL_GPIO_71,
  *				OS_HAL_MODE_0);
- *			mtk_os_hal_gpio_request(OS_HAL_GPIO_47);
- *			mtk_os_hal_gpio_pmx_set_mode(OS_HAL_GPIO_47,
+ *			mtk_os_hal_gpio_request(OS_HAL_GPIO_72);
+ *			mtk_os_hal_gpio_pmx_set_mode(OS_HAL_GPIO_72,
  *				OS_HAL_MODE_0);
- *			mtk_os_hal_gpio_request(OS_HAL_GPIO_48);
- *			mtk_os_hal_gpio_pmx_set_mode(OS_HAL_GPIO_48,
+ *			mtk_os_hal_gpio_request(OS_HAL_GPIO_73);
+ *			mtk_os_hal_gpio_pmx_set_mode(OS_HAL_GPIO_73,
  *				OS_HAL_MODE_0);
- *			mtk_os_hal_gpio_request(OS_HAL_GPIO_49);
- *			mtk_os_hal_gpio_pmx_set_mode(OS_HAL_GPIO_49,
+ *			mtk_os_hal_gpio_request(OS_HAL_GPIO_74);
+ *			mtk_os_hal_gpio_pmx_set_mode(OS_HAL_GPIO_74,
+ *				OS_HAL_MODE_0);
+ *			mtk_os_hal_gpio_request(OS_HAL_GPIO_75);
+ *			mtk_os_hal_gpio_pmx_set_mode(OS_HAL_GPIO_75,
  *				OS_HAL_MODE_0);
  *			break;
  *		}
@@ -313,30 +328,35 @@
  *			mtk_os_hal_gpio_free(OS_HAL_GPIO_27);
  *			mtk_os_hal_gpio_free(OS_HAL_GPIO_28);
  *			mtk_os_hal_gpio_free(OS_HAL_GPIO_29);
+ *			mtk_os_hal_gpio_free(OS_HAL_GPIO_30);
  *			break;
  *		case 1:
  *			mtk_os_hal_gpio_free(OS_HAL_GPIO_31);
  *			mtk_os_hal_gpio_free(OS_HAL_GPIO_32);
  *			mtk_os_hal_gpio_free(OS_HAL_GPIO_33);
  *			mtk_os_hal_gpio_free(OS_HAL_GPIO_34);
+ *			mtk_os_hal_gpio_free(OS_HAL_GPIO_35);
  *			break;
  *		case 2:
  *			mtk_os_hal_gpio_free(OS_HAL_GPIO_36);
  *			mtk_os_hal_gpio_free(OS_HAL_GPIO_37);
  *			mtk_os_hal_gpio_free(OS_HAL_GPIO_38);
  *			mtk_os_hal_gpio_free(OS_HAL_GPIO_39);
+ *			mtk_os_hal_gpio_free(OS_HAL_GPIO_40);
  *			break;
  *		case 3:
- *			mtk_os_hal_gpio_free(OS_HAL_GPIO_41);
- *			mtk_os_hal_gpio_free(OS_HAL_GPIO_42);
- *			mtk_os_hal_gpio_free(OS_HAL_GPIO_43);
- *			mtk_os_hal_gpio_free(OS_HAL_GPIO_44);
+ *			mtk_os_hal_gpio_free(OS_HAL_GPIO_66);
+ *			mtk_os_hal_gpio_free(OS_HAL_GPIO_67);
+ *			mtk_os_hal_gpio_free(OS_HAL_GPIO_68);
+ *			mtk_os_hal_gpio_free(OS_HAL_GPIO_69);
+ *			mtk_os_hal_gpio_free(OS_HAL_GPIO_70);
  *			break;
  *		case 4:
- *			mtk_os_hal_gpio_free(OS_HAL_GPIO_46);
- *			mtk_os_hal_gpio_free(OS_HAL_GPIO_47);
- *			mtk_os_hal_gpio_free(OS_HAL_GPIO_48);
- *			mtk_os_hal_gpio_free(OS_HAL_GPIO_49);
+ *			mtk_os_hal_gpio_free(OS_HAL_GPIO_71);
+ *			mtk_os_hal_gpio_free(OS_HAL_GPIO_72);
+ *			mtk_os_hal_gpio_free(OS_HAL_GPIO_73);
+ *			mtk_os_hal_gpio_free(OS_HAL_GPIO_74);
+ *			mtk_os_hal_gpio_free(OS_HAL_GPIO_75);
  *			break;
  *		}
  *	}
@@ -571,6 +591,7 @@
  *		.cpha = SPI_CPHA_0,
  *		.rx_mlsb = SPI_MSB,
  *		.tx_mlsb = SPI_MSB,
+ *		 .slave_sel = SPI_SELECT_DEVICE_0,
  *	};
  *
  *	char spim_tx_buffer[10];
@@ -674,6 +695,17 @@ enum spi_mlsb {
 	SPI_MSB = 1
 };
 
+/** @brief SPI master's slave device select definition.
+* Before performing transfer, user should
+* configured through #mtk_mhal_spim_prepare_hw().
+*/
+enum spi_slave_sel {
+	/** select device 0 */
+	SPI_SELECT_DEVICE_0 = 0,
+	/** select device 1 */
+	SPI_SELECT_DEVICE_1 = 1,
+};
+
 /**
   * @}
   */
@@ -721,6 +753,8 @@ struct mtk_spi_config {
 	enum spi_mlsb tx_mlsb;
 	/** rx per-word bits-on-wire */
 	enum spi_mlsb rx_mlsb;
+	/** define select which spi slave device */
+	enum spi_slave_sel slave_sel;
 };
 
 /** @brief I/O INTERFACE between SPI OS-HAL and M-HAL.
@@ -878,6 +912,7 @@ int mtk_mhal_spim_fifo_handle_rx(struct mtk_spi_controller *ctlr,
  *		 .cpha = SPI_CPHA_0,
  *		 .rx_mlsb = SPI_MSB,
  *		 .tx_mlsb = SPI_MSB,
+ *		 .slave_sel = SPI_SELECT_DEVICE_0,
  *	 };
  *
  *	mtk_mhal_spim_prepare_hw(ctlr, &spi_default_config);

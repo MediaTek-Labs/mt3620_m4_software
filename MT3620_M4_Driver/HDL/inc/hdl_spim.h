@@ -157,7 +157,8 @@ void mtk_hdl_spim_fifo_handle_rx(void __iomem *base,
 	const void *tx_buf, void *rx_buf, u32 len);
 void mtk_hdl_spim_prepare_hw(void __iomem *base,
 			     u32 cpol, u32 cpha,
-			     u32 tx_mlsb, u32 rx_mlsb);
+			     u32 tx_mlsb, u32 rx_mlsb,
+			     u32 slave_sel);
 void mtk_hdl_spim_prepare_transfer(void __iomem *base,
 				   u32 speed_khz,
 				   u32 use_dma,
@@ -172,6 +173,7 @@ void mtk_hdl_spim_enable_fifo_transfer(void __iomem *base,
 				       int rx_enable);
 void mtk_hdl_spim_enable_clk(void __iomem *cg_base);
 void mtk_hdl_spim_disable_clk(void __iomem *cg_base);
+void mtk_hdl_spim_sw_reset(void __iomem *cg_base);
 void mtk_hdl_spim_enable_dma(void __iomem *base);
 void mtk_hdl_spim_disable_dma(void __iomem *base);
 #endif

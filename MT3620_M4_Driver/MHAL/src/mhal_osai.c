@@ -37,87 +37,76 @@
 #include "mhal_osai.h"
 #include "os_hal_dma.h"
 
-#ifdef OSAI_BARE_METAL
 void osai_delay_us(u32 us)
 {
-	uint32_t current_tick;
-	uint32_t delta_tick;
-	uint32_t target_tick;
+	u32 current_tick;
+	u32 delta_tick;
+	u32 target_tick;
 
 	if (us >= 1000) {
-		osai_delay_ms(us/1000);
+		osai_delay_ms(us / 1000);
 	} else {
 		current_tick = SysTick->VAL;
-		delta_tick = us*(SysTick->LOAD)/1000;
-		if ( current_tick > delta_tick ) {
+		delta_tick = us*(SysTick->LOAD) / 1000;
+		if (current_tick > delta_tick) {
 			target_tick = current_tick - delta_tick;
-			while((SysTick->VAL)>target_tick){}
+			while ((SysTick->VAL) > target_tick)
+				;
 		} else {
 			target_tick = SysTick->LOAD + current_tick - delta_tick;
-			while(SysTick->VAL > 100){}
-			while(SysTick->VAL > target_tick){}
+			while (SysTick->VAL > 100)
+				;
+			while (SysTick->VAL > target_tick)
+				;
 		}
 		return;
 	}
 }
 
+#ifdef OSAI_BARE_METAL
 void osai_delay_ms(u32 ms)
 {
-	extern volatile uint32_t sys_tick_in_ms;
-	uint32_t current_ms = sys_tick_in_ms;
-	uint32_t target_ms = current_ms + ms;
+	extern volatile u32 sys_tick_in_ms;
+	u32 current_ms = sys_tick_in_ms;
+	u32 target_ms = current_ms + ms;
 
 	if (target_ms >= current_ms) {
-		while(sys_tick_in_ms < target_ms){}
+		while (sys_tick_in_ms < target_ms)
+			;
 	} else {
-		// delay until system_tic_in_ms over flow
-		while(sys_tick_in_ms >= current_ms){}
-		// delay until target_ms
-		while(sys_tick_in_ms < target_ms){}
+		/* delay until system_tic_in_ms over flow */
+		while (sys_tick_in_ms >= current_ms)
+			;
+		/* delay until target_ms */
+		while (sys_tick_in_ms < target_ms)
+			;
 	}
 }
+#endif
 
-u32 osai_readl(void __iomem* addr)
-{
-	return *(volatile uint32_t*)(addr);;
-}
-
-void osai_writel(u32 data, void __iomem* addr)
-{
-	*(volatile uint32_t*)(addr) = data;
-}
-
-unsigned long osai_get_phyaddr(void* vir_addr)
-{
-	return (unsigned long) vir_addr;
-}
-#else
-void osai_delay_us(u32 us)
-{
-	 delay_us(us);
-}
-
+#ifdef OSAI_FREERTOS
+#include "FreeRTOS.h"
+#include "task.h"
 void osai_delay_ms(u32 ms)
 {
-	 delay_ms(ms);
+	vTaskDelay(pdMS_TO_TICKS(ms));
 }
+#endif
 
 u32 osai_readl(void __iomem *addr)
 {
-	return readl(addr);
+	return *(volatile u32 *)(addr);
 }
 
 void osai_writel(u32 data, void __iomem *addr)
 {
-	writel(data, addr);
+	*(volatile u32 *)(addr) = data;
 }
 
 unsigned long osai_get_phyaddr(void *vir_addr)
 {
 	return (unsigned long) vir_addr;
-
 }
-#endif
 
 #ifdef OSAI_ENABLE_DMA
 /* sync cache data to dram */
@@ -231,19 +220,59 @@ int osai_dma_clr_dreq(u8 chn)
 	return mtk_os_hal_dma_clr_dreq(chn);
 }
 #else
-void osai_clean_cache(void *vir_addr, u32 len){}
-void osai_invalid_cache(void *vir_addr, u32 len){}
-int osai_dma_allocate_chan(u8 chn){return 0;}
-int osai_dma_config(u8 chn, struct osai_dma_config *cfg_params){return 0;}
-int osai_dma_start(u8 chn){return 0;}
-int osai_dma_stop(u8 chn){return 0;}
+void osai_clean_cache(void *vir_addr, u32 len)
+{
+}
+void osai_invalid_cache(void *vir_addr, u32 len)
+{
+}
+int osai_dma_allocate_chan(u8 chn)
+{
+	return 0;
+}
+int osai_dma_config(u8 chn, struct osai_dma_config *cfg_params)
+{
+	return 0;
+}
+int osai_dma_start(u8 chn)
+{
+	return 0;
+}
+int osai_dma_stop(u8 chn)
+{
+	return 0;
+}
 int osai_dma_set_param(u8 chn, enum osai_dma_param_type param_type,
-						u32 value){return 0;}
-int osai_dma_get_param(u8 chn, enum osai_dma_param_type param_type){return 0;}
-int osai_dma_release_chan(u8 chn){return 0;}
-int osai_dma_get_status(u8 chn){return 0;}
-int osai_dma_update_vfifo_swptr(u8 chn, u32 length_byte){return 0;}
-int osai_dma_vff_read_data(u8 chn, u8 *buffer, u32 length){return 0;}
-int osai_dma_reset(u8 chn){return 0;}
-int osai_dma_clr_dreq(u8 chn){return 0;}
+						u32 value)
+{
+	return 0;
+}
+int osai_dma_get_param(u8 chn, enum osai_dma_param_type param_type)
+{
+	return 0;
+}
+int osai_dma_release_chan(u8 chn)
+{
+	return 0;
+}
+int osai_dma_get_status(u8 chn)
+{
+	return 0;
+}
+int osai_dma_update_vfifo_swptr(u8 chn, u32 length_byte)
+{
+	return 0;
+}
+int osai_dma_vff_read_data(u8 chn, u8 *buffer, u32 length)
+{
+	return 0;
+}
+int osai_dma_reset(u8 chn)
+{
+	return 0;
+}
+int osai_dma_clr_dreq(u8 chn)
+{
+	return 0;
+}
 #endif

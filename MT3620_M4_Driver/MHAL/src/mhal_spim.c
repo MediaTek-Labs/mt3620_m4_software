@@ -100,6 +100,11 @@ int mtk_mhal_spim_fifo_handle_rx(struct mtk_spi_controller *ctlr,
 			return -SPIM_EPTR;
 		}
 
+		if (!ctlr->base) {
+			spim_err("%s ctlr->base is NULL\n", __func__);
+			return -SPIM_EPTR;
+		}
+
 		if (!xfer->tx_buf && !xfer->rx_buf) {
 			spim_err("%s xfer->tx(rx)_buf is NULL\n", __func__);
 			return -SPIM_EPTR;
@@ -139,14 +144,21 @@ int mtk_mhal_spim_prepare_hw(struct mtk_spi_controller *ctlr,
 		return -SPIM_EPTR;
 	}
 
+	if (!ctlr->base) {
+		spim_err("%s ctlr->base is NULL\n", __func__);
+		return -SPIM_EPTR;
+	}
+
 	if (!config) {
 		spim_err("%s config is NULL\n", __func__);
 		return -SPIM_EPTR;
 	}
 
+	mtk_hdl_spim_sw_reset(ctlr->cg_base);
 	mtk_hdl_spim_prepare_hw(ctlr->base,
 				config->cpol, config->cpha,
-				config->tx_mlsb, config->rx_mlsb);
+				config->tx_mlsb, config->rx_mlsb,
+				config->slave_sel);
 
 	return 0;
 }
@@ -158,6 +170,11 @@ int mtk_mhal_spim_prepare_transfer(struct mtk_spi_controller *ctlr,
 
 	if (!ctlr || !xfer) {
 		spim_err("%s ctlr or xfer is NULL\n", __func__);
+		return -SPIM_EPTR;
+	}
+
+	if (!ctlr->base) {
+		spim_err("%s ctlr->base is NULL\n", __func__);
 		return -SPIM_EPTR;
 	}
 
@@ -198,6 +215,11 @@ int mtk_mhal_spim_fifo_transfer_one(struct mtk_spi_controller *ctlr,
 
 	if (!ctlr || !xfer) {
 		spim_err("%s ctlr or xfer is NULL\n", __func__);
+		return -SPIM_EPTR;
+	}
+
+	if (!ctlr->base) {
+		spim_err("%s ctlr->base is NULL\n", __func__);
 		return -SPIM_EPTR;
 	}
 
@@ -569,6 +591,11 @@ int mtk_mhal_spim_dma_transfer_one(struct mtk_spi_controller *ctlr,
 
 	if (!ctlr || !xfer) {
 		spim_err("%s ctlr or xfer is NULL\n", __func__);
+		return -SPIM_EPTR;
+	}
+
+	if (!ctlr->base) {
+		spim_err("%s ctlr->base is NULL\n", __func__);
 		return -SPIM_EPTR;
 	}
 

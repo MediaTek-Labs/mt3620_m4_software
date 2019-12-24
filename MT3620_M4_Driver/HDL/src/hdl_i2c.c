@@ -72,11 +72,6 @@ static u32 _mtk_hdl_isu_readl(void __iomem *clk_base, u32 offset)
 	return osai_readl(clk_base + offset);
 }
 
-void mtk_hdl_i2c_set_reg(void __iomem *i2c_base, u32 data, u32 offset)
-{
-	_mtk_hdl_i2c_writel(i2c_base, data, offset);
-}
-
 u32 mtk_hdl_i2c_get_pad_con0(void __iomem *i2c_base)
 {
 	return _mtk_hdl_i2c_readl(i2c_base, OFFSET_MM_PAD_CON0);

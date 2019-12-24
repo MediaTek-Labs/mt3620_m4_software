@@ -54,6 +54,24 @@ void mtk_hdl_spim_disable_clk(void __iomem *cg_base)
 	osai_writel(reg_val, cg_base);
 }
 
+void mtk_hdl_spim_sw_reset(void __iomem *cg_base)
+{
+	u32 reg_val = 0;
+
+	spim_debug("spim sw reset\n");
+	reg_val = osai_readl(cg_base);
+	reg_val &= ~0x1;
+	osai_writel(reg_val, cg_base);
+
+	reg_val = osai_readl(cg_base);
+	reg_val |= 0x1;
+	osai_writel(reg_val, cg_base);
+
+	reg_val = osai_readl(cg_base);
+	reg_val |= 0x00001e00;
+	osai_writel(reg_val, cg_base);
+}
+
 void mtk_hdl_spim_dump_reg(void __iomem *base)
 {
 	int i;
@@ -149,12 +167,6 @@ void mtk_hdl_spim_enable_fifo_transfer(void __iomem *base,
 
 	fifo_fill_data[14] = 0;
 
-	if (opcode_len > 4) {
-		fifo_fill_data[14] =
-		    fifo_fill_data[14] & (~SPI_CTL_ADDREXT_MASK);
-		fifo_fill_data[14] = fifo_fill_data[14] | (addr_ext << 24);
-	}
-
 	fifo_fill_data[14] = fifo_fill_data[14] |
 	    (SPI_CTL_ADDR_SIZE_24BIT | SPI_CTL_START);
 
@@ -214,7 +226,8 @@ void mtk_hdl_spim_fifo_handle_rx(void __iomem *base,
 
 void mtk_hdl_spim_prepare_hw(void __iomem *base,
 			     u32 cpol, u32 cpha,
-			     u32 tx_mlsb, u32 rx_mlsb)
+			     u32 tx_mlsb, u32 rx_mlsb,
+			     u32 slave_sel)
 {
 	u32 reg_val;
 
@@ -222,7 +235,10 @@ void mtk_hdl_spim_prepare_hw(void __iomem *base,
 
 	/* config rs_slave_sel */
 	reg_val &= ~(0x7 << 29);
-	reg_val |= SPI_MASTER_SLAVE_SEL_0;
+	if (slave_sel == 0)
+		reg_val |= SPI_MASTER_SLAVE_SEL_0;
+	if (slave_sel == 1)
+		reg_val |= SPI_MASTER_SLAVE_SEL_1;
 
 	/* config clk_mode */
 	reg_val &= ~(0x1 << 28);
