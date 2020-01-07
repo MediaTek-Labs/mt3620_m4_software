@@ -161,7 +161,6 @@ void mtk_hdl_spim_prepare_hw(void __iomem *base,
 			     u32 slave_sel);
 void mtk_hdl_spim_prepare_transfer(void __iomem *base,
 				   u32 speed_khz,
-				   u32 use_dma,
 				   u32 is_full_duplex);
 void mtk_hdl_spim_enable_fifo_transfer(void __iomem *base,
 				       int opcode,

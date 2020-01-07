@@ -37,7 +37,7 @@
 
 static u32 _mtk_hdl_dma_byte_to_count(u32 byte_cnt, u8 transize)
 {
-	u32 count_unit;
+	u32 count_unit = 1;
 
 	switch (transize) {
 	case DMA_CON_SIZE_LONG:
@@ -49,18 +49,17 @@ static u32 _mtk_hdl_dma_byte_to_count(u32 byte_cnt, u8 transize)
 	case DMA_CON_SIZE_BYTE:
 		count_unit = 1;
 		break;
-	default:
-		count_unit = 1;
-		dma_err("transize is invalid %d,use default 1\n", transize);
-		break;
 	}
 
-	return (byte_cnt - 1) / count_unit + 1;
+	if (byte_cnt == 0)
+		return 0;
+	else
+		return (byte_cnt - 1) / count_unit + 1;
 }
 
 static u32 _mtk_hdl_dma_count_to_byte(u32 count, u8 transize)
 {
-	u32 count_unit;
+	u32 count_unit = 1;
 
 	switch (transize) {
 	case DMA_CON_SIZE_LONG:
@@ -71,10 +70,6 @@ static u32 _mtk_hdl_dma_count_to_byte(u32 count, u8 transize)
 		break;
 	case DMA_CON_SIZE_BYTE:
 		count_unit = 1;
-		break;
-	default:
-		count_unit = 1;
-		dma_err("transize is invalid %d,use default 1\n", transize);
 		break;
 	}
 
@@ -145,11 +140,6 @@ u32 mtk_hdl_dma_get_pgmaddr(void __iomem *chn_base)
 	return osai_readl(DMA_PGMADDR(chn_base));
 }
 
-u32 mtk_hdl_dma_get_ffstatus(void __iomem *chn_base)
-{
-	return osai_readl(DMA_FFSTA(chn_base));
-}
-
 int mtk_hdl_dma_set_altlen(void __iomem *chn_base, u8 altscm, u32 altlen)
 {
 	u32 value = osai_readl(DMA_ALTLEN(chn_base));
@@ -182,17 +172,6 @@ int mtk_hdl_dma_set_ffsize(void __iomem *chn_base, u32 ffsize, u8 transize)
 void mtk_hdl_dma_set_timeout_thr(void __iomem *chn_base, u32 ff_timeout)
 {
 	osai_writel(ff_timeout, DMA_TO(chn_base));
-}
-
-void mtk_hdl_dma_set_hwptr(void __iomem *chn_base, u32 hwptr)
-{
-	u32 value = osai_readl(DMA_HWPTR(chn_base));
-
-	value &= ~DMA_HWPTR_WARP;
-	value |= (hwptr & DMA_HWPTR_WARP);
-	value &= ~DMA_HWPTR_MSK;
-	value |= (hwptr & DMA_HWPTR_MSK);
-	osai_writel(value, DMA_HWPTR(chn_base));
 }
 
 u32 mtk_hdl_dma_get_hwptr(void __iomem *chn_base)
@@ -242,58 +221,6 @@ u32 mtk_hdl_dma_get_vfifo_ffsize(void __iomem *chn_base, u8 transize)
 	return _mtk_hdl_dma_count_to_byte(ffsize, transize);
 }
 
-u8 mtk_hdl_dma_is_vfifo_full(void __iomem *chn_base)
-{
-	return osai_readl(DMA_FFSTA(chn_base)) & DMA_FFSTA_FULL;
-}
-
-void mtk_hdl_dma_enable_int(void __iomem *chn_base)
-{
-	u32 value = osai_readl(DMA_CON(chn_base));
-
-	value |= DMA_CON_ITEN;
-	osai_writel(value, DMA_CON(chn_base));
-}
-
-void mtk_hdl_dma_disable_int(void __iomem *chn_base)
-{
-	u32 value = osai_readl(DMA_CON(chn_base));
-
-	value &= ~DMA_CON_ITEN;
-	osai_writel(value, DMA_CON(chn_base));
-}
-
-void mtk_hdl_dma_enable_half_int(void __iomem *chn_base)
-{
-	u32 value = osai_readl(DMA_CON(chn_base));
-
-	value |= DMA_CON_HITEN;
-	osai_writel(value, DMA_CON(chn_base));
-}
-void mtk_hdl_dma_disable_half_int(void __iomem *chn_base)
-{
-	u32 value = osai_readl(DMA_CON(chn_base));
-
-	value &= ~DMA_CON_HITEN;
-	osai_writel(value, DMA_CON(chn_base));
-}
-
-void mtk_hdl_dma_enable_timeout_int(void __iomem *chn_base)
-{
-	u32 value = osai_readl(DMA_CON(chn_base));
-
-	value |= DMA_CON_TOEN;
-	osai_writel(value, DMA_CON(chn_base));
-}
-
-void mtk_hdl_dma_disable_timeout_int(void __iomem *chn_base)
-{
-	u32 value = osai_readl(DMA_CON(chn_base));
-
-	value &= ~DMA_CON_TOEN;
-	osai_writel(value, DMA_CON(chn_base));
-}
-
 /* only for halfsize dma */
 void mtk_hdl_dma_enable_reload(void __iomem *chn_base)
 {
@@ -335,12 +262,6 @@ void mtk_hdl_dma_ack_half_int(void __iomem *chn_base)
 void mtk_hdl_dma_ack_timeout_int(void __iomem *chn_base)
 {
 	osai_writel(DMA_ACKTOINT_BIT, DMA_ACKINT(chn_base));
-}
-
-void mtk_hdl_dma_ack_all(void __iomem *chn_base)
-{
-	osai_writel(osai_readl(DMA_ACKINT(chn_base)),
-		    DMA_ACKINT(chn_base));
 }
 
 u8 mtk_hdl_dma_chk_run_status(void __iomem *dma_base, u8 chn)
@@ -388,7 +309,6 @@ void mtk_hdl_dma_dump_chn_reg(void __iomem *chn_base)
 	void __iomem *start_reg = chn_base;
 	u32 chn_reg_size = DMA_CHN_REG_OFFSET;
 	u32 reg_idx;
-	(void)start_reg;
 
 	for (reg_idx = 0; reg_idx < chn_reg_size; reg_idx += 4) {
 		if (reg_idx % 16 == 0)
@@ -403,7 +323,6 @@ void mtk_hdl_dma_dump_global_reg(void __iomem *dma_base)
 	void __iomem *start_reg = dma_base + DMA_GLB_REG_OFFSET;
 	u32 global_reg_size = 0x11C;
 	u32 reg_idx;
-	(void)start_reg;
 
 	for (reg_idx = 0; reg_idx < global_reg_size; reg_idx += 4) {
 		if (reg_idx % 16 == 0)
@@ -415,35 +334,20 @@ void mtk_hdl_dma_dump_global_reg(void __iomem *dma_base)
 
 u32 mtk_hdl_dma_chk_pause_status(void __iomem *dma_base, u8 chn)
 {
-	if (chn == DMA_CHANNEL_AMOUNT) {
-		return osai_readl(DMA_GLBSTAPAUSE(dma_base));
-	} else {
-		return (osai_readl(DMA_GLBSTAPAUSE(dma_base)) &
-			(u32)(1 << chn)) >> chn;
-	}
+	return (osai_readl(DMA_GLBSTAPAUSE(dma_base)) &
+		(u32)(1 << chn)) >> chn;
 }
 
 void mtk_hdl_dma_pause(void __iomem *dma_base, u8 chn)
 {
-	if (chn == DMA_CHANNEL_AMOUNT) {
-		return osai_writel(0x3FFFFFFF,
-				   DMA_GLBPAUSE(dma_base));
-	} else {
-		return osai_writel(
-		    (osai_readl(DMA_GLBPAUSE(dma_base)) | (u32)(1 << chn)),
+	osai_writel((osai_readl(DMA_GLBPAUSE(dma_base)) | (u32)(1 << chn)),
 		    DMA_GLBPAUSE(dma_base));
-	}
 }
 
 void mtk_hdl_dma_resume(void __iomem *dma_base, u8 chn)
 {
-	if (chn == DMA_CHANNEL_AMOUNT) {
-		return osai_writel(0x0, DMA_GLBPAUSE(dma_base));
-	} else {
-		return osai_writel(
-		    (osai_readl(DMA_GLBPAUSE(dma_base)) & (u32)(~(1 << chn))),
+	osai_writel((osai_readl(DMA_GLBPAUSE(dma_base)) & (u32)(~(1 << chn))),
 		     DMA_GLBPAUSE(dma_base));
-	}
 }
 
 void mtk_hdl_dma_reset_chn(void __iomem *dma_base, u8 chn)
@@ -455,26 +359,6 @@ void mtk_hdl_dma_reset_chn(void __iomem *dma_base, u8 chn)
 
 	value |= (1 << chn);
 	osai_writel(value, DMA_CH_RST(dma_base));
-}
-
-/** @brief  Software reset for DMA module to reset all DMA
- * control register except the global DMA address.
- *
- *  @param  void
- *
- *  @return always return 0
- *
- *  @note   The reset scope of DMA module except DMA global control register
- */
-void mtk_hdl_dma_reset(void __iomem *dma_base)
-{
-	u32 value = osai_readl(DMA_GLO_CON(dma_base));
-
-	value &= (~DMA_SW_RESET);
-	osai_writel(value, DMA_GLO_CON(dma_base));
-
-	value |= DMA_SW_RESET;
-	osai_writel(value, DMA_GLO_CON(dma_base));
 }
 
 /** @brief  Manual configure the DMA throttle to create a DREQ
@@ -519,35 +403,20 @@ void mtk_hdl_dma_clock_enable(void __iomem *dma_base, u8 chn)
 {
 	u32 val = 0;
 
-	if (chn == 0xFF) {
-		osai_writel(0xFFFFFFFF,
-			    DMA_CH_EN_SET(dma_base));
-	} else if (chn < DMA_CHANNEL_AMOUNT) {
-		val = osai_readl(DMA_CH_EN_SET(dma_base));
-		val |= (1 << chn);
-		osai_writel(val, DMA_CH_EN_SET(dma_base));
-		dma_debug("%s: %p, 0x%08x\n", __func__,
-			   (DMA_CH_EN_SET(dma_base)), (u32)(val));
-	} else {
-		dma_err("%s: ERROR! DMA CH(%d) clock enable\n", __func__,
-			   chn);
-	}
+	val = osai_readl(DMA_CH_EN_SET(dma_base));
+	val |= (1 << chn);
+	osai_writel(val, DMA_CH_EN_SET(dma_base));
+	dma_debug("%s: %p, 0x%08x\n", __func__,
+	(DMA_CH_EN_SET(dma_base)), (u32)(val));
 }
 
 void mtk_hdl_dma_clock_disable(void __iomem *dma_base, u8 chn)
 {
 	u32 val;
 
-	if (chn == 0xFF) {
-		osai_writel(0xFFFFFFFF, DMA_CH_EN_CLR(dma_base));
-	} else if (chn < DMA_CHANNEL_AMOUNT) {
-		val = osai_readl(DMA_CH_EN_CLR(dma_base));
-		val |= (1 << chn);
-		osai_writel(val, DMA_CH_EN_CLR(dma_base));
-		dma_debug("%s: %p, 0x%08x\n", __func__,
-			   (DMA_CH_EN_CLR(dma_base)), (u32)(val));
-	} else {
-		dma_err("%s: ERROR! DMA CH(%d) clock gatting\n",
-			   __func__, chn);
-	}
+	val = osai_readl(DMA_CH_EN_CLR(dma_base));
+	val |= (1 << chn);
+	osai_writel(val, DMA_CH_EN_CLR(dma_base));
+	dma_debug("%s: %p, 0x%08x\n", __func__,
+	(DMA_CH_EN_CLR(dma_base)), (u32)(val));
 }

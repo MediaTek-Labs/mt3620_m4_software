@@ -110,6 +110,10 @@ int mtk_os_hal_pwm_ctlr_deinit(pwm_groups group_num, u32 channel_bit_map);
  *
  *  @param group_num : PWM group number, 0 is group0 , 1 is group1, 2 is group2
  *  @param pwm_num : PWM number, 0 is pwm0 , 1 is pwm1, 2 is pwm2, 3 is pwm3
+ *  @param frequency : PWM frequency select, unit in HZ, if set 1000,
+ *	waveform frequency is 1000HZ.
+ *  @param duty_cycle : PWM duty_cycle ,resolution is 0.1, ex: duty is 50%,
+ *	duty_cycle = (50/0.1) = 500
  *
  * @return
  *	If return value is 0, it means success.\n
@@ -124,6 +128,9 @@ int mtk_os_hal_pwm_config_freq_duty_normal(pwm_groups group_num,
  *
  *  @param group_num : PWM group number, 0 is group0 , 1 is group1, 2 is group2
  *  @param pwm_num : PWM number, 0 is pwm0 , 1 is pwm1, 2 is pwm2, 3 is pwm3
+ *  @param global_kick_enable : PWM global kick feature enable
+ *  @param io_ctrl_sel : PWM io ctrl select
+ *  @param polarity_set : PWM plus level polarity select
  *
  * @return
  *	If return value is 0, it means success.\n
@@ -141,6 +148,8 @@ int mtk_os_hal_pwm_feature_enable(pwm_groups group_num,
  *
  *  @param group_num : PWM group number, 0 is group0 , 1 is group1, 2 is group2
  *  @param pwm_num : PWM number, 0 is pwm0 , 1 is pwm1, 2 is pwm2, 3 is pwm3
+ *  @param state_config : store the PWM base address, group number,
+ *	clock source, pwm channel common structure information
  *
  * @return
  *	If return value is 0, it means success.\n
@@ -155,6 +164,8 @@ int mtk_os_hal_pwm_config_freq_duty_2_state(pwm_groups group_num,
  *
  *  @param group_num : PWM group number, 0 is group0 , 1 is group1, 2 is group2
  *  @param pwm_num : PWM number, 0 is pwm0 , 1 is pwm1, 2 is pwm2, 3 is pwm3
+ *  @param state_config : store the PWM base address, group number,
+ *	clock source, pwm channel common structure information
  *
  * @return
  *	If return value is 0, it means success.\n
@@ -170,6 +181,7 @@ int mtk_os_hal_pwm_config_stay_cycle_2_state(pwm_groups group_num,
  *
  *  @param group_num : PWM group number, 0 is group0 , 1 is group1, 2 is group2
  *  @param pwm_num : PWM number, 0 is pwm0 , 1 is pwm1, 2 is pwm2, 3 is pwm3
+ *  @param mode : Defines the PWM channel's differential mode
  *
  * @return
  *	If return value is 0, it means success.\n

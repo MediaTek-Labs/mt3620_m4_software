@@ -33,115 +33,156 @@
  * MEDIATEK SOFTWARE AT ISSUE.
  */
 
+#include <stddef.h>
+#include <stdbool.h>
+#include <stdint.h>
+
+#include "printf.h"
 #include "mt3620.h"
+#include "os_hal_uart.h"
 #include "os_hal_gpt.h"
 #include "os_hal_gpio.h"
 
 /******************************************************************************/
 /* Configurations */
 /******************************************************************************/
-static const uint8_t gpt_timer_button = OS_HAL_GPT0;	// OS_HAL_GPT0 clock speed: 1KHz or 32KHz
-static const uint8_t gpt_timer_led = OS_HAL_GPT3;		// OS_HAL_GPT3 clock speed: 1MHz
-static const uint8_t gpip_led = OS_HAL_GPIO_9;			// GPIO_9 for LED Control
-static const uint8_t gpio_button = OS_HAL_GPIO_12;		// GPIO_12 for Button Status Sensing
+// UART
+static const uint8_t uart_port_num = OS_HAL_UART_ISU0;
 
-static const uint32_t buttonPressCheckPeriodMs = 10;
+// GPT
+static const uint8_t gpt_timer_led = OS_HAL_GPT0;				// GPT0 for LED blinking.
+static const uint8_t gpt_timer_button = OS_HAL_GPT3;			// GPE3 for Button status scan
+static const uint32_t gpt_timer_led_blinking_perios_ms = 500;	// 500ms, GPT0 clock speed: 1KHz or 32KHz
+static const uint32_t gpt_timer_button_scan_perios_ms = 100000;	// 100ms, GPT3 clock speed: 1MHz
 
-static bool ledOn = false;
-static const uint32_t blinkIntervalsMs[] = {125000, 500000, 2000000};	// 125ms/500ms/2000ms
-static uint8_t blinkIntervalIndex = 0;
-static const uint32_t numBlinkIntervals = sizeof(blinkIntervalsMs) / sizeof(blinkIntervalsMs[0]);
+// GPIO
+static const uint8_t gpio_led_red = OS_HAL_GPIO_8;				// GPIO_8 for LED_Red Control
+static const uint8_t gpio_led_green = OS_HAL_GPIO_9;			// GPIO_9 for LED_Green Control
+static const uint8_t gpio_led_blue = OS_HAL_GPIO_10;			// GPIO_10 for LED_Blue Control
+static const uint8_t gpio_button_a = OS_HAL_GPIO_12;			// GPIO_12 for Button_A Status Sensing
+static const uint8_t gpio_button_b = OS_HAL_GPIO_13;			// GPIO_13 for Button_B Status Sensing
+
+
+/******************************************************************************/
+/* Applicaiton Hooks */
+/******************************************************************************/
+// Hook for "printf".
+void _putchar(char character)
+{
+	mtk_os_hal_uart_put_char(uart_port_num, character);
+}
 
 /******************************************************************************/
 /* Functions */
 /******************************************************************************/
-static void HandleButtonTimerIrq(void* cb_data)
+static int gpio_output(u8 gpio_no, u8 level)
 {
-	// Assume initial state is high, i.e. button not pressed.
-	static bool prevState = true;
-	bool newState;
+	int ret;
 
-	os_hal_gpio_data GpioValue = 0;
-	mtk_os_hal_gpio_get_input(gpio_button, &GpioValue);
-	newState = !(!GpioValue);
+	ret = mtk_os_hal_gpio_request(gpio_no);
+	if (ret != 0) {
+		printf("request gpio[%d] fail\r\n", gpio_no);
+		return ret;
+	}
+	mtk_os_hal_gpio_set_direction(gpio_no, OS_HAL_GPIO_DIR_OUTPUT);
+	mtk_os_hal_gpio_set_output(gpio_no, level);
+	ret = mtk_os_hal_gpio_free(gpio_no);
+	if (ret != 0) {
+		printf("free gpio[%d] fail\r\n", gpio_no);
+		return 0;
+	}
+	return 0;
+}
 
-	if (newState != prevState) {
-		bool pressed = !newState;
-		if (pressed) {
-			blinkIntervalIndex = (blinkIntervalIndex + 1) % numBlinkIntervals;
-			mtk_os_hal_gpt_stop(gpt_timer_led);
-			mtk_os_hal_gpt_reset_timer(gpt_timer_led, blinkIntervalsMs[blinkIntervalIndex], false);
-			mtk_os_hal_gpt_start(gpt_timer_led);
-		}
-		prevState = newState;
+static int gpio_input(u8 gpio_no, os_hal_gpio_data* pvalue)
+{
+	u8 ret;
+
+	ret = mtk_os_hal_gpio_request(gpio_no);
+	if (ret != 0) {
+		printf("request gpio[%d] fail\r\n", gpio_no);
+		return ret;
+	}
+	mtk_os_hal_gpio_set_direction(gpio_no, OS_HAL_GPIO_DIR_INPUT);
+	mtk_os_hal_gpio_get_input(gpio_no, pvalue);
+	ret = mtk_os_hal_gpio_free(gpio_no);
+	if (ret != 0) {
+		printf("free gpio[%d] fail\r\n", gpio_no);
+		return ret;
+	}
+	return 0;
+}
+
+static void TimerHandlerGpt0(void* cb_data)
+{
+	static bool ledOn = true;
+	uint8_t i;
+
+	// Toggle LED Status
+	ledOn = !ledOn;
+	gpio_output(gpio_led_green, ledOn);
+
+	// Toggle ISU1~ISU2 GPIO(31~40), just a demo to show ISU could be used as GPIO.
+	// ISU1: GPIO31~35
+	// ISU2: GPIO36~40
+	for (i=OS_HAL_GPIO_31 ; i<=OS_HAL_GPIO_40 ; i++) {
+		gpio_output(i, ledOn);
 	}
 }
 
-static void HandleBlinkTimerIrq(void* cb_data)
+static void TimerHandlerGpt3(void* cb_data)
 {
-	int i;
+	os_hal_gpio_data button_status;
 
-	// Toggle GPIO of ISU0~ISU3
-	for (i=OS_HAL_GPIO_26 ; i<=OS_HAL_GPIO_40 ; i++) {
-		mtk_os_hal_gpio_set_output(i, ledOn);
+	// Set LED_Blue according to Button_A
+	gpio_input(gpio_button_a, &button_status);
+	if (button_status) {
+		gpio_output(gpio_led_blue, OS_HAL_GPIO_DATA_HIGH);
+	} else {
+		gpio_output(gpio_led_blue, OS_HAL_GPIO_DATA_LOW);
 	}
 
-	ledOn = !ledOn;
-	// Toggle LED Status
-	mtk_os_hal_gpio_set_output(gpip_led, ledOn);
-	// Restart Timer
-	mtk_os_hal_gpt_stop(gpt_timer_led);
-	mtk_os_hal_gpt_start(gpt_timer_led);
+	// Set LED_Red according to Button_B
+	gpio_input(gpio_button_b, &button_status);
+	if (button_status) {
+		gpio_output(gpio_led_red, OS_HAL_GPIO_DATA_HIGH);
+	} else {
+		gpio_output(gpio_led_red, OS_HAL_GPIO_DATA_LOW);
+	}
+
+	// Restart GPT3 since it's one-shot mode.
+	mtk_os_hal_gpt_restart(gpt_timer_button);
 }
 
 _Noreturn void RTCoreMain(void)
 {
 	struct os_gpt_int gpt0_int;
-	struct os_gpt_int gpt1_int;
-	int i;
+	struct os_gpt_int gpt3_int;
 	
 	// Init Vector Table
 	NVIC_SetupVectorTable();
 
-	// Init GPIO
-	mtk_os_hal_gpio_ctlr_init();
-	// Init GPIO for Button as GPI
-	mtk_os_hal_gpio_request(gpio_button);
-	mtk_os_hal_gpio_pmx_set_mode(gpio_button, OS_HAL_MODE_6);
-	mtk_os_hal_gpio_set_direction(gpio_button, OS_HAL_GPIO_DIR_INPUT);
-	// Init GPIO for LED as GPO
-	mtk_os_hal_gpio_request(gpip_led);
-	mtk_os_hal_gpio_pmx_set_mode(gpip_led, OS_HAL_MODE_6);
-	mtk_os_hal_gpio_set_direction(gpip_led, OS_HAL_GPIO_DIR_OUTPUT);
-	mtk_os_hal_gpio_set_output(gpip_led, ledOn);
-	// Init GPIO for ISU0~ISU2 as GPO
-	for (i=OS_HAL_GPIO_26 ; i<=OS_HAL_GPIO_40 ; i++) {
-		mtk_os_hal_gpio_request(i);
-		mtk_os_hal_gpio_pmx_set_mode(i, OS_HAL_MODE_6);
-		mtk_os_hal_gpio_set_direction(i, OS_HAL_GPIO_DIR_OUTPUT);
-		mtk_os_hal_gpio_set_output(i, ledOn);
-	}
+	// Init UART
+	mtk_os_hal_uart_ctlr_init(uart_port_num);
+	printf("UART Inited (port_num=%d)\r\n", uart_port_num);
 
 	// Init GPT
-	gpt0_int.gpt_cb_hdl = HandleBlinkTimerIrq;
-	gpt0_int.gpt_cb_data = NULL;
-	gpt1_int.gpt_cb_hdl = HandleButtonTimerIrq;
-	gpt1_int.gpt_cb_data = NULL;
 	mtk_os_hal_gpt_init();
 
-	//	configure GPT0 clock speed (as 1KHz) and register GPT0 user interrupt callback handle and user data.
+	// Init GPT0 for LED blinking, repeat mode.
+	gpt0_int.gpt_cb_hdl = TimerHandlerGpt0;
+	gpt0_int.gpt_cb_data = NULL;
 	mtk_os_hal_gpt_config(gpt_timer_led, false, &gpt0_int);
-	//	configure GPT0 timeout value (as 125ms ) and configure it as one shot mode.
-	mtk_os_hal_gpt_reset_timer(gpt_timer_led, blinkIntervalsMs[blinkIntervalIndex], false);
-	//	start timer
+	mtk_os_hal_gpt_reset_timer(gpt_timer_led, gpt_timer_led_blinking_perios_ms, true);
 	mtk_os_hal_gpt_start(gpt_timer_led);
 
-	//	configure GPT1 clock speed (as 1KHz) and register GPT1 user interrupt callback handle and user data.
-	mtk_os_hal_gpt_config(gpt_timer_button, false, &gpt1_int);
-	//	configure GPT0 timeout value (as 10 ms) and configure it as repeat mode.
-	mtk_os_hal_gpt_reset_timer(gpt_timer_button, buttonPressCheckPeriodMs, true);
-	//	start timer
+	// Init GPT3 for button status monitor, one-shot mode.
+	gpt3_int.gpt_cb_hdl = TimerHandlerGpt3;
+	gpt3_int.gpt_cb_data = NULL;
+	mtk_os_hal_gpt_config(gpt_timer_button, false, &gpt3_int);
+	mtk_os_hal_gpt_reset_timer(gpt_timer_button, gpt_timer_button_scan_perios_ms, false);
 	mtk_os_hal_gpt_start(gpt_timer_button);
+
 
 	for (;;) {
 		__asm__("wfi");

@@ -37,8 +37,6 @@
 #include "os_hal_gpio.h"
 #include "os_hal_dma.h"
 
-#define MTK_UART_MAX_PORT_NUMBER 6
-
 #define CM4_UART_BASE			0x21040000
 #define ISU0_UART_BASE			0x38070500
 #define ISU1_UART_BASE			0x38080500
@@ -46,7 +44,7 @@
 #define ISU3_UART_BASE			0x380a0500
 #define ISU4_UART_BASE			0x380b0500
 
-static unsigned long uart_base_addr[MTK_UART_MAX_PORT_NUMBER] = {
+static unsigned long uart_base_addr[OS_HAL_UART_MAX_PORT] = {
 	CM4_UART_BASE,
 	ISU0_UART_BASE,
 	ISU1_UART_BASE,
@@ -62,7 +60,7 @@ static unsigned long uart_base_addr[MTK_UART_MAX_PORT_NUMBER] = {
 #define ISU3_UART_CG_BASE	0x380a0000
 #define ISU4_UART_CG_BASE	0x380b0000
 
-static unsigned long uart_cg_base_addr[MTK_UART_MAX_PORT_NUMBER] = {
+static unsigned long uart_cg_base_addr[OS_HAL_UART_MAX_PORT] = {
 	CM4_UART_CG_BASE,
 	ISU0_UART_CG_BASE,
 	ISU1_UART_CG_BASE,
@@ -71,7 +69,7 @@ static unsigned long uart_cg_base_addr[MTK_UART_MAX_PORT_NUMBER] = {
 	ISU4_UART_CG_BASE,
 };
 
-static u8 uart_half_dma_chan[MTK_UART_MAX_PORT_NUMBER-1][2] = {
+static u8 uart_half_dma_chan[OS_HAL_UART_MAX_PORT-1][2] = {
 	/* [0]:tx, [1]:rx */
 	{DMA_ISU0_TX_CH0, DMA_ISU0_RX_CH1},
 	{DMA_ISU1_TX_CH2, DMA_ISU1_RX_CH3},
@@ -80,7 +78,7 @@ static u8 uart_half_dma_chan[MTK_UART_MAX_PORT_NUMBER-1][2] = {
 	{DMA_ISU4_TX_CH8, DMA_ISU4_RX_CH9},
 };
 
-static u8 uart_vff_dma_chan[MTK_UART_MAX_PORT_NUMBER-1][2] = {
+static u8 uart_vff_dma_chan[OS_HAL_UART_MAX_PORT-1][2] = {
 	/* [0]:tx, [1]:rx */
 	{VDMA_ISU0_TX_CH13, VDMA_ISU0_RX_CH14},
 	{VDMA_ISU1_TX_CH15, VDMA_ISU1_RX_CH16},
@@ -102,15 +100,18 @@ struct mtk_uart_controller_rtos {
 };
 
 static struct mtk_uart_private
-	g_uart_mdata[MTK_UART_MAX_PORT_NUMBER];
+	g_uart_mdata[OS_HAL_UART_MAX_PORT];
 static struct mtk_uart_controller
-	g_uart_ctlr[MTK_UART_MAX_PORT_NUMBER];
+	g_uart_ctlr[OS_HAL_UART_MAX_PORT];
 static struct mtk_uart_controller_rtos
-	g_uart_ctlr_rtos[MTK_UART_MAX_PORT_NUMBER];
+	g_uart_ctlr_rtos[OS_HAL_UART_MAX_PORT];
 
 static struct mtk_uart_controller_rtos
 	*_mtk_os_hal_uart_get_ctlr(UART_PORT port_num)
 {
+	if (port_num >= OS_HAL_UART_MAX_PORT)
+		return NULL;
+
 	return &g_uart_ctlr_rtos[port_num];
 }
 
@@ -266,6 +267,9 @@ void mtk_os_hal_uart_dumpreg(UART_PORT port_num)
 	struct mtk_uart_controller_rtos *ctlr_rtos =
 		_mtk_os_hal_uart_get_ctlr(port_num);
 
+	if (!ctlr_rtos)
+		return;
+
 	mtk_mhal_uart_dumpreg(ctlr_rtos->ctlr);
 }
 
@@ -273,6 +277,9 @@ void mtk_os_hal_uart_set_baudrate(UART_PORT port_num, u32 baudrate)
 {
 	struct mtk_uart_controller_rtos *ctlr_rtos =
 		_mtk_os_hal_uart_get_ctlr(port_num);
+
+	if (!ctlr_rtos)
+		return;
 
 	ctlr_rtos->ctlr->baudrate = baudrate;
 	mtk_mhal_uart_set_baudrate(ctlr_rtos->ctlr);
@@ -286,6 +293,9 @@ void mtk_os_hal_uart_set_format(UART_PORT port_num,
 	struct mtk_uart_controller_rtos *ctlr_rtos =
 		_mtk_os_hal_uart_get_ctlr(port_num);
 
+	if (!ctlr_rtos)
+		return;
+
 	ctlr_rtos->ctlr->data_bit = data_bit;
 	ctlr_rtos->ctlr->parity = parity;
 	ctlr_rtos->ctlr->stop_bit = stop_bit;
@@ -298,6 +308,9 @@ u8 mtk_os_hal_uart_get_char(UART_PORT port_num)
 		_mtk_os_hal_uart_get_ctlr(port_num);
 	u8 data;
 
+	if (!ctlr_rtos)
+		return 0;
+
 	data = mtk_mhal_uart_getc(ctlr_rtos->ctlr);
 
 	return data;
@@ -309,6 +322,9 @@ u8 mtk_os_hal_uart_get_char_nowait(UART_PORT port_num)
 		_mtk_os_hal_uart_get_ctlr(port_num);
 	u8 data;
 
+	if (!ctlr_rtos)
+		return 0;
+
 	data = mtk_mhal_uart_getc_nowait(ctlr_rtos->ctlr);
 
 	return data;
@@ -319,6 +335,9 @@ void mtk_os_hal_uart_put_char(UART_PORT port_num, u8 data)
 	struct mtk_uart_controller_rtos *ctlr_rtos =
 		_mtk_os_hal_uart_get_ctlr(port_num);
 
+	if (!ctlr_rtos)
+		return;
+
 	mtk_mhal_uart_putc(ctlr_rtos->ctlr, data);
 }
 
@@ -326,6 +345,9 @@ int mtk_os_hal_uart_clear_irq_status(UART_PORT port_num)
 {
 	struct mtk_uart_controller_rtos *ctlr_rtos =
 		_mtk_os_hal_uart_get_ctlr(port_num);
+
+	if (!ctlr_rtos)
+		return -UART_EPTR;
 
 	return mtk_mhal_uart_clear_irq_status(ctlr_rtos->ctlr);
 }
@@ -335,6 +357,9 @@ void mtk_os_hal_uart_set_irq(UART_PORT port_num, u8 irq_flag)
 	struct mtk_uart_controller_rtos *ctlr_rtos =
 		_mtk_os_hal_uart_get_ctlr(port_num);
 
+	if (!ctlr_rtos)
+		return;
+
 	mtk_mhal_uart_set_irq(ctlr_rtos->ctlr, irq_flag);
 }
 
@@ -342,6 +367,9 @@ void mtk_os_hal_uart_set_hw_fc(UART_PORT port_num, u8 hw_fc)
 {
 	struct mtk_uart_controller_rtos *ctlr_rtos =
 		_mtk_os_hal_uart_get_ctlr(port_num);
+
+	if (!ctlr_rtos)
+		return;
 
 	mtk_mhal_uart_set_hw_fc(ctlr_rtos->ctlr, hw_fc);
 }
@@ -351,6 +379,9 @@ void mtk_os_hal_uart_disable_sw_fc(UART_PORT port_num)
 	struct mtk_uart_controller_rtos *ctlr_rtos =
 		_mtk_os_hal_uart_get_ctlr(port_num);
 
+	if (!ctlr_rtos)
+		return;
+
 	mtk_mhal_uart_disable_sw_fc(ctlr_rtos->ctlr);
 }
 
@@ -359,6 +390,9 @@ void mtk_os_hal_uart_set_sw_fc(UART_PORT port_num,
 {
 	struct mtk_uart_controller_rtos *ctlr_rtos =
 		_mtk_os_hal_uart_get_ctlr(port_num);
+
+	if (!ctlr_rtos)
+		return;
 
 	mtk_mhal_uart_set_sw_fc(ctlr_rtos->ctlr, xon1, xoff1,
 		xon2, xoff2, escape_data);
@@ -408,8 +442,10 @@ int mtk_os_hal_uart_dma_send_data(UART_PORT port_num,
 	struct mtk_uart_controller *ctlr;
 	int ret, cnt;
 
-	ctlr = ctlr_rtos->ctlr;
+	if (!ctlr_rtos)
+		return -UART_EPTR;
 
+	ctlr = ctlr_rtos->ctlr;
 	if (!ctlr)
 		return -UART_EPTR;
 
@@ -467,8 +503,10 @@ int mtk_os_hal_uart_dma_get_data(UART_PORT port_num,
 	struct mtk_uart_controller *ctlr;
 	int ret, cnt;
 
-	ctlr = ctlr_rtos->ctlr;
+	if (!ctlr_rtos)
+		return -UART_EPTR;
 
+	ctlr = ctlr_rtos->ctlr;
 	if (!ctlr)
 		return -UART_EPTR;
 

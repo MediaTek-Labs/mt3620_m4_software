@@ -33,8 +33,9 @@
  * MEDIATEK SOFTWARE AT ISSUE.
  */
 
-#include <stdio.h>
-#include <stdarg.h>
+#include <stddef.h>
+#include <stdbool.h>
+#include <stdint.h>
 
 #include "printf.h"
 #include "mt3620.h"
@@ -85,13 +86,13 @@ _Noreturn void RTCoreMain(void)
 	gpt0_int.gpt_cb_data = (void*)gpt_cb_data;
 	mtk_os_hal_gpt_init();
 
-	//	configure GPT0 clock speed (as 1KHz) and register GPT0 user interrupt callback handle and user data.
+	// configure GPT0 clock speed (as 1KHz) and register GPT0 user interrupt callback handle and user data.
 	mtk_os_hal_gpt_config(gpt_timer_id, false, &gpt0_int);
-	//	configure GPT0 timeout value (as 500ms) and configure it as repeat mode.
+	// configure GPT0 timeout value (as 500ms) and configure it as repeat mode.
 	mtk_os_hal_gpt_reset_timer(gpt_timer_id, gpt_timer_val, true);
-	//	start timer
+	// start timer
 	mtk_os_hal_gpt_start(gpt_timer_id);
-	printf("GPT0 Started (timer_id=%d)(timer_val=%dms)\r\n", gpt_timer_id, gpt_timer_val);
+	printf("GPT0 Started (timer_id=%d)(timer_val=%ldms)\r\n", gpt_timer_id, gpt_timer_val);
 
 	for (;;) {
 		__asm__("wfi");

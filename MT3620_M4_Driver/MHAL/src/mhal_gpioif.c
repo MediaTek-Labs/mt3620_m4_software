@@ -34,15 +34,14 @@
  */
 
 #include "hdl_gpioif.h"
-#include "mhal_osai.h"
 #include "mhal_gpioif.h"
 
 int mtk_mhal_gpioif_select_clock_source(struct mtk_gpioif_controller *ctlr)
 {
 	if ((!ctlr) || (!ctlr->mconfig) || (!ctlr->reg_clk_base))
-		return -EPTR;
+		return -GPIOIF_EPTR;
 	if (ctlr->mconfig->clk >= MHAL_GPIOIF_CLOCK_MAX)
-		return -EINVAL;
+		return -GPIOIF_EINVAL;
 
 	mtk_hdl_gpioif_select_clock_source(
 		ctlr->reg_clk_base, ctlr->mconfig->clk);
@@ -57,17 +56,17 @@ int mtk_mhal_gpioif_event_counter_setting(struct mtk_gpioif_controller *ctlr)
 
 	if ((!ctlr) || (!ctlr->mconfig) || (!ctlr->mconfig->setting)
 		|| (!ctlr->base[ctlr->mconfig->group]))
-		return -EPTR;
+		return -GPIOIF_EPTR;
 
 	group = ctlr->mconfig->group;
 	mode = ctlr->mconfig->event_cnt_mode;
 	psetting = ctlr->mconfig->setting;
 	if ((group >= MHAL_GPIOIF_GROUP_MAX) ||
 		(mode >= MHAL_GPIOIF_EVNET_COUNTER_MODE_MAX))
-		return -EINVAL;
+		return -GPIOIF_EINVAL;
 
 	if (psetting->control_setting > MAX_CTRL_SETTING)
-		return -EINVAL;
+		return -GPIOIF_EINVAL;
 
 	mtk_hdl_gpioif_event_counter_setting(ctlr->base[group],
 		mode, psetting->control_setting, psetting->updown,
@@ -84,7 +83,7 @@ int mtk_mhal_gpioif_capture_counter_setting(struct mtk_gpioif_controller *ctlr)
 
 	if ((!ctlr) || (!ctlr->mconfig) || (!ctlr->mconfig->setting)
 		|| (!ctlr->base[ctlr->mconfig->group]))
-		return -EPTR;
+		return -GPIOIF_EPTR;
 
 	group = ctlr->mconfig->group;
 	edge_type_gpio_0 = ctlr->mconfig->setting->edge_type_gpio_0;
@@ -92,7 +91,7 @@ int mtk_mhal_gpioif_capture_counter_setting(struct mtk_gpioif_controller *ctlr)
 	if ((group >= MHAL_GPIOIF_GROUP_MAX) ||
 		(edge_type_gpio_0 >= MHAL_GPIOIF_GPIO_0_EDGE_TYPE_MAX) ||
 		(edge_type_gpio_1 >= MHAL_GPIOIF_GPIO_1_EDGE_TYPE_MAX))
-		return -EINVAL;
+		return -GPIOIF_EINVAL;
 
 	mtk_hdl_gpioif_capture_counter_setting(ctlr->base[group],
 		ctlr->mconfig->setting->edge_type_gpio_0,
@@ -105,9 +104,9 @@ int mtk_mhal_gpioif_enable_event_counter(struct mtk_gpioif_controller *ctlr)
 	u8 group = 0;
 
 	if ((!ctlr) || (!ctlr->mconfig) || (!ctlr->base[ctlr->mconfig->group]))
-		return -EPTR;
+		return -GPIOIF_EPTR;
 	if (ctlr->mconfig->group >= MHAL_GPIOIF_GROUP_MAX)
-		return -EINVAL;
+		return -GPIOIF_EINVAL;
 
 	group = ctlr->mconfig->group;
 	mtk_hdl_gpioif_enable_event_counter(ctlr->base[group]);
@@ -119,9 +118,9 @@ int mtk_mhal_gpioif_disable_event_counter(struct mtk_gpioif_controller *ctlr)
 	u8 group = 0;
 
 	if ((!ctlr) || (!ctlr->mconfig) || (!ctlr->base[ctlr->mconfig->group]))
-		return -EPTR;
+		return -GPIOIF_EPTR;
 	if (ctlr->mconfig->group >= MHAL_GPIOIF_GROUP_MAX)
-		return -EINVAL;
+		return -GPIOIF_EINVAL;
 
 	group = ctlr->mconfig->group;
 	mtk_mhdl_gpioif_disable_event_counter(ctlr->base[group]);
@@ -133,9 +132,9 @@ int mtk_mhal_gpioif_enable_capture_counter(struct mtk_gpioif_controller *ctlr)
 	u8 group = 0;
 
 	if ((!ctlr) || (!ctlr->mconfig) || (!ctlr->base[ctlr->mconfig->group]))
-		return -EPTR;
+		return -GPIOIF_EPTR;
 	if (ctlr->mconfig->group >= MHAL_GPIOIF_GROUP_MAX)
-		return -EINVAL;
+		return -GPIOIF_EINVAL;
 
 	group = ctlr->mconfig->group;
 	mtk_hdl_gpioif_enable_capture_counter(ctlr->base[group]);
@@ -147,9 +146,9 @@ int mtk_mhal_gpioif_disable_capture_counter(struct mtk_gpioif_controller *ctlr)
 	u8 group = 0;
 
 	if ((!ctlr) || (!ctlr->mconfig) || (!ctlr->base[ctlr->mconfig->group]))
-		return -EPTR;
+		return -GPIOIF_EPTR;
 	if (ctlr->mconfig->group >= MHAL_GPIOIF_GROUP_MAX)
-		return -EINVAL;
+		return -GPIOIF_EINVAL;
 
 	group = ctlr->mconfig->group;
 	mtk_hdl_gpioif_disable_capture_counter(ctlr->base[group]);
@@ -162,14 +161,14 @@ int mtk_mhal_gpioif_software_reset(struct mtk_gpioif_controller *ctlr)
 	u32 mode = 0;
 
 	if ((!ctlr) || (!ctlr->mconfig) || (!ctlr->base[ctlr->mconfig->group]))
-		return -EPTR;
+		return -GPIOIF_EPTR;
 
 	group = ctlr->mconfig->group;
 	mode = ctlr->mconfig->mode;
 
 	if ((group >= MHAL_GPIOIF_GROUP_MAX) ||
 		(mode >= MHAL_GPIOIF_MODE_MAX))
-		return -EINVAL;
+		return -GPIOIF_EINVAL;
 
 	mtk_hdl_gpioif_software_reset(ctlr->base[group], mode);
 	return 0;
@@ -182,31 +181,16 @@ int mtk_mhal_gpioif_interrupt_bit_wise(
 
 	if ((!ctlr) || (!ctlr->mconfig) || (!ctlr->int_cnt)
 		|| (!ctlr->base[ctlr->mconfig->group]))
-		return -EPTR;
+		return -GPIOIF_EPTR;
 	if (ctlr->mconfig->group >= MHAL_GPIOIF_GROUP_MAX)
-		return -EINVAL;
+		return -GPIOIF_EINVAL;
 
 	if (enable > 1)
-		return -EINVAL;
+		return -GPIOIF_EINVAL;
 
 	group = ctlr->mconfig->group;
 	ctlr->int_cnt->int_bit = bit;
 	mtk_hdl_gpioif_interrupt_bit_wise(ctlr->base[group], bit, enable);
-	return 0;
-}
-
-int mtk_mhal_gpioif_clear_interrupt_status(
-	struct mtk_gpioif_controller *ctlr, unsigned int bit)
-{
-	u8 group = 0;
-
-	if ((!ctlr) || (!ctlr->mconfig) || (!ctlr->base[ctlr->mconfig->group]))
-		return -EPTR;
-	if (ctlr->mconfig->group >= MHAL_GPIOIF_GROUP_MAX)
-		return -EINVAL;
-
-	group = ctlr->mconfig->group;
-	mtk_hdl_gpioif_clear_interrupt_status(ctlr->base[group], bit);
 	return 0;
 }
 
@@ -217,16 +201,16 @@ int mtk_mhal_gpioif_hardware_reset_by_gpio_2(
 	u32 mode = 0;
 
 	if ((!ctlr) || (!ctlr->mconfig) || (!ctlr->base[ctlr->mconfig->group]))
-		return -EPTR;
+		return -GPIOIF_EPTR;
 
 	if ((active_reset > 1) || (active_reset < 0))
-		return -EINVAL;
+		return -GPIOIF_EINVAL;
 
 	group = ctlr->mconfig->group;
 	mode = ctlr->mconfig->mode;
 	if ((group >= MHAL_GPIOIF_GROUP_MAX) ||
 		(mode >= MHAL_GPIOIF_EVNET_COUNTER_MODE_MAX))
-		return -EINVAL;
+		return -GPIOIF_EINVAL;
 
 	mtk_hdl_gpioif_hardware_reset_by_gpio_2(
 		ctlr->base[group], mode, active_reset);
@@ -238,10 +222,11 @@ int mtk_mhal_gpioif_read_gpio_event_count(
 {
 	u8 group = 0;
 
-	if ((!ctlr) || (!ctlr->mconfig) || (!ctlr->base[ctlr->mconfig->group]))
-		return -EPTR;
+	if ((!ctlr) || (!ctlr->mconfig) || (!ctlr->base[ctlr->mconfig->group])
+		|| (pvalue == NULL))
+		return -GPIOIF_EPTR;
 	if (ctlr->mconfig->group >= MHAL_GPIOIF_GROUP_MAX)
-		return -EINVAL;
+		return -GPIOIF_EINVAL;
 
 	group = ctlr->mconfig->group;
 	mtk_hdl_gpioif_read_gpio_event_count(ctlr->base[group], pvalue);
@@ -253,10 +238,11 @@ int mtk_mhal_gpioif_read_reset_val(
 {
 	u8 group = 0;
 
-	if ((!ctlr) || (!ctlr->mconfig) || (!ctlr->base[ctlr->mconfig->group]))
-		return -EPTR;
+	if ((!ctlr) || (!ctlr->mconfig) || (!ctlr->base[ctlr->mconfig->group])
+		|| (pvalue == NULL))
+		return -GPIOIF_EPTR;
 	if (ctlr->mconfig->group >= MHAL_GPIOIF_GROUP_MAX)
-		return -EINVAL;
+		return -GPIOIF_EINVAL;
 
 	group = ctlr->mconfig->group;
 	mtk_hdl_gpioif_read_reset_val(ctlr->base[group], pvalue);
@@ -268,10 +254,11 @@ int mtk_mhal_gpioif_read_low_limit_val(
 {
 	u8 group = 0;
 
-	if ((!ctlr) || (!ctlr->mconfig) || (!ctlr->base[ctlr->mconfig->group]))
-		return -EPTR;
+	if ((!ctlr) || (!ctlr->mconfig) || (!ctlr->base[ctlr->mconfig->group])
+		|| (pvalue == NULL))
+		return -GPIOIF_EPTR;
 	if (ctlr->mconfig->group >= MHAL_GPIOIF_GROUP_MAX)
-		return -EINVAL;
+		return -GPIOIF_EINVAL;
 
 	group = ctlr->mconfig->group;
 	mtk_hdl_gpioif_read_low_limit_val(ctlr->base[group], pvalue);
@@ -283,10 +270,11 @@ int mtk_mhal_gpioif_read_high_limit_val(
 {
 	u8 group = 0;
 
-	if ((!ctlr) || (!ctlr->mconfig) || (!ctlr->base[ctlr->mconfig->group]))
-		return -EPTR;
+	if ((!ctlr) || (!ctlr->mconfig) || (!ctlr->base[ctlr->mconfig->group])
+		|| (pvalue == NULL))
+		return -GPIOIF_EPTR;
 	if (ctlr->mconfig->group >= MHAL_GPIOIF_GROUP_MAX)
-		return -EINVAL;
+		return -GPIOIF_EINVAL;
 
 	group = ctlr->mconfig->group;
 	mtk_hdl_gpioif_read_high_limit_val(ctlr->base[group], pvalue);
@@ -298,10 +286,11 @@ int mtk_mhal_gpioif_read_gpio_cap_fifo0_value(
 {
 	u8 group = 0;
 
-	if ((!ctlr) || (!ctlr->mconfig) || (!ctlr->base[ctlr->mconfig->group]))
-		return -EPTR;
+	if ((!ctlr) || (!ctlr->mconfig) || (!ctlr->base[ctlr->mconfig->group])
+		|| (pvalue == NULL))
+		return -GPIOIF_EPTR;
 	if (ctlr->mconfig->group >= MHAL_GPIOIF_GROUP_MAX)
-		return -EINVAL;
+		return -GPIOIF_EINVAL;
 
 	group = ctlr->mconfig->group;
 	mtk_hdl_gpioif_read_gpio_cap_fifo0_value(
@@ -314,10 +303,11 @@ int mtk_mhal_gpioif_read_gpio_cap_fifo1_value(
 {
 	u8 group = 0;
 
-	if ((!ctlr) || (!ctlr->mconfig) || (!ctlr->base[ctlr->mconfig->group]))
-		return -EPTR;
+	if ((!ctlr) || (!ctlr->mconfig) || (!ctlr->base[ctlr->mconfig->group])
+		|| (pvalue == NULL))
+		return -GPIOIF_EPTR;
 	if (ctlr->mconfig->group >= MHAL_GPIOIF_GROUP_MAX)
-		return -EINVAL;
+		return -GPIOIF_EINVAL;
 
 	group = ctlr->mconfig->group;
 	mtk_hdl_gpioif_read_gpio_cap_fifo1_value(
@@ -332,21 +322,21 @@ int mtk_mhal_gpioif_de_glitch(
 	u8 group = 0;
 
 	if ((!ctlr) || (!ctlr->mconfig) || (!ctlr->base[ctlr->mconfig->group]))
-		return -EPTR;
+		return -GPIOIF_EPTR;
 	if (ctlr->mconfig->group >= MHAL_GPIOIF_GROUP_MAX)
-		return -EINVAL;
+		return -GPIOIF_EINVAL;
 
 	if ((gpio < 0) || (gpio > 2))
-		return -EINVAL;
+		return -GPIOIF_EINVAL;
 
 	if ((enable < 0) || (enable > 1))
-		return -EINVAL;
+		return -GPIOIF_EINVAL;
 
 	if (min_p > MAX_MIN_PURSE_WIDTH)
-		return -EINVAL;
+		return -GPIOIF_EINVAL;
 
 	if ((init_v != 0) && (init_v != 1))
-		return -EINVAL;
+		return -GPIOIF_EINVAL;
 
 	group = ctlr->mconfig->group;
 	mtk_hdl_gpioif_de_glitch(ctlr->base[group],
@@ -361,7 +351,7 @@ int mtk_mhal_gpioif_limit_comparator(struct mtk_gpioif_controller *ctlr)
 	int interrupt_limit_v = 0;
 
 	if ((!ctlr) || (!ctlr->mconfig) || (!ctlr->base[ctlr->mconfig->group]))
-		return -EPTR;
+		return -GPIOIF_EPTR;
 
 	group = ctlr->mconfig->group;
 	sa_limit_v = ctlr->mconfig->sa_mode_lim;
@@ -369,7 +359,7 @@ int mtk_mhal_gpioif_limit_comparator(struct mtk_gpioif_controller *ctlr)
 	if ((group >= MHAL_GPIOIF_GROUP_MAX) ||
 		(sa_limit_v >= MHAL_GPIOIF_SA_MAX) ||
 		(interrupt_limit_v >= MHAL_GPIOIF_INTERRUPT_MAX))
-		return -EINVAL;
+		return -GPIOIF_EINVAL;
 
 	mtk_hdl_gpioif_limit_comparator(ctlr->base[group],
 		sa_limit_v, interrupt_limit_v);
@@ -381,9 +371,9 @@ int mtk_mhal_gpioif_global_reset(struct mtk_gpioif_controller *ctlr)
 	u8 group = 0;
 
 	if ((!ctlr) || (!ctlr->mconfig) || (!ctlr->base[ctlr->mconfig->group]))
-		return -EPTR;
+		return -GPIOIF_EPTR;
 	if (ctlr->mconfig->group >= MHAL_GPIOIF_GROUP_MAX)
-		return -EINVAL;
+		return -GPIOIF_EINVAL;
 
 	group = ctlr->mconfig->group;
 	mtk_hdl_gpioif_global_reset(ctlr->base[group]);
@@ -396,12 +386,12 @@ int mtk_mhal_gpioif_counter_clock_setting(
 	u8 group = 0;
 
 	if ((!ctlr) || (!ctlr->mconfig) || (!ctlr->base[ctlr->mconfig->group]))
-		return -EPTR;
+		return -GPIOIF_EPTR;
 	if (ctlr->mconfig->group >= MHAL_GPIOIF_GROUP_MAX)
-		return -EINVAL;
+		return -GPIOIF_EINVAL;
 
 	if ((enable != 0) && (enable != 1))
-		return -EINVAL;
+		return -GPIOIF_EINVAL;
 
 	group = ctlr->mconfig->group;
 	mtk_hdl_gpioif_counter_clock_setting(ctlr->base[group], enable);
@@ -415,19 +405,21 @@ int mtk_mhal_gpioif_isr_handle(struct mtk_gpioif_controller *ctlr)
 	u32 count = 0;
 	u8 group = 0;
 	u32 cap_f0_cnt, cap_f1_cnt;
+	u32 count_fifo0 = 0;
+	u32 count_fifo1 = 0;
 
 	if ((!ctlr) || (!ctlr->mconfig) || (!ctlr->base[ctlr->mconfig->group]))
-		return -EPTR;
+		return -GPIOIF_EPTR;
 
 	if (ctlr->mconfig->group >= MHAL_GPIOIF_GROUP_MAX)
-		return -EINVAL;
+		return -GPIOIF_EINVAL;
 
 	group = ctlr->mconfig->group;
 	mtk_hdl_gpioif_read_int_val(ctlr->base[group], &value1);
 	value = (value1 & GPIO_CNT_INT_STS_EVENT_LOW_MASK);
 
-	gpioif_debug("%s group %d interrupt_bit 0x%x\n", __func__, group,
-		ctlr->int_cnt->int_bit);
+	gpioif_debug("%s group %d interrupt_bit 0x%x, value1=0x%x\n",
+		__func__, group, ctlr->int_cnt->int_bit, value1);
 	if (value) {
 		gpioif_debug("IRQ_GPIOIF_EVENT_C_R_LOW\n");
 		ctlr->int_cnt->int_event_low_count++;
@@ -535,19 +527,22 @@ int mtk_mhal_gpioif_isr_handle(struct mtk_gpioif_controller *ctlr)
 			ctlr->int_cnt->int_bit, 0x1);
 
 		/* FIFO count of Capture FIFO 0 = 4'h1 */
-		mtk_hdl_gpioif_read_cap_fifo0_count(ctlr, &count);
+		mtk_hdl_gpioif_read_cap_fifo0_count(ctlr->base[group], &count);
 		gpioif_debug("count %u\n", count);
 		for (; count > 0; count--) {
 		/* Read Capture FIFO 0 Once */
-			mtk_hdl_gpioif_read_gpio_cap_fifo0_value(ctlr, &value);
+			mtk_hdl_gpioif_read_gpio_cap_fifo0_value(
+				ctlr->base[group], &value);
 			gpioif_debug("Read Capture FIFO 0  %u\n", value);
+			mtk_hdl_gpioif_read_cap_fifo0_count(
+				ctlr->base[group], &count_fifo0);
+			gpioif_debug("count_fifo0 %u\n", count_fifo0);
 			if (ctlr->int_cnt->cap_fifo0_count < 5) {
 				cap_f0_cnt = ctlr->int_cnt->cap_fifo0_count;
 				ctlr->int_cnt->cap_fifo0[cap_f0_cnt] = value;
 				ctlr->int_cnt->cap_fifo0_count++;
 			}
 		}
-		/* read_gpio_cap_fifo0_value(group, &value); */
 
 		value =  (1 << IRQ_GPIOIF_CFIFO0_NOT_EMPTY);
 		mtk_hdl_gpioif_clear_interrupt_status(ctlr->base[group], value);
@@ -558,10 +553,12 @@ int mtk_mhal_gpioif_isr_handle(struct mtk_gpioif_controller *ctlr)
 
 		mtk_hdl_gpioif_interrupt_bit_wise(ctlr->base[group],
 			ctlr->int_cnt->int_bit, 0x1);
+
 	}
 
 	value = (value1 & GPIO_CNT_INT_STS_CAP_F1_NP_MASK);
 	if (value) {
+
 		gpioif_debug("IRQ_GPIOIF_CFIFO1_NOT_EMPTY\n");
 		ctlr->int_cnt->int_cap_f1_np_count++;
 
@@ -571,19 +568,22 @@ int mtk_mhal_gpioif_isr_handle(struct mtk_gpioif_controller *ctlr)
 			ctlr->int_cnt->int_bit, 0x1);
 
 		/* FIFO count of Capture FIFO 0 = 4'h1 */
-		mtk_hdl_gpioif_read_cap_fifo1_count(ctlr, &count);
+		mtk_hdl_gpioif_read_cap_fifo1_count(ctlr->base[group], &count);
 		gpioif_debug("count %u\n", count);
 		for (; count > 0; count--) {
 		/* Read Capture FIFO 1 Once */
-			mtk_hdl_gpioif_read_gpio_cap_fifo1_value(ctlr, &value);
+			mtk_hdl_gpioif_read_gpio_cap_fifo1_value(
+				ctlr->base[group], &value);
 			gpioif_debug("Read Capture FIFO 1  %u\n", value);
+			mtk_hdl_gpioif_read_cap_fifo1_count(
+				ctlr->base[group], &count_fifo1);
+			gpioif_debug("count_fifo1 %u\n", count_fifo1);
 			if (ctlr->int_cnt->cap_fifo1_count < 5) {
 				cap_f1_cnt = ctlr->int_cnt->cap_fifo1_count;
 				ctlr->int_cnt->cap_fifo1[cap_f1_cnt] = value;
 				ctlr->int_cnt->cap_fifo1_count++;
 			}
 		}
-		/*mtk_hdl_gpioif_read_gpio_cap_fifo1_value(ctlr, &value);*/
 
 		value =  (1 << IRQ_GPIOIF_CFIFO1_NOT_EMPTY);
 		mtk_hdl_gpioif_clear_interrupt_status(ctlr->base[group], value);
@@ -592,6 +592,7 @@ int mtk_mhal_gpioif_isr_handle(struct mtk_gpioif_controller *ctlr)
 		if (ctlr->int_cnt->cap_fifo1_count < 5)
 			ctlr->int_cnt->int_bit |=
 				(1 << IRQ_GPIOIF_CFIFO1_NOT_EMPTY);
+
 		mtk_hdl_gpioif_interrupt_bit_wise(ctlr,
 			ctlr->int_cnt->int_bit, 0x1);
 	}

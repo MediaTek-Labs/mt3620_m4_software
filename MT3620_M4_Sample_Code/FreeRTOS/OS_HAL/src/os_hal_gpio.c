@@ -65,26 +65,29 @@
 /** The pinmux register offset. */
 #define PINMUX_OFFSET	0x20
 
-static unsigned long gpio_base_addr[MHAL_GPIO_REG_BASE_MAX] = {
-	CM4_GPIO_PWM_GRP0_BASE,
-	CM4_GPIO_PWM_GRP1_BASE,
-	CM4_GPIO_PWM_GRP2_BASE,
-	CM4_GPIO_PWM_GRP3_BASE,
-	CM4_GPIO_PWM_GRP4_BASE,
-	CM4_GPIO_PWM_GRP5_BASE,
-	CM4_ISU0_I2C_BASE,
-	CM4_ISU1_I2C_BASE,
-	CM4_ISU2_I2C_BASE,
-	CM4_ISU3_I2C_BASE,
-	CM4_ISU4_I2C_BASE,
-	CM4_ADC_BASE,
-	CA7_GPIO_BASE,
-	CM4_I2S0_BASE,
-	CM4_I2S1_BASE,
-	PINMUX_BASE,
+static struct mtk_pinctrl_controller pctl = {
+	.base[0] = (void __iomem *)CM4_GPIO_PWM_GRP0_BASE,
+	.base[1] = (void __iomem *)CM4_GPIO_PWM_GRP1_BASE,
+	.base[2] = (void __iomem *)CM4_GPIO_PWM_GRP2_BASE,
+	.base[3] = (void __iomem *)CM4_GPIO_PWM_GRP3_BASE,
+	.base[4] = (void __iomem *)CM4_GPIO_PWM_GRP4_BASE,
+	.base[5] = (void __iomem *)CM4_GPIO_PWM_GRP5_BASE,
+	.base[6] = (void __iomem *)CM4_ISU0_I2C_BASE,
+	.base[7] = (void __iomem *)CM4_ISU1_I2C_BASE,
+	.base[8] = (void __iomem *)CM4_ISU2_I2C_BASE,
+	.base[9] = (void __iomem *)CM4_ISU3_I2C_BASE,
+	.base[10] = (void __iomem *)CM4_ISU4_I2C_BASE,
+	.base[11] = (void __iomem *)CM4_ADC_BASE,
+	.base[12] = (void __iomem *)CA7_GPIO_BASE,
+	.base[13] = (void __iomem *)CM4_I2S0_BASE,
+	.base[14] = (void __iomem *)CM4_I2S1_BASE,
+	.base[15] = (void __iomem *)PINMUX_BASE,
+	.gpio_mode_bits = GPIO_MODE_BITS,
+	.max_gpio_mode_per_reg = MAX_GPIO_MODE_PER_REG,
+	.port_shf = PORT_SHF,
+	.port_mask = PORT_MASK,
+	.pinmux_offset = PINMUX_OFFSET,
 };
-
-static struct mtk_pinctrl_controller pctl;
 
 int mtk_os_hal_gpio_request(os_hal_gpio_pin pin)
 {
@@ -137,24 +140,4 @@ int mtk_os_hal_gpio_pmx_set_mode(os_hal_gpio_pin pin, os_hal_gpio_mode mode)
 int mtk_os_hal_gpio_pmx_get_mode(os_hal_gpio_pin pin, os_hal_gpio_mode *pvalue)
 {
 	return mtk_mhal_gpio_pmx_get_mode(&pctl, pin, (u32 *)pvalue);
-}
-
-int mtk_os_hal_gpio_ctlr_init(void)
-{
-	int pin, reg_num;
-
-	for (reg_num = 0; reg_num < MHAL_GPIO_REG_BASE_MAX; reg_num++)
-		pctl.base[reg_num] = (void __iomem *)gpio_base_addr[reg_num];
-
-	for (pin = 0; pin < MHAL_GPIO_MAX; pin++) {
-		pctl.mtk_pins[pin].pinctrl_free = false;
-	}
-
-	pctl.gpio_mode_bits = GPIO_MODE_BITS;
-	pctl.max_gpio_mode_per_reg = MAX_GPIO_MODE_PER_REG;
-	pctl.port_shf = PORT_SHF;
-	pctl.port_mask = PORT_MASK;
-	pctl.pinmux_offset = PINMUX_OFFSET;
-
-	return 0;
 }

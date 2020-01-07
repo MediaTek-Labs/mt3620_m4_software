@@ -93,7 +93,6 @@
  * @}
  */
 
-
 /**
  * @addtogroup M-HAL
  * @{
@@ -170,7 +169,7 @@
  *	 u32 pin;
  *
  *	 if (group >= MTK_GPIOIF_MAX_GRP_NUM)
- *		 return -EINVAL;
+ *		 return -GPIOIF_EINVAL;
  *
  *	 switch (group) {
  *	 case 0:
@@ -232,7 +231,7 @@
  *	 u32 pin;
  *
  *	 if (group >= MTK_GPIOIF_MAX_GRP_NUM)
- *		 return -EINVAL;
+ *		 return -GPIOIF_EINVAL;
  *
  *	 switch (group) {
  *	 case 0:
@@ -289,7 +288,7 @@
  *		 _mtk_os_hal_gpioif_get_ctlr(group);
  *
  *	 if (!ctlr_rtos || !callback || !user_data)
- *		 return -EINVAL;
+ *		 return -GPIOIF_EINVAL;
  *
  *	 ctlr_rtos->user_data = user_data;
  *	 ctlr_rtos->int_callback = callback;
@@ -304,7 +303,7 @@
  *	 struct mtk_gpioif_controller *ctlr;
  *
  *	 if (!ctlr_rtos)
- *		 return -EINVAL;
+ *		 return -GPIOIF_EINVAL;
  *	 ctlr = ctlr_rtos->ctlr;
  *
  *	 printf("now in gpioif%d_irq_handler\n", group);
@@ -347,9 +346,6 @@
  *
  *static int _mtk_os_hal_gpioif_request_irq(u8 group)
  *{
- *	 if (group >= MTK_GPIOIF_MAX_GRP_NUM)
- *		 return -EINVAL;
- *
  *	 switch (group) {
  *	 case 0:
  *		 CM4_Install_NVIC(CM4_IRQ_GPIO_G0_CNT, DEFAULT_PRI,
@@ -394,9 +390,6 @@
  *
  *static int _mtk_os_hal_gpioif_free_irq(u8 group)
  *{
- *	 if (group >= MTK_GPIOIF_MAX_GRP_NUM)
- *		 return -EINVAL;
- *
  *	 switch (group) {
  *	 case 0:
  *		 NVIC_DisableIRQ((IRQn_Type)CM4_IRQ_GPIO_G0_CNT);
@@ -428,7 +421,7 @@
  *	 struct mtk_gpioif_controller *ctlr;
  *
  *	 if (!ctlr_rtos)
- *		 return -EINVAL;
+ *		 return -GPIOIF_EINVAL;
  *	 ctlr = ctlr_rtos->ctlr;
  *
  *	 ctlr->mconfig->group = (mhal_gpioif_group)group;
@@ -444,7 +437,7 @@
  *	 struct mtk_gpioif_controller *ctlr;
  *
  *	 if (!ctlr_rtos)
- *		 return -EINVAL;
+ *		 return -GPIOIF_EINVAL;
  *	 ctlr = ctlr_rtos->ctlr;
  *
  *	 ctlr->mconfig->group = (mhal_gpioif_group)group;
@@ -460,7 +453,7 @@
  *	 struct mtk_gpioif_controller *ctlr;
  *
  *	 if (!ctlr_rtos)
- *		 return -EINVAL;
+ *		 return -GPIOIF_EINVAL;
  *	 ctlr = ctlr_rtos->ctlr;
  *
  *	 ctlr->mconfig->group = (mhal_gpioif_group)group;
@@ -476,7 +469,7 @@
  *	 struct mtk_gpioif_controller *ctlr;
  *
  *	 if (!ctlr_rtos)
- *		 return -EINVAL;
+ *		 return -GPIOIF_EINVAL;
  *	 ctlr = ctlr_rtos->ctlr;
  *
  *	 ctlr->mconfig->group = (mhal_gpioif_group)group;
@@ -493,7 +486,7 @@
  *	 struct mtk_gpioif_controller *ctlr;
  *
  *	 if (!ctlr_rtos)
- *		 return -EINVAL;
+ *		 return -GPIOIF_EINVAL;
  *	 ctlr = ctlr_rtos->ctlr;
  *
  *	 for (i = 0; i < MAX_FIFO_ENTRY_CNT ; i++) {
@@ -513,7 +506,7 @@
  *	 struct mtk_gpioif_controller *ctlr;
  *
  *	 if (!ctlr_rtos)
- *		 return -EINVAL;
+ *		 return -GPIOIF_EINVAL;
  *	 ctlr = ctlr_rtos->ctlr;
  *
  *	 ctlr->int_cnt->int_bit = IRQ_GPIOIF_ALL_ENABLE;
@@ -544,7 +537,7 @@
  *	 struct mtk_gpioif_controller *ctlr;
  *
  *	 if (!ctlr_rtos)
- *		 return -EINVAL;
+ *		 return -GPIOIF_EINVAL;
  *	 ctlr = ctlr_rtos->ctlr;
  *
  *	 if ((control_setting > MAX_CTRL_SETTING)
@@ -552,7 +545,7 @@
  *		 || (low_limit >= MTK_GPIOIF_MAX_VAL)
  *		 || (high_limit >= MTK_GPIOIF_MAX_VAL)
  *		 || (reset_value >= MTK_GPIOIF_MAX_VAL))
- *		 return -EINVAL;
+ *		 return -GPIOIF_EINVAL;
  *
  *	 setting.control_setting = control_setting;
  *	 setting.reset_value = reset_value;
@@ -583,7 +576,7 @@
  *	 struct mtk_gpioif_controller *ctlr;
  *
  *	 if (!ctlr_rtos)
- *		 return -EINVAL;
+ *		 return -GPIOIF_EINVAL;
  *	 ctlr = ctlr_rtos->ctlr;
  *
  *	 if ((control_setting > MAX_CTRL_SETTING)
@@ -591,7 +584,7 @@
  *		 || (low_limit >= MTK_GPIOIF_MAX_VAL)
  *		 || (high_limit >= MTK_GPIOIF_MAX_VAL)
  *		 || (reset_value >= MTK_GPIOIF_MAX_VAL))
- *		 return -EINVAL;
+ *		 return -GPIOIF_EINVAL;
  *
  *	 setting.control_setting = control_setting;
  *	 setting.reset_value = reset_value;
@@ -621,7 +614,7 @@
  *	 struct mtk_gpioif_controller *ctlr;
  *
  *	 if (!ctlr_rtos)
- *		 return -EINVAL;
+ *		 return -GPIOIF_EINVAL;
  *	 ctlr = ctlr_rtos->ctlr;
  *
  *	 if ((control_setting > MAX_CTRL_SETTING)
@@ -629,7 +622,7 @@
  *		 || (low_limit > MTK_GPIOIF_MAX_VAL)
  *		 || (high_limit > MTK_GPIOIF_MAX_VAL)
  *		 || (reset_value > MTK_GPIOIF_MAX_VAL))
- *		 return -EINVAL;
+ *		 return -GPIOIF_EINVAL;
  *
  *	 setting.control_setting = control_setting;
  *	 setting.reset_value = reset_value;
@@ -658,13 +651,13 @@
  *	 struct mtk_gpioif_controller *ctlr;
  *
  *	 if (!ctlr_rtos)
- *		 return -EINVAL;
+ *		 return -GPIOIF_EINVAL;
  *	 ctlr = ctlr_rtos->ctlr;
  *
  *	 if ((clock_source >= MHAL_GPIOIF_CLOCK_MAX)
  *		 || (edge_type_gpio_0 >= MHAL_GPIOIF_GPIO_0_EDGE_TYPE_MAX)
  *		 || (edge_type_gpio_1 >= MHAL_GPIOIF_GPIO_1_EDGE_TYPE_MAX))
- *		 return -EINVAL;
+ *		 return -GPIOIF_EINVAL;
  *
  *	 setting.edge_type_gpio_0 = edge_type_gpio_0;
  *	 setting.edge_type_gpio_1 = edge_type_gpio_1;
@@ -689,11 +682,11 @@
  *	 struct mtk_gpioif_controller *ctlr;
  *
  *	 if (!ctlr_rtos)
- *		 return -EINVAL;
+ *		 return -GPIOIF_EINVAL;
  *	 ctlr = ctlr_rtos->ctlr;
  *
  *	 if ((enable > 1) || (clear > 1) || (bit > MTK_GPIOIF_MAX_VAL))
- *		 return -EINVAL;
+ *		 return -GPIOIF_EINVAL;
  *
  *	 ctlr->mconfig->group = (mhal_gpioif_group)group;
  *	 if (enable)
@@ -720,11 +713,11 @@
  *	 struct mtk_gpioif_controller *ctlr;
  *
  *	 if (!ctlr_rtos)
- *		 return -EINVAL;
+ *		 return -GPIOIF_EINVAL;
  *	 ctlr = ctlr_rtos->ctlr;
  *
  *	 if ((enable > 1) || (bit > MTK_GPIOIF_MAX_VAL))
- *		 return -EINVAL;
+ *		 return -GPIOIF_EINVAL;
  *
  *	 ctlr->mconfig->group = (mhal_gpioif_group)group;
  *	 return mtk_mhal_gpioif_interrupt_bit_wise(ctlr, bit, enable);
@@ -738,12 +731,12 @@
  *	 struct mtk_gpioif_controller *ctlr;
  *
  *	 if (!ctlr_rtos)
- *		 return -EINVAL;
+ *		 return -GPIOIF_EINVAL;
  *	 ctlr = ctlr_rtos->ctlr;
  *
  *	 if ((sa_limit_v >= MHAL_GPIOIF_SA_MAX)
  *		 || (interrupt_limit_v >= MHAL_GPIOIF_INTERRUPT_MAX))
- *		 return -EINVAL;
+ *		 return -GPIOIF_EINVAL;
  *
  *	 ctlr->mconfig->group = (mhal_gpioif_group)group;
  *	 ctlr->mconfig->sa_mode_lim =
@@ -764,12 +757,12 @@
  *	 struct mtk_gpioif_controller *ctlr;
  *
  *	 if (!ctlr_rtos)
- *		 return -EINVAL;
+ *		 return -GPIOIF_EINVAL;
  *	 ctlr = ctlr_rtos->ctlr;
  *
  *	 if ((gpio > 2)  || (enable > 1) || (init_v > 1)
  *		 || (min_p > MAX_MIN_PURSE_WIDTH))
- *		 return -EINVAL;
+ *		 return -GPIOIF_EINVAL;
  *
  *	 ctlr->mconfig->group = (mhal_gpioif_group)group;
  *	 mtk_mhal_gpioif_de_glitch(ctlr, gpio,
@@ -785,7 +778,7 @@
  *	 struct mtk_gpioif_controller *ctlr;
  *
  *	 if (!ctlr_rtos)
- *		 return -EINVAL;
+ *		 return -GPIOIF_EINVAL;
  *	 ctlr = ctlr_rtos->ctlr;
  *
  *	 ctlr->mconfig->group = (mhal_gpioif_group)group;
@@ -802,11 +795,11 @@
  *	 struct mtk_gpioif_controller *ctlr;
  *
  *	 if (!ctlr_rtos)
- *		 return -EINVAL;
+ *		 return -GPIOIF_EINVAL;
  *	 ctlr = ctlr_rtos->ctlr;
  *
  *	 if ((active_reset > 1) || (mode >= MHAL_GPIOIF_MODE_MAX))
- *		 return -EINVAL;
+ *		 return -GPIOIF_EINVAL;
  *
  *	 ctlr->mconfig->group = (mhal_gpioif_group)group;
  *	 ctlr->mconfig->mode = (mhal_gpioif_mode)mode;
@@ -842,11 +835,11 @@
  *	 struct mtk_gpioif_controller *ctlr;
  *
  *	 if (!ctlr_rtos)
- *		 return -EINVAL;
+ *		 return -GPIOIF_EINVAL;
  *	 ctlr = ctlr_rtos->ctlr;
  *
  *	 if (clock_source >= MHAL_GPIOIF_CLOCK_MAX)
- *		 return -EINVAL;
+ *		 return -GPIOIF_EINVAL;
  *
  *	 ctlr->mconfig->clk = (mhal_gpioif_source_clock)clock_source;
  *	 mtk_mhal_gpioif_select_clock_source(ctlr);
@@ -861,11 +854,11 @@
  *	 struct mtk_gpioif_controller *ctlr;
  *
  *	 if (!ctlr_rtos)
- *		 return -EINVAL;
+ *		 return -GPIOIF_EINVAL;
  *	 ctlr = ctlr_rtos->ctlr;
  *
  *	 if (enable > 1)
- *		 return -EINVAL;
+ *		 return -GPIOIF_EINVAL;
  *
  *	 ctlr->mconfig->group = (mhal_gpioif_group)group;
  *
@@ -881,11 +874,11 @@
  *	 struct mtk_gpioif_controller *ctlr;
  *
  *	 if (!ctlr_rtos)
- *		 return -EINVAL;
+ *		 return -GPIOIF_EINVAL;
  *	 ctlr = ctlr_rtos->ctlr;
  *
  *	 if (mode >= MHAL_GPIOIF_MODE_MAX)
- *		 return -EINVAL;
+ *		 return -GPIOIF_EINVAL;
  *
  *	 ctlr->mconfig->group = (mhal_gpioif_group)group;
  *	 ctlr->mconfig->mode = (mhal_gpioif_mode)mode;
@@ -902,7 +895,7 @@
  *	 struct mtk_gpioif_controller *ctlr;
  *
  *	 if (!ctlr_rtos)
- *		 return -EINVAL;
+ *		 return -GPIOIF_EINVAL;
  *	 ctlr = ctlr_rtos->ctlr;
  *
  *	 ctlr->mconfig->group = (mhal_gpioif_group)group;
@@ -922,7 +915,7 @@
  *	 struct mtk_gpioif_controller *ctlr;
  *
  *	 if (!ctlr_rtos)
- *		 return -EINVAL;
+ *		 return -GPIOIF_EINVAL;
  *	 ctlr = ctlr_rtos->ctlr;
  *
  *	 if ((control_setting > MAX_CTRL_SETTING)
@@ -930,7 +923,7 @@
  *		 || (low_limit > MTK_GPIOIF_MAX_VAL)
  *		 || (high_limit > MTK_GPIOIF_MAX_VAL)
  *		 || (reset_value > MTK_GPIOIF_MAX_VAL))
- *		 return -EINVAL;
+ *		 return -GPIOIF_EINVAL;
  *
  *	 setting.control_setting = control_setting;
  *	 setting.reset_value = reset_value;
@@ -953,7 +946,7 @@
  *	 struct mtk_gpioif_controller *ctlr;
  *
  *	 if (!ctlr_rtos)
- *		 return -EINVAL;
+ *		 return -GPIOIF_EINVAL;
  *	 ctlr = ctlr_rtos->ctlr;
  *
  *	 ctlr->mconfig->group = (mhal_gpioif_group)group;
@@ -967,7 +960,7 @@
  *	 struct mtk_gpioif_controller *ctlr;
  *
  *	 if (!ctlr_rtos)
- *		 return -EINVAL;
+ *		 return -GPIOIF_EINVAL;
  *	 ctlr = ctlr_rtos->ctlr;
  *	 ctlr->mconfig->group = (mhal_gpioif_group)group;
  *	 return mtk_mhal_gpioif_read_gpio_cap_fifo1_value(ctlr, pvalue);
@@ -980,7 +973,7 @@
  *	 struct mtk_gpioif_controller *ctlr;
  *
  *	 if (!ctlr_rtos)
- *		 return -EINVAL;
+ *		 return -GPIOIF_EINVAL;
  *	 ctlr = ctlr_rtos->ctlr;
  *
  *	 printf("int_cnt=0x%x\n", ctlr->int_cnt->int_bit);
@@ -1021,7 +1014,7 @@
  *	 struct mtk_gpioif_controller *ctlr;
  *
  *	 if (!ctlr_rtos)
- *		 return -EINVAL;
+ *		 return -GPIOIF_EINVAL;
  *	 ctlr = ctlr_rtos->ctlr;
  *
  *	 return ctlr->int_cnt->int_event_low_count;
@@ -1034,7 +1027,7 @@
  *	 struct mtk_gpioif_controller *ctlr;
  *
  *	 if (!ctlr_rtos)
- *		 return -EINVAL;
+ *		 return -GPIOIF_EINVAL;
  *	 ctlr = ctlr_rtos->ctlr;
  *
  *	 return ctlr->int_cnt->int_event_high_count;
@@ -1047,7 +1040,7 @@
  *	 struct mtk_gpioif_controller *ctlr;
  *
  *	 if (!ctlr_rtos)
- *		 return -EINVAL;
+ *		 return -GPIOIF_EINVAL;
  *	 ctlr = ctlr_rtos->ctlr;
  *
  *	 return ctlr->int_cnt->int_gpio2_rst_done_count;
@@ -1060,7 +1053,7 @@
  *	 struct mtk_gpioif_controller *ctlr;
  *
  *	 if (!ctlr_rtos)
- *		 return -EINVAL;
+ *		 return -GPIOIF_EINVAL;
  *	 ctlr = ctlr_rtos->ctlr;
  *
  *	 return ctlr->int_cnt->int_event_over_count;
@@ -1073,7 +1066,7 @@
  *	 struct mtk_gpioif_controller *ctlr;
  *
  *	 if (!ctlr_rtos)
- *		 return -EINVAL;
+ *		 return -GPIOIF_EINVAL;
  *	 ctlr = ctlr_rtos->ctlr;
  *
  *	 return ctlr->int_cnt->int_event_uf_count;
@@ -1086,7 +1079,7 @@
  *	 struct mtk_gpioif_controller *ctlr;
  *
  *	 if (!ctlr_rtos)
- *		 return -EINVAL;
+ *		 return -GPIOIF_EINVAL;
  *	 ctlr = ctlr_rtos->ctlr;
  *
  *	 return ctlr->int_cnt->int_cap_f0_full_count;
@@ -1099,7 +1092,7 @@
  *	 struct mtk_gpioif_controller *ctlr;
  *
  *	 if (!ctlr_rtos)
- *		 return -EINVAL;
+ *		 return -GPIOIF_EINVAL;
  *	 ctlr = ctlr_rtos->ctlr;
  *
  *	 return ctlr->int_cnt->int_cap_f1_full_count;
@@ -1112,7 +1105,7 @@
  *	 struct mtk_gpioif_controller *ctlr;
  *
  *	 if (!ctlr_rtos)
- *		 return -EINVAL;
+ *		 return -GPIOIF_EINVAL;
  *	 ctlr = ctlr_rtos->ctlr;
  *
  *	 return ctlr->int_cnt->int_reset_cap_f0_full_count;
@@ -1125,7 +1118,7 @@
  *	 struct mtk_gpioif_controller *ctlr;
  *
  *	 if (!ctlr_rtos)
- *		 return -EINVAL;
+ *		 return -GPIOIF_EINVAL;
  *	 ctlr = ctlr_rtos->ctlr;
  *
  *	 return ctlr->int_cnt->int_reset_cap_f1_full_count;
@@ -1138,7 +1131,7 @@
  *	 struct mtk_gpioif_controller *ctlr;
  *
  *	 if (!ctlr_rtos)
- *		 return -EINVAL;
+ *		 return -GPIOIF_EINVAL;
  *	 ctlr = ctlr_rtos->ctlr;
  *
  *	 return ctlr->int_cnt->int_cap_f0_np_count;
@@ -1151,7 +1144,7 @@
  *	 struct mtk_gpioif_controller *ctlr;
  *
  *	 if (!ctlr_rtos)
- *		 return -EINVAL;
+ *		 return -GPIOIF_EINVAL;
  *	 ctlr = ctlr_rtos->ctlr;
  *
  *	 return ctlr->int_cnt->int_cap_f1_np_count;
@@ -1164,7 +1157,7 @@
  *	 struct mtk_gpioif_controller *ctlr;
  *
  *	 if (!ctlr_rtos)
- *		 return -EINVAL;
+ *		 return -GPIOIF_EINVAL;
  *	 ctlr = ctlr_rtos->ctlr;
  *
  *	 return ctlr->int_cnt->int_cap_f0_p_count;
@@ -1177,7 +1170,7 @@
  *	 struct mtk_gpioif_controller *ctlr;
  *
  *	 if (!ctlr_rtos)
- *		 return -EINVAL;
+ *		 return -GPIOIF_EINVAL;
  *	 ctlr = ctlr_rtos->ctlr;
  *
  *	 return ctlr->int_cnt->int_cap_f1_p_count;
@@ -1190,7 +1183,7 @@
  *	 struct mtk_gpioif_controller *ctlr;
  *
  *	 if (!ctlr_rtos)
- *		 return -EINVAL;
+ *		 return -GPIOIF_EINVAL;
  *	 ctlr = ctlr_rtos->ctlr;
  *
  *	 return ctlr->int_cnt->cap_fifo0_count;
@@ -1203,7 +1196,7 @@
  *	 struct mtk_gpioif_controller *ctlr;
  *
  *	 if (!ctlr_rtos)
- *		 return -EINVAL;
+ *		 return -GPIOIF_EINVAL;
  *	 ctlr = ctlr_rtos->ctlr;
  *
  *	 return ctlr->int_cnt->cap_fifo1_count;
@@ -1216,11 +1209,11 @@
  *	 struct mtk_gpioif_controller *ctlr;
  *
  *	 if (!ctlr_rtos)
- *		 return -EINVAL;
+ *		 return -GPIOIF_EINVAL;
  *	 ctlr = ctlr_rtos->ctlr;
  *
  *	 if (idex >= MAX_FIFO_ENTRY_CNT)
- *		 return -EINVAL;
+ *		 return -GPIOIF_EINVAL;
  *
  *	 return ctlr->int_cnt->cap_fifo0[idex];
  *}
@@ -1232,11 +1225,11 @@
  *	 struct mtk_gpioif_controller *ctlr;
  *
  *	 if (!ctlr_rtos)
- *		 return -EINVAL;
+ *		 return -GPIOIF_EINVAL;
  *	 ctlr = ctlr_rtos->ctlr;
  *
  *	 if (idex >= MAX_FIFO_ENTRY_CNT)
- *		 return -EINVAL;
+ *		 return -GPIOIF_EINVAL;
  *
  *	 return ctlr->int_cnt->cap_fifo1[idex];
  *}
@@ -1248,11 +1241,11 @@
  *	 struct mtk_gpioif_controller *ctlr;
  *
  *	 if (!ctlr_rtos)
- *		 return -EINVAL;
+ *		 return -GPIOIF_EINVAL;
  *	 ctlr = ctlr_rtos->ctlr;
  *
  *	 if (group >= MTK_GPIOIF_MAX_GRP_NUM)
- *		 return -EINVAL;
+ *		 return -GPIOIF_EINVAL;
  *
  *	 ctlr_rtos->ctlr = &g_gpioif_ctlr[group];
  *	 ctlr = ctlr_rtos->ctlr;
@@ -1418,9 +1411,9 @@
   */
 
 /** Indicate that a wrong parameter is given */
-#define EINVAL	1
+#define GPIOIF_EINVAL	1
 /** Invalid argument, it means the pointer is NULL */
-#define EPTR		2
+#define GPIOIF_EPTR		2
 
 /** This defines GPIOIF Capture Mode maximum available FIFO entry counter */
 #define MAX_FIFO_ENTRY_CNT	16
@@ -1755,7 +1748,7 @@ struct mtk_gpioif_controller {
  * See @ref MHAL_GPIOIF_Driver_Usage_Chapter to use this function.
  *
  * @return To indicate whether this function call is successful or not.\n
- *    If the return value is -#EINVAL,
+ *    If the return value is -#GPIOIF_EINVAL,
  *    it means that a wrong parameter is given,
  *    and the parameter must be verified.\n
  *    If the return value is 0, it means success.\n
@@ -1773,7 +1766,7 @@ int mtk_mhal_gpioif_select_clock_source(struct mtk_gpioif_controller *ctlr);
  * See @ref MHAL_GPIOIF_Driver_Usage_Chapter to use this function.
  *
  * @return To indicate whether this function call is successful or not.\n
- *    If the return value is -#EINVAL,
+ *    If the return value is -#GPIOIF_EINVAL,
  *    it means that a wrong parameter is given,
  *    and the parameter must be verified.\n
  *    If the return value is 0, it means success.\n
@@ -1791,7 +1784,7 @@ int mtk_mhal_gpioif_event_counter_setting(struct mtk_gpioif_controller *ctlr);
  * See @ref MHAL_GPIOIF_Driver_Usage_Chapter to use this function.
  *
  * @return To indicate whether this function call is successful or not.\n
- *    If the return value is -#EINVAL,
+ *    If the return value is -#GPIOIF_EINVAL,
  *    it means that a wrong parameter is given,
  *    and the parameter must be verified.\n
  *    If the return value is 0, it means success.\n
@@ -1809,7 +1802,7 @@ int mtk_mhal_gpioif_capture_counter_setting(struct mtk_gpioif_controller *ctlr);
  * See @ref MHAL_GPIOIF_Driver_Usage_Chapter to use this function.
  *
  * @return To indicate whether this function call is successful or not.\n
- *    If the return value is -#EINVAL,
+ *    If the return value is -#GPIOIF_EINVAL,
  *    it means that a wrong parameter is given,
  *    and the parameter must be verified.\n
  *    If the return value is 0, it means success.\n
@@ -1827,7 +1820,7 @@ int mtk_mhal_gpioif_enable_event_counter(struct mtk_gpioif_controller *ctlr);
  * See @ref MHAL_GPIOIF_Driver_Usage_Chapter to use this function.
  *
  * @return To indicate whether this function call is successful or not.\n
- *    If the return value is -#EINVAL,
+ *    If the return value is -#GPIOIF_EINVAL,
  *    it means that a wrong parameter is given,
  *    and the parameter must be verified.\n
  *    If the return value is 0, it means success.\n
@@ -1842,7 +1835,7 @@ int mtk_mhal_gpioif_disable_event_counter(struct mtk_gpioif_controller *ctlr);
  * @param [in] ctlr : GPIOIF controller used with the device
  *
  * @return To indicate whether this function call is successful or not.\n
- *    If the return value is -#EINVAL,
+ *    If the return value is -#GPIOIF_EINVAL,
  *    it means that a wrong parameter is given,
  *    and the parameter must be verified.\n
  *    If the return value is 0, it means success.\n
@@ -1857,7 +1850,7 @@ int mtk_mhal_gpioif_enable_capture_counter(struct mtk_gpioif_controller *ctlr);
  * @param [in] ctlr : GPIOIF controller used with the device
  *
  * @return To indicate whether this function call is successful or not.\n
- *    If the return value is -#EINVAL,
+ *    If the return value is -#GPIOIF_EINVAL,
  *    it means that a wrong parameter is given,
  *    and the parameter must be verified.\n
  *    If the return value is 0, it means success.\n
@@ -1877,7 +1870,7 @@ int mtk_mhal_gpioif_disable_capture_counter(struct mtk_gpioif_controller *ctlr);
  * See @ref MHAL_GPIOIF_Driver_Usage_Chapter to use this function.
  *
  * @return To indicate whether this function call is successful or not.\n
- *    If the return value is -#EINVAL,
+ *    If the return value is -#GPIOIF_EINVAL,
  *    it means that a wrong parameter is given,
  *    and the parameter must be verified.\n
  *    If the return value is 0, it means success.\n
@@ -1899,7 +1892,7 @@ int mtk_mhal_gpioif_software_reset(struct mtk_gpioif_controller *ctlr);
  * See @ref MHAL_GPIOIF_Driver_Usage_Chapter to use this function.
  *
  * @return To indicate whether this function call is successful or not.\n
- *    If the return value is -#EINVAL,
+ *    If the return value is -#GPIOIF_EINVAL,
  *    it means that a wrong parameter is given,
  *    and the parameter must be verified.\n
  *    If the return value is 0, it means success.\n
@@ -1907,26 +1900,6 @@ int mtk_mhal_gpioif_software_reset(struct mtk_gpioif_controller *ctlr);
  */
 int mtk_mhal_gpioif_interrupt_bit_wise(
 	struct mtk_gpioif_controller *ctlr, u32 bit, u8 enable);
-
-/**
- * @brief This function is used to clear bit-wise interrupt status.
- * @brief Usage: OS-HAL driver should call it
- *    to clear interrupt by bit-wise.
- * @param [in] ctlr : GPIOIF controller used with the device.
- * @param [in] bit : Clear different bit.
- *
- * @par       Example
- * See @ref MHAL_GPIOIF_Driver_Usage_Chapter to use this function.
- *
- * @return To indicate whether this function call is successful or not.\n
- *    If the return value is -#EINVAL,
- *    it means that a wrong parameter is given,
- *    and the parameter must be verified.\n
- *    If the return value is 0, it means success.\n
- *
- */
-int mtk_mhal_gpioif_clear_interrupt_status(
-	struct mtk_gpioif_controller *ctlr, unsigned int bit);
 
 /**
  * @brief  This function uses GPIO_2 pin to
@@ -1940,7 +1913,7 @@ int mtk_mhal_gpioif_clear_interrupt_status(
  * See @ref MHAL_GPIOIF_Driver_Usage_Chapter to use this function.
  *
  * @return To indicate whether this function call is successful or not.\n
- *    If the return value is -#EINVAL,
+ *    If the return value is -#GPIOIF_EINVAL,
  *    it means that a wrong parameter is given,
  *    and the parameter must be verified.\n
  *    If the return value is 0, it means success.\n
@@ -1961,7 +1934,7 @@ int mtk_mhal_gpioif_hardware_reset_by_gpio_2(
  * See @ref MHAL_GPIOIF_Driver_Usage_Chapter to use this function.
  *
  * @return To indicate whether this function call is successful or not.\n
- *    If the return value is -#EINVAL,
+ *    If the return value is -#GPIOIF_EINVAL,
  *    it means that a wrong parameter is given,
  *    and the parameter must be verified.\n
  *    If the return value is 0, it means success.\n
@@ -1979,7 +1952,7 @@ int mtk_mhal_gpioif_read_gpio_event_count(
  * See @ref MHAL_GPIOIF_Driver_Usage_Chapter to use this function.
  *
  * @return To indicate whether this function call is successful or not.\n
- *    If the return value is -#EINVAL,
+ *    If the return value is -#GPIOIF_EINVAL,
  *    it means that a wrong parameter is given,
  *    and the parameter must be verified.\n
  *    If the return value is 0, it means success.\n
@@ -1999,7 +1972,7 @@ int mtk_mhal_gpioif_read_gpio_cap_fifo0_value(
  * See @ref MHAL_GPIOIF_Driver_Usage_Chapter to use this function.
  *
  * @return To indicate whether this function call is successful or not.\n
- *    If the return value is -#EINVAL,
+ *    If the return value is -#GPIOIF_EINVAL,
  *    it means that a wrong parameter is given,
  *    and the parameter must be verified.\n
  *    If the return value is 0, it means success.\n
@@ -2021,7 +1994,7 @@ int mtk_mhal_gpioif_read_gpio_cap_fifo1_value(
  *    Initial output value of the GPIOIF de-glitch circuit(0 or 1)
  *
  * @return To indicate whether this function call is successful or not.\n
- *    If the return value is -#EINVAL,
+ *    If the return value is -#GPIOIF_EINVAL,
  *    it means that a wrong parameter is given,
  *    and the parameter must be verified.\n
  *    If the return value is 0, it means success.\n
@@ -2039,7 +2012,7 @@ int mtk_mhal_gpioif_de_glitch(
  * @param [in] ctlr : GPIOIF controller used with the device
  *
  * @return To indicate whether this function call is successful or not.\n
- *    If the return value is -#EINVAL,
+ *    If the return value is -#GPIOIF_EINVAL,
  *    it means that a wrong parameter is given,
  *    and the parameter must be verified.\n
  *    If the return value is 0, it means success.\n
@@ -2055,7 +2028,7 @@ int mtk_mhal_gpioif_limit_comparator(struct mtk_gpioif_controller *ctlr);
  * @param [in] ctlr : GPIOIF controller used with the device
  *
  * @return To indicate whether this function call is successful or not.\n
- *    If the return value is -#EINVAL,
+ *    If the return value is -#GPIOIF_EINVAL,
  *    it means that a wrong parameter is given,
  *    and the parameter must be verified.\n
  *    If the return value is 0, it means success.\n
@@ -2074,7 +2047,7 @@ int mtk_mhal_gpioif_global_reset(struct mtk_gpioif_controller *ctlr);
  * See @ref MHAL_GPIOIF_Driver_Usage_Chapter to use this function.
  *
  * @return To indicate whether this function call is successful or not.\n
- *    If the return value is -#EINVAL,
+ *    If the return value is -#GPIOIF_EINVAL,
  *    it means that a wrong parameter is given,
  *    and the parameter must be verified.\n
  *    If the return value is 0, it means success.\n
@@ -2090,7 +2063,7 @@ int mtk_mhal_gpioif_counter_clock_setting(
  * @param [in] ctlr : GPIOIF controller used with the device
  *
  * @return To indicate whether this function call is successful or not.\n
- *    If the return value is -#EINVAL,
+ *    If the return value is -#GPIOIF_EINVAL,
  *    it means that a wrong parameter is given,
  *    and the parameter must be verified.\n
  *    If the return value is 0, it means success.\n
@@ -2108,7 +2081,7 @@ int mtk_mhal_gpioif_isr_handle(struct mtk_gpioif_controller *ctlr);
  * See @ref MHAL_GPIOIF_Driver_Usage_Chapter to use this function.
  *
  * @return To indicate whether this function call is successful or not.\n
- *    If the return value is -#EINVAL,
+ *    If the return value is -#GPIOIF_EINVAL,
  *    it means that a wrong parameter is given,
  *    and the parameter must be verified.\n
  *    If the return value is 0, it means success.\n
@@ -2127,7 +2100,7 @@ int mtk_mhal_gpioif_read_reset_val(
  * See @ref MHAL_GPIOIF_Driver_Usage_Chapter to use this function.
  *
  * @return To indicate whether this function call is successful or not.\n
- *    If the return value is -#EINVAL,
+ *    If the return value is -#GPIOIF_EINVAL,
  *    it means that a wrong parameter is given,
  *    and the parameter must be verified.\n
  *    If the return value is 0, it means success.\n
@@ -2147,7 +2120,7 @@ int mtk_mhal_gpioif_read_low_limit_val(
  * See @ref MHAL_GPIOIF_Driver_Usage_Chapter to use this function.
  *
  * @return To indicate whether this function call is successful or not.\n
- *    If the return value is -#EINVAL,
+ *    If the return value is -#GPIOIF_EINVAL,
  *    it means that a wrong parameter is given,
  *    and the parameter must be verified.\n
  *    If the return value is 0, it means success.\n

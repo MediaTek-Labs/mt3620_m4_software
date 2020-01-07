@@ -274,7 +274,6 @@ void mtk_hdl_spim_prepare_hw(void __iomem *base,
 
 void mtk_hdl_spim_prepare_transfer(void __iomem *base,
 				   u32 speed_khz,
-				   u32 use_dma,
 				   u32 is_full_duplex)
 {
 	u32 reg_val;
@@ -299,14 +298,8 @@ void mtk_hdl_spim_prepare_transfer(void __iomem *base,
 		reg_val |= HALF_DUPLEX;
 	}
 
-	/* config int_en
-	* dma mode, just use dma irq to jungle it is transfer done,
-	* so disable spi irq
-	*/
-	if (use_dma)
-		reg_val &= ~SPI_MASTER_INT_ENABLE;
-	else
-		reg_val |= SPI_MASTER_INT_ENABLE;
+	/* config int_en */
+	reg_val |= SPI_MASTER_INT_ENABLE;
 
 	osai_writel(reg_val, SPI_REG_MASTER(base));
 }

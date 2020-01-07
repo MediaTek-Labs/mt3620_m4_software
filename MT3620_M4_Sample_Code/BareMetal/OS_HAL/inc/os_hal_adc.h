@@ -37,7 +37,6 @@
 #ifndef __OS_HAL_ADC_H__
 #define __OS_HAL_ADC_H__
 
-#include "mhal_osai.h"
 #include "mhal_adc.h"
 /**
  * @brief  Init ADC controller.

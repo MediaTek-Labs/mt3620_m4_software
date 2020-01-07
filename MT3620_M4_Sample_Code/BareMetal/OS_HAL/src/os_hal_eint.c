@@ -139,7 +139,7 @@ int mtk_os_hal_eint_set_type(eint_number eint_num,
 }
 
 int mtk_os_hal_eint_set_debounce(eint_number eint_num,
-				u32 debounce_time)
+				os_hal_eint_debounce_time debounce_time)
 {
 	IRQn_Type irq;
 	int state = 0;

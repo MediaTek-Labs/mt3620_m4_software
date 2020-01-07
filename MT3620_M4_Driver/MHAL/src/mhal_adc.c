@@ -40,12 +40,9 @@
 
 #define ADC_DMA_RX_PORT					0x38000200
 
-static int _mtk_mhal_adc_fifo_get_length(struct mtk_adc_controller *ctlr,
+static void _mtk_mhal_adc_fifo_get_length(struct mtk_adc_controller *ctlr,
 	u32 *length)
 {
-	if (!ctlr)
-		return -EPTR;
-
 	switch (ctlr->adc_fsm_parameter->fifo_mode) {
 	case ADC_FIFO_DMA:
 		/* Get the data length from VFIFO DMA FFCNT */
@@ -56,8 +53,6 @@ static int _mtk_mhal_adc_fifo_get_length(struct mtk_adc_controller *ctlr,
 		mtk_hdl_adc_fifo_get_length(ctlr->base, length);
 		break;
 	}
-
-	return 0;
 }
 
 static int _mtk_mhal_adc_fifo_read_data(struct mtk_adc_controller *ctlr,
@@ -65,9 +60,6 @@ static int _mtk_mhal_adc_fifo_read_data(struct mtk_adc_controller *ctlr,
 {
 	u32 counter = 0;
 	int ret = 0;
-
-	if (!ctlr)
-		return -EPTR;
 
 	switch (ctlr->adc_fsm_parameter->fifo_mode) {
 	case ADC_FIFO_DMA:
@@ -100,12 +92,7 @@ static int _mtk_mhal_adc_period_sample_data(struct mtk_adc_controller *ctlr)
 	u32 fifo_data[ADC_FIFO_SIZE] = {0};
 	int ret = 0;
 
-	if (!ctlr)
-		return -EPTR;
-
-	ret = _mtk_mhal_adc_fifo_get_length(ctlr, &valid_fifo_len);
-	if (ret)
-		return ret;
+	_mtk_mhal_adc_fifo_get_length(ctlr, &valid_fifo_len);
 
 	/*Query fifo available length */
 	ret = _mtk_mhal_adc_fifo_read_data(ctlr, valid_fifo_len, &fifo_data[0]);
@@ -159,9 +146,6 @@ static int _mtk_mhal_adc_period_sample_data(struct mtk_adc_controller *ctlr)
 
 static int _mtk_mhal_adc_dma_release_chan(struct mtk_adc_controller *ctlr)
 {
-	if (!ctlr)
-		return -EPTR;
-
 	return osai_dma_release_chan(ctlr->dma_channel);
 }
 
@@ -178,9 +162,6 @@ static int _mtk_mhal_adc_dma_config(struct mtk_adc_controller *ctlr)
 {
 	struct osai_dma_config config;
 
-	if (!ctlr)
-		return -EPTR;
-
 	config.interrupt_flag = OSAI_DMA_INT_VFIFO_THRESHOLD;
 	config.transize = OSAI_DMA_SIZE_LONG;
 	config.dir = 1;
@@ -195,7 +176,7 @@ static int _mtk_mhal_adc_dma_config(struct mtk_adc_controller *ctlr)
 
 	ctlr->rx_addr =
 		osai_get_phyaddr(ctlr->adc_fsm_parameter->dma_vfifo_addr);
-	adc_debug("\tmtk mhal_adc_dma_config  ctlr->rx_addr~0x%x\n",
+	adc_debug("\tmtk mhal_adc_dma_config  ctlr->rx_addr~%ld\n",
 		ctlr->rx_addr);
 	adc_debug("\tmtk mhal_adc_dma_config  dma_vfifo_addr %p\n",
 		ctlr->adc_fsm_parameter->dma_vfifo_addr);
@@ -211,7 +192,7 @@ static int _mtk_mhal_adc_dma_config(struct mtk_adc_controller *ctlr)
 int mtk_mhal_adc_stop_dma(struct mtk_adc_controller *ctlr)
 {
 	if (!ctlr)
-		return -EPTR;
+		return -ADC_EPTR;
 
 	return osai_dma_stop(ctlr->dma_channel);
 }
@@ -219,10 +200,10 @@ int mtk_mhal_adc_stop_dma(struct mtk_adc_controller *ctlr)
 int mtk_mhal_adc_enable_clk(struct mtk_adc_controller *ctlr)
 {
 	if (!ctlr)
-		return -EPTR;
+		return -ADC_EPTR;
 
 	if (!ctlr->cg_base)
-		return -EPTR;
+		return -ADC_EPTR;
 
 	mtk_hdl_adc_enable_clk(ctlr->cg_base);
 
@@ -232,10 +213,10 @@ int mtk_mhal_adc_enable_clk(struct mtk_adc_controller *ctlr)
 int mtk_mhal_adc_disable_clk(struct mtk_adc_controller *ctlr)
 {
 	if (!ctlr)
-		return -EPTR;
+		return -ADC_EPTR;
 
 	if (!ctlr->cg_base)
-		return -EPTR;
+		return -ADC_EPTR;
 
 	mtk_hdl_adc_disable_clk(ctlr->cg_base);
 
@@ -247,17 +228,17 @@ int mtk_mhal_adc_init(struct mtk_adc_controller *ctlr)
 	int ret = 0;
 
 	if (!ctlr)
-		return -EPTR;
+		return -ADC_EPTR;
 
 	if (!ctlr->base)
-		return -EPTR;
+		return -ADC_EPTR;
 
 	if (!ctlr->adc_fsm_parameter)
-		return -EPTR;
+		return -ADC_EPTR;
 
 	if ((ctlr->adc_fsm_parameter->fifo_mode != ADC_FIFO_DMA) &&
 		(ctlr->adc_fsm_parameter->fifo_mode != ADC_FIFO_DIRECT))
-		return -EPARAMETER;
+		return -ADC_EPARAMETER;
 
 	mtk_hal_adc_init(ctlr->base);
 	if (ctlr->adc_fsm_parameter->fifo_mode == ADC_FIFO_DMA) {
@@ -275,25 +256,25 @@ int mtk_mhal_adc_deinit(struct mtk_adc_controller *ctlr)
 	int ret = 0;
 
 	if (!ctlr)
-		return -EPTR;
+		return -ADC_EPTR;
 
 	if (!ctlr->base)
-		return -EPTR;
+		return -ADC_EPTR;
 
 	if (!ctlr->cg_base)
-		return -EPTR;
+		return -ADC_EPTR;
 
 	if (!ctlr->adc_fsm_parameter)
-		return -EPTR;
+		return -ADC_EPTR;
 
 	if ((ctlr->adc_fsm_parameter->fifo_mode != ADC_FIFO_DMA) &&
 		(ctlr->adc_fsm_parameter->fifo_mode != ADC_FIFO_DIRECT))
-		return -EPARAMETER;
+		return -ADC_EPARAMETER;
 
 	if (ctlr->adc_fsm_parameter->fifo_mode == ADC_FIFO_DMA) {
 		ret = _mtk_mhal_adc_dma_release_chan(ctlr);
 		if (ret)
-			return -EPTR;
+			return -ADC_EPTR;
 	}
 	mtk_hal_adc_uninit(ctlr->base);
 
@@ -307,13 +288,13 @@ int mtk_mhal_adc_fsm_param_set(struct mtk_adc_controller *ctlr,
 	int ret = 0;
 
 	if (!ctlr)
-		return -EPTR;
+		return -ADC_EPTR;
 
 	if (!ctlr->base)
-		return -EPTR;
+		return -ADC_EPTR;
 
 	if (!ctlr->adc_fsm_parameter)
-		return -EPTR;
+		return -ADC_EPTR;
 
 	if ((adc_fsm_parameter->avg_mode !=  ADC_AVG_1_SAMPLE) &&
 		(adc_fsm_parameter->avg_mode !=  ADC_AVG_2_SAMPLE) &&
@@ -322,31 +303,26 @@ int mtk_mhal_adc_fsm_param_set(struct mtk_adc_controller *ctlr,
 		(adc_fsm_parameter->avg_mode !=  ADC_AVG_16_SAMPLE) &&
 		(adc_fsm_parameter->avg_mode !=  ADC_AVG_32_SAMPLE) &&
 		(adc_fsm_parameter->avg_mode !=  ADC_AVG_64_SAMPLE)) {
-		return -EPARAMETER;
+		return -ADC_EPARAMETER;
 	}
 
 	if ((ctlr->adc_fsm_parameter->fifo_mode != ADC_FIFO_DMA) &&
 		(ctlr->adc_fsm_parameter->fifo_mode != ADC_FIFO_DIRECT))
-		return -EPARAMETER;
+		return -ADC_EPARAMETER;
 
 	if ((adc_fsm_parameter->pmode != ADC_PMODE_ONE_TIME) &&
 		(adc_fsm_parameter->pmode != ADC_PMODE_PERIODIC))
-		return -EPARAMETER;
+		return -ADC_EPARAMETER;
 
 	/* Parameter check */
 	if (adc_fsm_parameter->channel_map == 0) {
 		adc_err("\tillegal channel map\n");
-		return -EPARAMETER;
+		return -ADC_EPARAMETER;
 	}
 
 	for (i = 0; i < ADC_CHANNEL_MAX; i++) {
 		if (adc_fsm_parameter->channel_map & BIT(i))
 			channel_num++;
-	}
-
-	if (channel_num > ADC_CHANNEL_MAX) {
-		adc_err("illegal ch number ,recommend to use DMA mode!\n");
-		return -EPARAMETER;
 	}
 
 	ctlr->channel_count = channel_num;
@@ -425,13 +401,13 @@ int mtk_mhal_adc_fsm_param_get(struct mtk_adc_controller *ctlr,
 	u32 period = 0;
 
 	if (!ctlr)
-		return -EPTR;
+		return -ADC_EPTR;
 
 	if (!ctlr->base)
-		return -EPTR;
+		return -ADC_EPTR;
 
 	if (!ctlr->adc_fsm_parameter)
-		return -EPTR;
+		return -ADC_EPTR;
 
 	mtk_hdl_adc_fsm_param_get(ctlr->base, &pmode,
 		&avg_mode, &channel_map, &period);
@@ -449,26 +425,26 @@ int mtk_mhal_adc_start(struct mtk_adc_controller *ctlr)
 	int ret = 0;
 
 	if (!ctlr)
-		return -EPTR;
+		return -ADC_EPTR;
 
 	if (!ctlr->base)
-		return -EPTR;
+		return -ADC_EPTR;
 
 	if (!ctlr->adc_fsm_parameter)
-		return -EPTR;
+		return -ADC_EPTR;
 
 	adc_debug("ctlr->adc_fsm_parameter->fifo_mode == %d\n",
 		ctlr->adc_fsm_parameter->fifo_mode);
 	if ((ctlr->adc_fsm_parameter->fifo_mode != ADC_FIFO_DMA) &&
 		(ctlr->adc_fsm_parameter->fifo_mode != ADC_FIFO_DIRECT))
-		return -EPARAMETER;
+		return -ADC_EPARAMETER;
 	if ((ctlr->adc_fsm_parameter->pmode != ADC_PMODE_ONE_TIME) &&
 		(ctlr->adc_fsm_parameter->pmode != ADC_PMODE_PERIODIC))
-		return -EPARAMETER;
+		return -ADC_EPARAMETER;
 
 	if (ctlr->adc_processing == true) {
 		/*ADC is processing*/
-		return -EPARAMETER;
+		return -ADC_EPARAMETER;
 	}
 
 	ctlr->adc_processing = true;
@@ -482,11 +458,6 @@ int mtk_mhal_adc_start(struct mtk_adc_controller *ctlr)
 
 		break;
 	case ADC_FIFO_DIRECT:
-		if (ctlr->channel_count > ADC_CHANNEL_MAX) {
-			adc_err("illegal ch number, use dma mode!\n");
-			return -EPARAMETER;
-		}
-
 		if (ctlr->adc_fsm_parameter->pmode
 			== ADC_PMODE_ONE_TIME) {
 			ctlr->adc_fsm_parameter->ier_mode = ADC_FIFO_IER_RXFULL;
@@ -495,14 +466,6 @@ int mtk_mhal_adc_start(struct mtk_adc_controller *ctlr)
 				(ctlr->adc_fsm_parameter->ier_mode ==
 				ADC_FIFO_IER_BOTH)) {
 				mtk_hdl_adc_fifo_rx_full_enable(
-					ctlr->base);
-			}
-
-			if ((ctlr->adc_fsm_parameter->ier_mode ==
-				ADC_FIFO_IER_TIMEOUT) ||
-				(ctlr->adc_fsm_parameter->ier_mode ==
-				ADC_FIFO_IER_BOTH)) {
-				mtk_hdl_adc_fifo_rx_timeout_enable(
 					ctlr->base);
 			}
 			/*enable interrupt*/
@@ -526,28 +489,28 @@ int  mtk_mhal_adc_start_ch(struct mtk_adc_controller *ctlr,
 	u32 channel_count = 0;
 
 	if (!ctlr)
-		return -EPTR;
+		return -ADC_EPTR;
 
 	if (!ctlr->base)
-		return -EPTR;
+		return -ADC_EPTR;
 
 	if (!ctlr->adc_fsm_parameter)
-		return -EPTR;
+		return -ADC_EPTR;
 
 	if ((ctlr->adc_fsm_parameter->fifo_mode != ADC_FIFO_DMA) &&
 		(ctlr->adc_fsm_parameter->fifo_mode != ADC_FIFO_DIRECT))
-		return -EPARAMETER;
+		return -ADC_EPARAMETER;
 
 	if ((ctlr->adc_fsm_parameter->pmode != ADC_PMODE_ONE_TIME) &&
 		(ctlr->adc_fsm_parameter->pmode != ADC_PMODE_PERIODIC))
-		return -EPARAMETER;
+		return -ADC_EPARAMETER;
 
 	if (ch_bit_map > 0xFF)
-		return -EPARAMETER;
+		return -ADC_EPARAMETER;
 
 	if (ctlr->adc_processing == true) {
 		/*ADC is processing*/
-		return -EPARAMETER;
+		return -ADC_EPARAMETER;
 	}
 
 	ctlr->adc_processing = true;
@@ -569,11 +532,6 @@ int  mtk_mhal_adc_start_ch(struct mtk_adc_controller *ctlr,
 
 		break;
 	case ADC_FIFO_DIRECT:
-		if (channel_num > ADC_CHANNEL_MAX) {
-			adc_err("\trecommend to use DMA mode!\n");
-			return -EPARAMETER;
-		}
-
 		if (ctlr->adc_fsm_parameter->pmode
 			== ADC_PMODE_ONE_TIME) {
 			ctlr->adc_fsm_parameter->ier_mode = ADC_FIFO_IER_RXFULL;
@@ -584,15 +542,6 @@ int  mtk_mhal_adc_start_ch(struct mtk_adc_controller *ctlr,
 				mtk_hdl_adc_fifo_rx_full_enable(
 					ctlr->base);
 			}
-
-			if ((ctlr->adc_fsm_parameter->ier_mode ==
-				ADC_FIFO_IER_TIMEOUT) ||
-				(ctlr->adc_fsm_parameter->ier_mode ==
-				ADC_FIFO_IER_BOTH)) {
-				mtk_hdl_adc_fifo_rx_timeout_enable(
-					ctlr->base);
-			}
-
 			/*enable interrupt*/
 		}
 
@@ -611,17 +560,17 @@ int mtk_mhal_adc_stop(struct mtk_adc_controller *ctlr)
 	int ret = 0;
 
 	if (!ctlr)
-		return -EPTR;
+		return -ADC_EPTR;
 
 	if (!ctlr->base)
-		return -EPTR;
+		return -ADC_EPTR;
 
 	if (!ctlr->adc_fsm_parameter)
-		return -EPTR;
+		return -ADC_EPTR;
 
 	if ((ctlr->adc_fsm_parameter->fifo_mode != ADC_FIFO_DMA) &&
 		(ctlr->adc_fsm_parameter->fifo_mode != ADC_FIFO_DIRECT))
-		return -EPARAMETER;
+		return -ADC_EPARAMETER;
 
 	mtk_hdl_adc_stop(ctlr->base);
 
@@ -636,22 +585,22 @@ int mtk_mhal_adc_one_shot_get_data(struct mtk_adc_controller *ctlr,
 	u32 read_point = 0;
 
 	if (!ctlr)
-		return -EPTR;
+		return -ADC_EPTR;
 
 	if (!ctlr->base)
-		return -EPTR;
+		return -ADC_EPTR;
 
 	if (!data)
-		return -EPTR;
+		return -ADC_EPTR;
 
 	if (!ctlr->adc_fsm_parameter)
-		return -EPTR;
+		return -ADC_EPTR;
 
 	if (ctlr->adc_fsm_parameter->pmode != ADC_PMODE_ONE_TIME)
-		return -EPARAMETER;
+		return -ADC_EPARAMETER;
 
 	if (channel >= ADC_CHANNEL_MAX)
-		return -EPARAMETER;
+		return -ADC_EPARAMETER;
 
 	write_point = ctlr->current_xfer[channel].write_point;
 	/*get prev data to guarantee latest*/
@@ -681,20 +630,20 @@ int mtk_mhal_adc_period_get_data(struct mtk_adc_controller *ctlr,
 	u32 count = 0;
 
 	if (!ctlr)
-		return -EPTR;
+		return -ADC_EPTR;
 
 	if (!ctlr->base)
-		return -EPTR;
+		return -ADC_EPTR;
 
 	if (!ctlr->adc_fsm_parameter)
-		return -EPTR;
+		return -ADC_EPTR;
 
 	if ((ctlr->adc_fsm_parameter->pmode != ADC_PMODE_ONE_TIME) &&
 		(ctlr->adc_fsm_parameter->pmode != ADC_PMODE_PERIODIC))
-		return -EPARAMETER;
+		return -ADC_EPARAMETER;
 
 	if (channel >= ADC_CHANNEL_MAX)
-		return -EPARAMETER;
+		return -ADC_EPARAMETER;
 
 	ctlr->rx_size = 0;
 
@@ -746,7 +695,7 @@ int mtk_mhal_adc_rx_notify_callback_register(struct mtk_adc_controller *ctlr,
 						void *callback_param)
 {
 	if (!ctlr || !callback || !callback_param)
-		return -EPTR;
+		return -ADC_EPTR;
 
 	ctlr->callback_param = callback_param;
 	ctlr->rx_done_callback = callback;
@@ -756,20 +705,16 @@ int mtk_mhal_adc_rx_notify_callback_register(struct mtk_adc_controller *ctlr,
 
 int mtk_mhal_adc_fifo_handle_rx(struct mtk_adc_controller *ctlr)
 {
-	int ret = 0;
-
 	if (!ctlr)
-		return -EPTR;
+		return -ADC_EPTR;
 
 	if (!ctlr->base)
-		return -EPTR;
+		return -ADC_EPTR;
 
 	if (!ctlr->adc_fsm_parameter)
-		return -EPTR;
+		return -ADC_EPTR;
 
-	ret = _mtk_mhal_adc_period_sample_data(ctlr);
-	if (ret < 0)
-		return ret;
+	_mtk_mhal_adc_period_sample_data(ctlr);
 
 	if (ctlr->adc_fsm_parameter->pmode == ADC_PMODE_ONE_TIME) {
 		adc_debug("mtk_hdl_adc_stop one shot.");

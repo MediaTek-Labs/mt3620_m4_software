@@ -57,10 +57,10 @@ static void _mhal_pwm_calc_total_count(u32 source_clock,
 	*total_count = source_clock_rate/frequency;
 }
 
-static void _mtk_mhal_pwm_group_init(void __iomem *base, pwm_clk clock_source)
+static void _mtk_mhal_pwm_group_init(void __iomem *base, pwm_clks clock_source)
 {
 	mtk_hdl_pwm_init(base);
-	mtk_hdl_pwm_group_clock_select(base, clock_source);
+	mtk_hdl_pwm_group_clock_select(base, (pwm_clk)clock_source);
 }
 
 static void _mtk_mhal_pwm_group_set(void __iomem *base, u8 index,
@@ -100,7 +100,7 @@ static void _mtk_mhal_pwm_group_set(void __iomem *base, u8 index,
 
 }
 
-static void _mtk_mhal_pwm_group_get(void __iomem *base, pwm_channel index,
+static void _mtk_mhal_pwm_group_get(void __iomem *base, pwm_channels index,
 		u32 *frequency, u16 *duty_cycle, u8 *status)
 {
 	pwm_s0_s1_stage	state = PWM_S0;
@@ -122,7 +122,7 @@ int mtk_mhal_pwm_clock_select(struct mtk_pwm_controller *ctlr)
 		return -PWM_EPARAMETER;
 	}
 
-	mtk_hdl_pwm_group_clock_select(ctlr->base, ctlr->group_clock);
+	mtk_hdl_pwm_group_clock_select(ctlr->base, (pwm_clk)ctlr->group_clock);
 
 	return 0;
 }
@@ -182,7 +182,7 @@ int mtk_mhal_pwm_init(struct mtk_pwm_controller *ctlr,
 
 	if (ctlr->group_clock >= PWM_CLOCK_NUM) {
 		pwm_err("source clock:should be 0~%d.", PWM_CLOCK_NUM - 1);
-		ctlr->group_clock = PWM_CLK_2M;
+		ctlr->group_clock = PWM_CLOCK_2M;
 		return -PWM_ECLK;
 	}
 
@@ -313,6 +313,11 @@ int mtk_mhal_pwm_set_duty_cycle(struct mtk_pwm_controller *ctlr,
 	pwm_debug("mtk mhal_pwm_set_duty_cycle ,frequency == %d\n",
 		frequency);
 
+	if (frequency == 0) {
+		pwm_err("frequency is invalid.\n");
+		return -PWM_EPARAMETER;
+	}
+
 	pwm_debug("mtk mhal_pwm_set_duty_cycle\n");
 
 	_mhal_pwm_calc_total_count(ctlr->group_clock,
@@ -399,6 +404,11 @@ int mtk_mhal_pwm_stop(struct mtk_pwm_controller *ctlr,
 		&duty_cycle,
 		&pwm_enable);
 
+	if (frequency == 0) {
+		pwm_err("frequency is invalid.");
+		return -PWM_EPARAMETER;
+	}
+
 	pwm_enable = 0;
 
 	_mtk_mhal_pwm_group_set(ctlr->base,
@@ -475,6 +485,11 @@ int mtk_mhal_pwm_get_duty_cycle(struct mtk_pwm_controller *ctlr,
 		&frequency,
 		&working_duty_cycle,
 		&pwm_enable);
+
+	if (frequency == 0) {
+		pwm_err("frequency is invalid.");
+		return -PWM_EPARAMETER;
+	}
 
 	_mhal_pwm_calc_total_count(ctlr->group_clock,
 		frequency,
@@ -601,7 +616,7 @@ int mtk_mhal_pwm_config_s0_s1_freq_duty(struct mtk_pwm_controller *ctlr,
 	pwm_debug("ctlr->data->duty_cycle %d\n", ctlr->data->duty_cycle);
 	mtk_hdl_pwm_group_config(ctlr->base,
 		pwm_num,
-		ctlr->data->stage,
+		(pwm_s0_s1_stage)ctlr->data->stage,
 		ctlr->data->duty_cycle,
 		ctlr->data->frequency
 		);

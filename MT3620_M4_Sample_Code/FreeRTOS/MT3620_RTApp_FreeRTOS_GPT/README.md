@@ -1,15 +1,10 @@
-# Sample: MT3620 M4 real-time application - Bare Metal GPIO
+# Sample: MT3620 M4 real-time application - FreeRTos GPT
 ### Description
-This sample demonstrates how to use GPIO, GPT and UART on an MT3620 real-time core.  
-- On-board LED_Red(GPIO8), LED_Green(GPIO9) and LED_Blue(GPIO10) are used as GPIO output.
-- On-board Button_A(GPIO12) and Button_B(GPIO13) are used as GPIO input.
-- GPT0 is used for LED_Green blinking.
-- GPT3 is used for motitoring Button_A and Button_B status.
-- ISU0 UART interface is used to print the output log.
-- User could press Button_A to turn on LED_Blue, and release to turn off.
-- User could press Button_B to turn on LED_Red, and release to turn off.  
+This sample demonstrates how to use GPT and UART on an MT3620 real-time core.  
+- GPT0/GPT3 are used to print log periodically.
+- ISU0 UART interface is used to print the output log.  
 (Note, UART port number in main.c could be changed from **OS_HAL_UART_ISU0** to **OS_HAL_UART_PORT0** to use M4 dedicate UART port.)  
-Please refer to the [MT3620 M4 API Rerference Manual](https://support.mediatek.com/AzureSphere/mt3620/M4_API_Reference_Manual) for the detailed API description.
+Please refer to the [MT3620 M4 API Rerference Manual](https://support.mediatek.com/AzureSphere/mt3620/M4_API_Reference_Manual) for the detailed API description.  
 
 ### Prerequisites
 * **Hardware**
@@ -21,6 +16,7 @@ Please refer to the [MT3620 M4 API Rerference Manual](https://support.mediatek.c
     * A terminal emulator (such as Telnet or [PuTTY](https://www.chiark.greenend.org.uk/~sgtatham/putty/) to display the output log).
 
 ### How to build and run the sample
+0. Important Note! To reuse the official GCC Cortex-M4F port, the gcc compiler flag should be modified to use FPU instructions. **Please copy the *AzureSphereRTCoreToolchainVFP.cmake* file into the Azure Sphere SDK install folder.** (Default path is *C:\Program Files (x86)\Microsoft Azure Sphere SDK\CMakeFiles*)
 1. Start Visual Studio.  
 2. From **File** menu, select **Open > CMake...** and navigate to the folder that contains this sample.  
 3. Select **CMakeList.txt** and then click **Open**.  

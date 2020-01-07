@@ -42,13 +42,14 @@
 #include "vector_table.h"
 
 volatile uint32_t sys_tick_in_ms = 0;
-
-#ifdef OSAI_BARE_METAL
-void SysTick_Handler(void)
+void SystmTick_Handler(void)
 {
 	sys_tick_in_ms++;
+	#ifdef OSAI_FREERTOS
+	extern void SysTick_Handler(void);
+	SysTick_Handler();
+	#endif
 }
-#endif
 
 int NVIC_Register(int irqn, NVIC_IRQ_Handler handler)
 {

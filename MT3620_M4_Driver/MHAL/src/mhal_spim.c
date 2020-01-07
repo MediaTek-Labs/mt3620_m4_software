@@ -203,7 +203,7 @@ int mtk_mhal_spim_prepare_transfer(struct mtk_spi_controller *ctlr,
 		is_full_duplex = 0;
 
 	mtk_hdl_spim_prepare_transfer(ctlr->base, xfer->speed_khz,
-				      xfer->use_dma, is_full_duplex);
+				      is_full_duplex);
 
 	return 0;
 }
@@ -288,15 +288,7 @@ int mtk_mhal_spim_fifo_transfer_one(struct mtk_spi_controller *ctlr,
 
 static void _mtk_mhal_spim_dma_tx_callback(void *data)
 {
-	struct mtk_spi_controller *ctlr = data;
-	struct mtk_spi_transfer *xfer = ctlr->current_xfer;
-	struct mtk_spi_private *mdata = ctlr->mdata;
-
 	spim_debug("now in %s\n", __func__);
-
-	/* call OS-HAL done callback */
-	if (!xfer->rx_buf)
-		mdata->dma_done_callback(mdata->user_data);
 }
 
 static void _mtk_mhal_spim_dma_rx_callback(void *data)

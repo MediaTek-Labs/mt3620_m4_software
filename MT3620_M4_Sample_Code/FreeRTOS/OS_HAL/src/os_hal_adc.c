@@ -199,10 +199,10 @@ static int _mtk_os_hal_adc_release_gpio(void)
 static int _mtk_os_hal_adc_irq_handler(struct mtk_adc_controller *ctlr)
 {
 	if (!ctlr)
-		return -EPTR;
+		return -ADC_EPTR;
 
 	if (ctlr->adc_fsm_parameter->fifo_mode != ADC_FIFO_DIRECT)
-		return -EPARAMETER;
+		return -ADC_EPARAMETER;
 
 	mtk_mhal_adc_fifo_handle_rx(ctlr);
 
@@ -224,7 +224,7 @@ static void _mtk_os_hal_adc_irq_event(void)
 static int _mtk_os_hal_adc_request_irq(struct mtk_adc_controller *ctlr)
 {
 	if (!ctlr)
-		return -EPTR;
+		return -ADC_EPTR;
 
 	CM4_Install_NVIC(CM4_IRQ_ADC, CM4_ADC_PRI, IRQ_LEVEL_TRIGGER,
 		_mtk_os_hal_adc_irq_event, TRUE);
@@ -267,19 +267,19 @@ int mtk_os_hal_adc_ctlr_init(adc_pmode pmode, adc_fifo_mode fifo_mode,
 
 	ctlr_rtos =	_mtk_os_hal_adc_get_ctlr();
 	if (!ctlr_rtos)
-		return -EPTR;
+		return -ADC_EPTR;
 
 	if ((pmode != ADC_PMODE_ONE_TIME) && (pmode != ADC_PMODE_PERIODIC))
-		return -EPARAMETER;
+		return -ADC_EPARAMETER;
 
 	if ((fifo_mode != ADC_FIFO_DIRECT) && (fifo_mode != ADC_FIFO_DMA))
-		return -EPARAMETER;
+		return -ADC_EPARAMETER;
 
 
 	ctlr_rtos->ctlr = &adc_controller;
 
 	if (!ctlr_rtos->ctlr)
-		return -EPTR;
+		return -ADC_EPTR;
 
 	ctlr = ctlr_rtos->ctlr;
 
@@ -307,13 +307,7 @@ int mtk_os_hal_adc_ctlr_init(adc_pmode pmode, adc_fifo_mode fifo_mode,
 
 		ctlr->dma_channel = VDMA_ADC_RX_CH29;
 		ctlr->use_dma = 1;
-		printf("mtk os_hal_adc_ctlr_init dma_vfifo_len == %d\n",
-			ctlr->adc_fsm_parameter->dma_vfifo_len);
-		printf("mtk os_hal_adc_ctlr_init dma_vfifo_addr == %p\n",
-			ctlr->adc_fsm_parameter->dma_vfifo_addr);
 	}
-	printf("mtk os_hal_adc_ctlr_init ctlr->rx_buf == %p\n",
-		ctlr->rx_buf);
 
 	for (channel_index = 0; channel_index < ADC_CHANNEL_MAX;
 			channel_index++) {
@@ -345,14 +339,6 @@ int mtk_os_hal_adc_ctlr_init(adc_pmode pmode, adc_fifo_mode fifo_mode,
 	if (ret)
 		return ret;
 
-	if (ctlr->adc_fsm_parameter->pmode == ADC_PMODE_ONE_TIME) {
-		ret = mtk_mhal_adc_start_ch(ctlr_rtos->ctlr,
-			ctlr->adc_fsm_parameter->channel_map);
-		if (ret)
-			return ret;
-	}
-	printf("mtk os_hal_adc_ctlr_init success\n");
-
 	return ret;
 }
 
@@ -362,7 +348,7 @@ int mtk_os_hal_adc_start(void)
 		_mtk_os_hal_adc_get_ctlr();
 
 	if (!ctlr_rtos)
-		return -EPTR;
+		return -ADC_EPTR;
 
 	return mtk_mhal_adc_start(ctlr_rtos->ctlr);
 }
@@ -373,7 +359,7 @@ int mtk_os_hal_adc_start_ch(u16 ch_bit_map)
 		_mtk_os_hal_adc_get_ctlr();
 
 	if (!ctlr_rtos)
-		return -EPTR;
+		return -ADC_EPTR;
 
 	 return mtk_mhal_adc_start_ch(ctlr_rtos->ctlr, ch_bit_map);
 }
@@ -385,10 +371,13 @@ int mtk_os_hal_adc_ctlr_deinit(void)
 		_mtk_os_hal_adc_get_ctlr();
 
 	if (!ctlr_rtos)
-		return -EPTR;
+		return -ADC_EPTR;
 
 	if (!ctlr_rtos->ctlr)
-		return -EPTR;
+		return -ADC_EPTR;
+
+	vSemaphoreDelete(ctlr_rtos->rx_completion);
+	ctlr_rtos->rx_completion = NULL;
 
 	if (ctlr_rtos->ctlr->adc_fsm_parameter->fifo_mode == ADC_FIFO_DIRECT) {
 		/* Disable ADC IRQ */
@@ -422,7 +411,7 @@ int mtk_os_hal_adc_fsm_param_set(struct adc_fsm_param *adc_fsm_parameter)
 
 	ctlr_rtos =	_mtk_os_hal_adc_get_ctlr();
 	if (!ctlr_rtos)
-		return -EPTR;
+		return -ADC_EPTR;
 
 	ctlr = ctlr_rtos->ctlr;
 
@@ -433,13 +422,8 @@ int mtk_os_hal_adc_fsm_param_set(struct adc_fsm_param *adc_fsm_parameter)
 	ctlr->adc_fsm_parameter->fifo_mode = adc_fsm_parameter->fifo_mode;
 	ctlr->adc_fsm_parameter->ier_mode = adc_fsm_parameter->ier_mode;
 
-	if (ctlr->adc_fsm_parameter->fifo_mode == ADC_FIFO_DMA) {
+	if (ctlr->adc_fsm_parameter->fifo_mode == ADC_FIFO_DMA)
 		ctlr->adc_fsm_parameter->dma_vfifo_len = ADC_DMA_BUF_WORD_SIZE;
-		printf("mtk os_hal_adc_ctlr_init dma_vfifo_len == %d\n",
-			ctlr->adc_fsm_parameter->dma_vfifo_len);
-		printf("mtk os_hal_adc_ctlr_init dma_vfifo_addr == %p\n",
-			ctlr->adc_fsm_parameter->dma_vfifo_addr);
-	}
 
 	for (channel_index = 0; channel_index < ADC_CHANNEL_MAX;
 		channel_index++) {
@@ -462,29 +446,24 @@ int mtk_os_hal_adc_one_shot_get_data(adc_channel sample_channel, u32 *data)
 
 	ctlr_rtos =	_mtk_os_hal_adc_get_ctlr();
 	if (!ctlr_rtos)
-		return -EPTR;
+		return -ADC_EPTR;
 
 	ctlr = ctlr_rtos->ctlr;
 
 	if ((ctlr == NULL) || (ctlr->adc_fsm_parameter == NULL))
-		return -EPTR;
+		return -ADC_EPTR;
 
 	if (sample_channel > ADC_CHANNEL_7)
-		return -EPARAMETER;
+		return -ADC_EPARAMETER;
 
 	if ((ctlr->adc_fsm_parameter->pmode != ADC_PMODE_ONE_TIME) ||
 		(ctlr->adc_fsm_parameter->fifo_mode != ADC_FIFO_DIRECT))
-		return -EPARAMETER;
-
-	printf("sample_channel->%d data point:%p\n", sample_channel, data);
+		return -ADC_EPARAMETER;
 
 	ret = mtk_mhal_adc_one_shot_get_data(ctlr_rtos->ctlr,
 		sample_channel, data);
 	if (ret)
 		return ret;
-
-	printf("one_shot_get_data sample_channel:->%d, data:%d\n",
-		sample_channel, *data);
 
 	return 0;
 }
@@ -494,15 +473,14 @@ int mtk_os_hal_adc_period_get_data(adc_channel sample_channel)
 	struct mtk_adc_controller_rtos *ctlr_rtos;
 	struct mtk_adc_controller *ctlr;
 	int ret = 0;
-	int count = 0;
 
 	ctlr_rtos =	_mtk_os_hal_adc_get_ctlr();
 	if (!ctlr_rtos)
-		return -EPTR;
+		return -ADC_EPTR;
 
 	ctlr = ctlr_rtos->ctlr;
 	if ((ctlr == NULL) || (ctlr->adc_fsm_parameter == NULL))
-		return -EPTR;
+		return -ADC_EPTR;
 
 	ret = mtk_mhal_adc_start(ctlr_rtos->ctlr);
 	if (ret)
@@ -516,13 +494,6 @@ int mtk_os_hal_adc_period_get_data(adc_channel sample_channel)
 	if (ret)
 		return ret;
 
-	printf("channel->%d,size:%d\n", sample_channel,
-	ctlr->rx_size);
-	for (count = 0; count < ctlr->rx_size; count++) {
-		printf("data%d:%d\n",
-		count,
-		ctlr->rx_buf[count]);
-	}
 	ret = mtk_mhal_adc_stop(ctlr);
 	if (ret)
 		return ret;

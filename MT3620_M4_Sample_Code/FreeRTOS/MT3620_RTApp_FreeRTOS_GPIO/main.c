@@ -33,13 +33,17 @@
  * MEDIATEK SOFTWARE AT ISSUE.
  */
 
+#include <stddef.h>
+#include <stdbool.h>
+#include <stdint.h>
+
 #include "FreeRTOS.h"
 #include "task.h"
 #include "printf.h"
 #include "mt3620.h"
 
-#include "os_hal_uart.h"
 #include "os_hal_gpio.h"
+#include "os_hal_uart.h"
 
 /******************************************************************************/
 /* Configurations */
@@ -80,15 +84,18 @@ static int gpio_output(u8 gpio_no, u8 level)
 	int ret;
 
 	ret = mtk_os_hal_gpio_request(gpio_no);
-	if (ret != 0)
+	if (ret != 0) {
 		printf("request gpio[%d] fail\r\n", gpio_no);
+		return ret;
+	}
 	mtk_os_hal_gpio_pmx_set_mode(gpio_no, OS_HAL_MODE_6);
 	mtk_os_hal_gpio_set_direction(gpio_no, OS_HAL_GPIO_DIR_OUTPUT);
 	mtk_os_hal_gpio_set_output(gpio_no, level);
 	ret = mtk_os_hal_gpio_free(gpio_no);
-	if (ret != 0)
+	if (ret != 0) {
 		printf("free gpio[%d] fail\r\n", gpio_no);
-
+		return ret;
+	}
 	return 0;
 }
 
@@ -97,8 +104,10 @@ static int gpio_input(u8 gpio_no, os_hal_gpio_data* pvalue)
 	u8 ret;
 
 	ret = mtk_os_hal_gpio_request(gpio_no);
-	if (ret != 0)
+	if (ret != 0) {
 		printf("request gpio[%d] fail\r\n", gpio_no);
+		return ret;
+	}
 	mtk_os_hal_gpio_pmx_set_mode(gpio_no, OS_HAL_MODE_6);
 	mtk_os_hal_gpio_set_direction(gpio_no, OS_HAL_GPIO_DIR_INPUT);
 	vTaskDelay(pdMS_TO_TICKS(10));
@@ -106,19 +115,21 @@ static int gpio_input(u8 gpio_no, os_hal_gpio_data* pvalue)
 	mtk_os_hal_gpio_get_input(gpio_no, pvalue);
 
 	ret = mtk_os_hal_gpio_free(gpio_no);
-	if (ret != 0)
+	if (ret != 0) {
 		printf("free gpio[%d] fail\r\n", gpio_no);
+		return ret;
+	}
 
-	return ret;
+	return 0;
 }
 
 static void gpio_task(void* pParameters)
 {
 	os_hal_gpio_data value = 0;
-	
+
 	printf("GPIO Task Started\r\n");
 	while (1) {
-		vTaskDelay(pdMS_TO_TICKS(100));
+		// Get Button_A status and set LED Red.
 		gpio_input(gpio_button_a, &value);
 		if (value == OS_HAL_GPIO_DATA_HIGH) {
 			gpio_output(gpio_led_red, OS_HAL_GPIO_DATA_HIGH);
@@ -126,28 +137,34 @@ static void gpio_task(void* pParameters)
 			gpio_output(gpio_led_red, OS_HAL_GPIO_DATA_LOW);
 		}
 
+		// Get Button_B status and set LED Green.
 		gpio_input(gpio_button_b, &value);
 		if (value == OS_HAL_GPIO_DATA_HIGH) {
 			gpio_output(gpio_led_green, OS_HAL_GPIO_DATA_LOW);
 		} else {
 			gpio_output(gpio_led_green, OS_HAL_GPIO_DATA_HIGH);
 		}
+
+		// Delay for 100ms
+		vTaskDelay(pdMS_TO_TICKS(100));
 	}
 }
 
 _Noreturn void RTCoreMain(void)
 {
+	// Setup Vector Table
 	NVIC_SetupVectorTable();
 
 	// Init UART
 	mtk_os_hal_uart_ctlr_init(uart_port_num);
-
-	// Init GPIO
-	mtk_os_hal_gpio_ctlr_init();
-
 	printf("\r\nFreeRTOS GPIO Demo\r\n");
+
+	// Create GPIO Task
 	xTaskCreate(gpio_task, "GPIO Task", APP_STACK_SIZE_BYTES, NULL, 4, NULL);
 	vTaskStartScheduler();
 
-	while(1);
+	for (;;) {
+		__asm__("wfi");
+	}
 }
+

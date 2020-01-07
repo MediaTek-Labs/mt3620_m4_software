@@ -60,29 +60,29 @@ typedef enum {
  * @brief  Init UART controller.
  *
  *  @param [in] bus_num : UART Port number,
- *  it can be UART_PORT0~UART_ISU_4.
+ *  it can be OS_HAL_UART_PORT0~OS_HAL_UART_ISU4.
  *
  *  @return -UART_EPTR means fail.
  *  @return 0 means success.
  */
-int mtk_os_hal_uart_ctlr_init(UART_PORT bus_num);
+int mtk_os_hal_uart_ctlr_init(UART_PORT port_num);
 
 /**
  * @brief  Deinit UART controller.
  *
  *  @param [in] bus_num : UART Port number,
- *  it can be UART_PORT0~UART_ISU_4.
+ *  it can be OS_HAL_UART_PORT0~OS_HAL_UART_ISU4.
  *
  *  @return -UART_EPTR means fail.
  *  @return 0 means success.
  */
-int mtk_os_hal_uart_ctlr_deinit(UART_PORT bus_num);
+int mtk_os_hal_uart_ctlr_deinit(UART_PORT port_num);
 
 /**
  * @brief  Dump UART register.
  *
  *  @param [in] bus_num : UART Port number,
- *  it can be UART_PORT0~UART_ISU_4.
+ *  it can be OS_HAL_UART_PORT0~OS_HAL_UART_ISU4.
  *
  *  @return None.
  */
@@ -92,7 +92,7 @@ void mtk_os_hal_uart_dumpreg(UART_PORT port_num);
  * @brief  Set UART Baudrate.
  *
  *  @param [in] bus_num : UART Port number,
- *  it can be UART_PORT0~UART_ISU_4.
+ *  it can be OS_HAL_UART_PORT0~OS_HAL_UART_ISU4.
  *  @param [in] baudrate : UART Baudrate,
  *  it can be 300~3K.
  *
@@ -104,7 +104,7 @@ void mtk_os_hal_uart_set_baudrate(UART_PORT port_num, u32 baudrate);
  * @brief  Set UART data format.
  *
  *  @param [in] bus_num : UART Port number,
- *  it can be UART_PORT0~UART_ISU_4.
+ *  it can be OS_HAL_UART_PORT0~OS_HAL_UART_ISU4.
  *  @param [in] data_bit : UART data length.
  *  @param [in] parity : UART parity information.
  *  @param [in] stop_bit : UART stop_bit length.
@@ -119,7 +119,7 @@ void mtk_os_hal_uart_set_format(UART_PORT port_num,
  * @brief  Get UART one byte of data in PIO mode.
  *
  *  @param [in] bus_num : UART Port number,
- *  it can be UART_PORT0~UART_ISU_4
+ *  it can be OS_HAL_UART_PORT0~OS_HAL_UART_ISU4
  *
  *  @return received data.
  */
@@ -129,7 +129,7 @@ u8 mtk_os_hal_uart_get_char(UART_PORT port_num);
  * @brief  Get UART one byte of data directly in PIO mode.
  *
  *  @param [in] bus_num : UART Port number,
- *  it can be UART_PORT0~UART_ISU_4
+ *  it can be OS_HAL_UART_PORT0~OS_HAL_UART_ISU4
  *
  *  @return received data.
  */
@@ -139,17 +139,18 @@ u8 mtk_os_hal_uart_get_char_nowait(UART_PORT port_num);
  * @brief  Send UART one byte of data in PIO mode.
  *
  *  @param [in] bus_num : UART Port number,
- *  it can be UART_PORT0~UART_ISU_4
+ *  it can be OS_HAL_UART_PORT0~OS_HAL_UART_ISU4
  *
  *  @return None.
  */
 void mtk_os_hal_uart_put_char(UART_PORT port_num, u8 data);
 
+
 /**
  * @brief  Set UART hardware flow control.
  *
  *  @param [in] bus_num : UART Port number,
- *  it can be UART_PORT0~UART_ISU_4
+ *  it can be OS_HAL_UART_PORT0~OS_HAL_UART_ISU4
  *  @param [in] hw_fc : Hardware flow control feature,
  *  please refer to UART_EFR_HW_FC_XXX type definition
  *
@@ -161,7 +162,7 @@ void mtk_os_hal_uart_set_hw_fc(UART_PORT port_num, u8 hw_fc);
  * @brief  Disable UART software flow control.
  *
  *  @param [in] bus_num : UART Port number,
- *  it can be UART_PORT0~UART_ISU_4
+ *  it can be OS_HAL_UART_PORT0~OS_HAL_UART_ISU4
  *
  *  @return None.
  */
@@ -171,7 +172,7 @@ void mtk_os_hal_uart_disable_sw_fc(UART_PORT port_num);
  * @brief  Set UART software flow control.
  *
  *  @param [in] bus_num : UART Port number,
- *  it can be UART_PORT0~UART_ISU_4
+ *  it can be OS_HAL_UART_PORT0~OS_HAL_UART_ISU4
  *  @param [in] xon1 : XON1 character for software flow control.
  *  @param [in] xoff1 : XOFF1 character for software flow control.
  *  @param [in] xon2 : XON2 character for software flow control.
@@ -187,7 +188,7 @@ void mtk_os_hal_uart_set_sw_fc(UART_PORT port_num,
  * @brief  Get and clear UART interrupt.
  *
  *  @param [in] bus_num : UART Port number,
- *  it can be UART_PORT0~UART_ISU_4.
+ *  it can be OS_HAL_UART_PORT0~OS_HAL_UART_ISU4.
  *
  *  @return None.
  */
@@ -197,7 +198,7 @@ int mtk_os_hal_uart_clear_irq_status(UART_PORT port_num);
  * @brief  Set UART IRQ.
  *
  *  @param [in] bus_num : UART Port number,
- *  it can be UART_PORT0~UART_ISU_4.
+ *  it can be OS_HAL_UART_PORT0~OS_HAL_UART_ISU4.
  *  @param [in] irq_flag : UART IRQ type,
  *  please refer to UART_INT_XXX type definition.
  *
@@ -209,7 +210,7 @@ void mtk_os_hal_uart_set_irq(UART_PORT port_num, u8 irq_flag);
  * @brief  Send UART data in DMA mode.
  *
  *  @param [in] bus_num : UART Port number,
- *  it can be UART_PORT0~UART_ISU_4.
+ *  it can be OS_HAL_UART_PORT0~OS_HAL_UART_ISU4.
  *  @param [in] data : Pointer to the data.
  *  @param [in] len : Data length.
  *  @param [in] vff_mode : true: VFF Mode; false: Half-Size Mode.
@@ -223,7 +224,7 @@ int mtk_os_hal_uart_dma_send_data(UART_PORT port_num,
  * @brief  Get UART data in DMA mode.
  *
  *  @param [in] bus_num : UART Port number,
- *  it can be UART_PORT0~UART_ISU_4.
+ *  it can be OS_HAL_UART_PORT0~OS_HAL_UART_ISU4.
  *  @param [in] data : Pointer to the data.
  *  @param [in] len : Data length.
  *  @param [in] vff_mode : true: VFF Mode; false: Half-Size Mode.

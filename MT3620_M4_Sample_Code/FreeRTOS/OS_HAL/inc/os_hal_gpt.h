@@ -43,7 +43,7 @@
  *  It can be used to specify the timer ID of the current GPT device unit.\n
  *  Follow mhal_gpt.h.
  */
-enum {
+typedef enum {
 	OS_HAL_GPT0 = GPT0,
 	OS_HAL_GPT1 = GPT1,
 	OS_HAL_GPT2 = GPT2,

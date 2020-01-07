@@ -53,7 +53,7 @@ void __attribute__((weak, alias("DefaultExceptionHandler"))) Usage_Fault_Handler
 void __attribute__((weak, alias("DefaultExceptionHandler"))) SVC_Handler(void);
 void __attribute__((weak, alias("DefaultExceptionHandler"))) Debug_Monitor_Handler(void);
 void __attribute__((weak, alias("DefaultExceptionHandler"))) PendSV_Handler(void);
-void __attribute__((weak, alias("DefaultExceptionHandler"))) SysTick_Handler(void);
+void __attribute__((weak, alias("DefaultExceptionHandler"))) SystmTick_Handler(void);
 
 uintptr_t __isr_vector[116] __attribute__((section(".vector_table"))) __attribute__((used)) = {
 	[0] = (uintptr_t)&StackTop,				/* Top of Stack */
@@ -66,7 +66,7 @@ uintptr_t __isr_vector[116] __attribute__((section(".vector_table"))) __attribut
 	[11] = (uintptr_t)SVC_Handler,			/* SVCall Handler */
 	[12] = (uintptr_t)Debug_Monitor_Handler,/* Debug Monitor Handler */
 	[14] = (uintptr_t)PendSV_Handler,		/* PendSV Handler */
-	[15] = (uintptr_t)SysTick_Handler,		/* SysTick Handler */
+	[15] = (uintptr_t)SystmTick_Handler,	/* SysTick Handler */
 
 	[(16)... (115)] = (uintptr_t)DefaultExceptionHandler
 };

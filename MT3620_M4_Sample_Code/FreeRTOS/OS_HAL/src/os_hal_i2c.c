@@ -40,7 +40,6 @@
 #include "os_hal_dma.h"
 #include "os_hal_gpio.h"
 
-#define MTK_I2C_MODE	2
 
 #define ISU0_I2C_BASE	0x38070200
 #define ISU1_I2C_BASE	0x38080200
@@ -93,7 +92,8 @@ static struct mtk_i2c_ctrl_rtos g_i2c_ctrl_rtos[OS_HAL_I2C_ISU_MAX];
 struct mtk_i2c_controller g_i2c_ctrl[OS_HAL_I2C_ISU_MAX];
 struct mtk_i2c_private g_i2c_mdata[OS_HAL_I2C_ISU_MAX];
 
-static int _mtk_os_hal_i2c_pinmux(u32 pin_scl, u32 pin_sda)
+static int _mtk_os_hal_i2c_pinmux(os_hal_gpio_pin pin_scl,
+				  os_hal_gpio_pin pin_sda)
 {
 	int ret = 0;
 
@@ -105,8 +105,8 @@ static int _mtk_os_hal_i2c_pinmux(u32 pin_scl, u32 pin_sda)
 		return ret;
 	}
 
-	mtk_os_hal_gpio_pmx_set_mode(pin_scl, MTK_I2C_MODE);
-	mtk_os_hal_gpio_pmx_set_mode(pin_sda, MTK_I2C_MODE);
+	mtk_os_hal_gpio_pmx_set_mode(pin_scl, OS_HAL_MODE_2);
+	mtk_os_hal_gpio_pmx_set_mode(pin_sda, OS_HAL_MODE_2);
 
 	return 0;
 }
@@ -117,19 +117,19 @@ static int _mtk_os_hal_i2c_config_pinmux(u8 bus_num)
 
 	switch (bus_num) {
 	case OS_HAL_I2C_ISU0:
-		ret = _mtk_os_hal_i2c_pinmux(MHAL_GPIO_27, MHAL_GPIO_28);
+		ret = _mtk_os_hal_i2c_pinmux(OS_HAL_GPIO_27, OS_HAL_GPIO_28);
 		break;
 	case OS_HAL_I2C_ISU1:
-		ret = _mtk_os_hal_i2c_pinmux(MHAL_GPIO_32, MHAL_GPIO_33);
+		ret = _mtk_os_hal_i2c_pinmux(OS_HAL_GPIO_32, OS_HAL_GPIO_33);
 		break;
 	case OS_HAL_I2C_ISU2:
-		ret = _mtk_os_hal_i2c_pinmux(MHAL_GPIO_37, MHAL_GPIO_38);
+		ret = _mtk_os_hal_i2c_pinmux(OS_HAL_GPIO_37, OS_HAL_GPIO_38);
 		break;
 	case OS_HAL_I2C_ISU3:
-		ret = _mtk_os_hal_i2c_pinmux(MHAL_GPIO_67, MHAL_GPIO_68);
+		ret = _mtk_os_hal_i2c_pinmux(OS_HAL_GPIO_67, OS_HAL_GPIO_68);
 		break;
 	case OS_HAL_I2C_ISU4:
-		ret = _mtk_os_hal_i2c_pinmux(MHAL_GPIO_72, MHAL_GPIO_73);
+		ret = _mtk_os_hal_i2c_pinmux(OS_HAL_GPIO_72, OS_HAL_GPIO_73);
 		break;
 	}
 
@@ -140,24 +140,24 @@ static void _mtk_os_hal_i2c_free_pinmux(u8 bus_num)
 {
 	switch (bus_num) {
 	case OS_HAL_I2C_ISU0:
-		mtk_os_hal_gpio_free(MHAL_GPIO_27);
-		mtk_os_hal_gpio_free(MHAL_GPIO_28);
+		mtk_os_hal_gpio_free(OS_HAL_GPIO_27);
+		mtk_os_hal_gpio_free(OS_HAL_GPIO_28);
 		break;
 	case OS_HAL_I2C_ISU1:
-		mtk_os_hal_gpio_free(MHAL_GPIO_32);
-		mtk_os_hal_gpio_free(MHAL_GPIO_33);
+		mtk_os_hal_gpio_free(OS_HAL_GPIO_32);
+		mtk_os_hal_gpio_free(OS_HAL_GPIO_33);
 		break;
 	case OS_HAL_I2C_ISU2:
-		mtk_os_hal_gpio_free(MHAL_GPIO_37);
-		mtk_os_hal_gpio_free(MHAL_GPIO_38);
+		mtk_os_hal_gpio_free(OS_HAL_GPIO_37);
+		mtk_os_hal_gpio_free(OS_HAL_GPIO_38);
 		break;
 	case OS_HAL_I2C_ISU3:
-		mtk_os_hal_gpio_free(MHAL_GPIO_67);
-		mtk_os_hal_gpio_free(MHAL_GPIO_68);
+		mtk_os_hal_gpio_free(OS_HAL_GPIO_67);
+		mtk_os_hal_gpio_free(OS_HAL_GPIO_68);
 		break;
 	case OS_HAL_I2C_ISU4:
-		mtk_os_hal_gpio_free(MHAL_GPIO_72);
-		mtk_os_hal_gpio_free(MHAL_GPIO_73);
+		mtk_os_hal_gpio_free(OS_HAL_GPIO_72);
+		mtk_os_hal_gpio_free(OS_HAL_GPIO_73);
 		break;
 	}
 }
@@ -394,7 +394,7 @@ int mtk_os_hal_i2c_ctrl_deinit(i2c_num bus_num)
 	return 0;
 }
 
-int mtk_os_hal_i2c_speed_init(u8 bus_num, enum i2c_speed_kHz speed)
+int mtk_os_hal_i2c_speed_init(i2c_num bus_num, enum i2c_speed_kHz speed)
 {
 	int ret = I2C_OK;
 	struct mtk_i2c_ctrl_rtos *ctrl_rtos;
@@ -418,7 +418,7 @@ int mtk_os_hal_i2c_speed_init(u8 bus_num, enum i2c_speed_kHz speed)
 	return ret;
 }
 
-int mtk_os_hal_i2c_read(u8 bus_num, u8 device_addr, u8 *buffer, u16 len)
+int mtk_os_hal_i2c_read(i2c_num bus_num, u8 device_addr, u8 *buffer, u16 len)
 {
 	struct i2c_msg msgs;
 	struct mtk_i2c_ctrl_rtos *ctrl_rtos;
@@ -456,7 +456,7 @@ int mtk_os_hal_i2c_read(u8 bus_num, u8 device_addr, u8 *buffer, u16 len)
 	return ret;
 }
 
-int   mtk_os_hal_i2c_write(u8 bus_num, u8 device_addr, u8 *buffer, u16 len)
+int   mtk_os_hal_i2c_write(i2c_num bus_num, u8 device_addr, u8 *buffer, u16 len)
 {
 	struct i2c_msg msgs;
 	struct mtk_i2c_ctrl_rtos *ctrl_rtos;
@@ -494,7 +494,7 @@ int   mtk_os_hal_i2c_write(u8 bus_num, u8 device_addr, u8 *buffer, u16 len)
 	return ret;
 }
 
-int mtk_os_hal_i2c_write_read(u8 bus_num, u8 device_addr,
+int mtk_os_hal_i2c_write_read(i2c_num bus_num, u8 device_addr,
 			      u8 *wr_buf, u8 *rd_buf, u16 wr_len, u16 rd_len)
 {
 	struct i2c_msg msgs[2];
@@ -538,7 +538,7 @@ int mtk_os_hal_i2c_write_read(u8 bus_num, u8 device_addr,
 	return ret;
 }
 
-int mtk_os_hal_i2c_set_slave_addr(u8 bus_num, u8 slv_addr)
+int mtk_os_hal_i2c_set_slave_addr(i2c_num bus_num, u8 slv_addr)
 {
 	int ret = I2C_OK;
 	struct mtk_i2c_ctrl_rtos *ctrl_rtos;
@@ -564,7 +564,7 @@ int mtk_os_hal_i2c_set_slave_addr(u8 bus_num, u8 slv_addr)
 	return ret;
 }
 
-int mtk_os_hal_i2c_slave_tx(u8 bus_num, u8 *buffer, u16 len, u32 time_out)
+int mtk_os_hal_i2c_slave_tx(i2c_num bus_num, u8 *buffer, u16 len, u32 time_out)
 {
 	struct i2c_msg msgs;
 	struct mtk_i2c_ctrl_rtos *ctrl_rtos;
@@ -601,7 +601,7 @@ int mtk_os_hal_i2c_slave_tx(u8 bus_num, u8 *buffer, u16 len, u32 time_out)
 	return ret;
 }
 
-int mtk_os_hal_i2c_slave_rx(u8 bus_num, u8 *buffer, u16 len, u32 time_out)
+int mtk_os_hal_i2c_slave_rx(i2c_num bus_num, u8 *buffer, u16 len, u32 time_out)
 {
 
 	struct i2c_msg msgs;

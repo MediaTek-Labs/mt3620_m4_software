@@ -252,11 +252,13 @@ static int _mtk_os_hal_spim_irq_handler(spim_num bus_num)
 
 	mtk_mhal_spim_clear_irq_status(ctlr);
 
-	/* 1. FIFO mode: return completion done in SPI irq handler
-	 * 2. DMA mode: return completion done in DMA irq handler
-	 */
-	if (!curr_xfer->use_dma) {
+	if (!curr_xfer->use_dma)
 		mtk_mhal_spim_fifo_handle_rx(ctlr, curr_xfer);
+
+	/* 1. FIFO mode: return completion done in SPI irq handler
+	 * 2. DMA mode: return rx completion done in DMA irq handler
+	 */
+	if (!curr_xfer->use_dma || (curr_xfer->tx_buf && !curr_xfer->rx_buf)) {
 		if (ctlr_rtos->complete) {
 			/* async xfer */
 			ctlr_rtos->complete(ctlr_rtos->context);
@@ -268,7 +270,6 @@ static int _mtk_os_hal_spim_irq_handler(spim_num bus_num)
 			ctlr_rtos->xfer_completion++;
 		}
 	}
-
 
 	return 0;
 }

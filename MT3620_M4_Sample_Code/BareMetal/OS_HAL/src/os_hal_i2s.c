@@ -80,7 +80,7 @@ void _mtk_os_hal_i2s0_tx_callback(void *data)
 {
 	mtk_mhal_i2s_move_tx_point(&i2s0_ctlr_cfg.i2s_ctrl,
 				   i2s0_ctlr_cfg.tx_period_len);
-	if (i2s0_ctlr_cfg.tx_callback_func != NULL)
+	if (*i2s0_ctlr_cfg.tx_callback_func != NULL)
 		i2s0_ctlr_cfg.tx_callback_func(
 				i2s0_ctlr_cfg.tx_callback_data);
 }
@@ -88,7 +88,7 @@ void _mtk_os_hal_i2s0_rx_callback(void *data)
 {
 	mtk_mhal_i2s_move_rx_point(&i2s0_ctlr_cfg.i2s_ctrl,
 				   i2s0_ctlr_cfg.rx_period_len);
-	if (i2s0_ctlr_cfg.rx_callback_func != NULL)
+	if (*i2s0_ctlr_cfg.rx_callback_func != NULL)
 		i2s0_ctlr_cfg.rx_callback_func(
 				i2s0_ctlr_cfg.rx_callback_data);
 }
@@ -96,7 +96,7 @@ void _mtk_os_hal_i2s1_tx_callback(void *data)
 {
 	mtk_mhal_i2s_move_tx_point(&i2s1_ctlr_cfg.i2s_ctrl,
 				   i2s1_ctlr_cfg.tx_period_len);
-	if (i2s1_ctlr_cfg.tx_callback_func != NULL)
+	if (*i2s1_ctlr_cfg.tx_callback_func != NULL)
 		i2s1_ctlr_cfg.tx_callback_func(
 				i2s1_ctlr_cfg.tx_callback_data);
 }
@@ -104,7 +104,7 @@ void _mtk_os_hal_i2s1_rx_callback(void *data)
 {
 	mtk_mhal_i2s_move_rx_point(&i2s1_ctlr_cfg.i2s_ctrl,
 				   i2s1_ctlr_cfg.rx_period_len);
-	if (i2s1_ctlr_cfg.rx_callback_func != NULL)
+	if (*i2s1_ctlr_cfg.rx_callback_func != NULL)
 		i2s1_ctlr_cfg.rx_callback_func(
 				i2s1_ctlr_cfg.rx_callback_data);
 }
@@ -257,8 +257,8 @@ int mtk_os_hal_config_i2s(i2s_no i2s_port, audio_parameter *parameter)
 
 	i2s_ctrl_cfg->tx_period_len = parameter->tx_period_len;
 	i2s_ctrl_cfg->rx_period_len = parameter->rx_period_len;
-	if (parameter->tx_callback_func == NULL ||
-	    parameter->rx_callback_func == NULL) {
+	if (*parameter->tx_callback_func == NULL ||
+	    *parameter->rx_callback_func == NULL) {
 		printf("callback function is NULL:\n");/* error handle */
 		return -I2S_EPTR;
 	}

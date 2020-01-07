@@ -199,34 +199,12 @@
  *	return mtk_mhal_gpio_pmx_get_mode(&pctl, pin, pvalue);
  *}
  *
- *int mtk_os_hal_gpio_ctlr_init(void)
- *{
- *	 int pin, reg_num;
- *
- *	 for (reg_num = 0; reg_num < MHAL_GPIO_REG_BASE_MAX; reg_num++)
- *		 pctl.base[reg_num] = (void __iomem *)gpio_base_addr[reg_num];
- *
- *	 for (pin = 0; pin < MHAL_GPIO_MAX; pin++) {
- *		 pctl.mtk_pins[pin].pinctrl_free = false;
- *	 }
- *
- *	 pctl.gpio_mode_bits = GPIO_MODE_BITS;
- *	 pctl.max_gpio_mode_per_reg = MAX_GPIO_MODE_PER_REG;
- *	 pctl.port_shf = PORT_SHF;
- *	 pctl.port_mask = PORT_MASK;
- *	 pctl.pinmux_offset = PINMUX_OFFSET;
- *
- *	 return 0;
- *}
- *
  *
  * @endcode
  * - \b How \b to \b develop \b user \b application \b by \b using
  *    \b OS-HAL \b API: \n
  *  - sample code (this is the user application sample code on freeRTos):
  *    @code
- *	// first call this function to initialize GPIO HW
- *	mtk_os_hal_gpio_ctlr_init();
  *
  *    - Set GPIO output high/low:
  *      -Call mtk_os_hal_gpio_request(pin) to get gpio request resource.

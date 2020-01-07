@@ -352,84 +352,27 @@
  * - \b Device \b driver \b sample \b code \b is \b as \b follows: \n
  *  - sample code (this is the user application sample code on FreeRTOS):
  *    @code
- *	#include <stdio.h>
- *	#include <stdint.h>
- *	#include <string.h>
- *	#include <stdlib.h>
- *	#include "nvic.h"
- *	#include "hal_gpt.h"
- *	#include "os_hal_eint.h"
- *	#include "os_hal_gpio.h"
+ *	- Register EINT
+ *	 -Call mtk_os_hal_eint_register(eint_number eint_num,
+ *			eint_trigger_mode trigger_mode, void (*handle)(void))
+ *	   to set trigger mode and callback function.
  *
- *	#define EINT_OUTPUT_PIN			0
+ *	- Use debounce function
+ *	  -Call mtk_os_hal_eint_set_debounce(eint_number eint_num,
+ *			os_hal_eint_debounce_time debounce_time)
+ *	    to set debounce time and enable it.
+ *	    If you want disable debounce function, you can Call
+ *	    mtk_os_hal_eint_disable_debounce(eint_number eint_num)
+ *	    to disable it.
  *
- *	int trigger;
- *	unsigned long long tick[3];
- *	extern struct mtk_pinctrl_controller *pctl;
+ *	- Change trigger mode
+ *	 - After register EINT, you can call mtk_os_hal_eint_set_type(
+ *			eint_number eint_num,eint_trigger_mode trigger_mode)
+ *	    to change trigger mode.
  *
- *	void eint_test_callback(void)
- *	{
- *		u32 tmp;
- *		unsigned int vector;
- *
- *		tick[1] = get_current_system_us();
- *		vector = (NVIC_GetVectActive() & 0x000000FF);
- *		mtk_os_hal_gpio_get_output(EINT_OUTPUT_PIN, &tmp);
- *		if (tmp)
- *			mtk_os_hal_gpio_set_output(EINT_OUTPUT_PIN, 0);
- *		else
- *			mtk_os_hal_gpio_set_output(EINT_OUTPUT_PIN, 1);
- *
- *		trigger++;
- *		delay_ms(200);
- *		printf("irq %d tirigger, tirgger times: %d\n", vector, trigger);
- *		NVIC_ClearPendingIRQ(vector);
- *		mSetHWEntry(CM4_WIC_SW_CLR, 1);
- *		mSetHWEntry(CM4_WIC_SW_CLR, 0);
- *	}
- *
- *
- *	void *ts_mtk_eint_debounce(uint8_t len, char *param[])
- *	{
- *		int type, deb_time, pol, range;
- *		unsigned int debounce[8] = {1, 2, 4, 8, 16, 32, 64, 128};
- *		unsigned int eint_num = strtoul(param[0], NULL, 10);
- *		int *loop = &trigger;
- *
- *		mtk_os_hal_gpio_pmx_set_mode(EINT_OUTPUT_PIN, OS_HAL_MODE_6);
- *		mtk_os_hal_gpio_set_direction(EINT_OUTPUT_PIN, 1);
- *
- *		for (type = 0; type < 5; type++) {
- *			pol = (type + 1) % 2;
- *			trigger = 0;
- *			mtk_os_hal_gpio_set_output(EINT_OUTPUT_PIN, pol);
- *			mtk_os_hal_eint_register(eint_num, type,
- *						 eint_test_callback);
- *
- *			for (deb_time = 0; deb_time < 8; deb_time++) {
- *				tick[0] = tick[1] = tick[2] = 0;
- *				pol = type % 2;
- *				mtk_os_hal_eint_set_debounce(eint_num,
- *					debounce[deb_time]);
- *				delay_ms(200);
- *				trigger = 0;
- *				printf("Will trigger EINT %d,type is %d!\n",
- *					eint_num, type);
- *				tick[0] = get_current_system_us();
- *				mtk_os_hal_gpio_set_output(
- *					EINT_OUTPUT_PIN, pol);
- *				while (*(volatile int *)(loop) == 0)
- *					;
- *				tick[2] = tick[1] - tick[0];
- *				printf("EINT debounce time is %d(ms) ,
- *					test result is %d(us).\n",
- *					debounce[deb_time], (int)(tick[2]));
- *			}
- *			mtk_os_hal_eint_unregister(eint_num);
- *		}
- *		printf("EINT debounce test pass!\n");
- *		return 0;
- *	}
+ *	- Unregister EINT
+ *	 - Call mtk_os_hal_eint_unregister(eint_number eint_num) to unregister
+ *	    EINT and release resource.
  *    @endcode
  *
  *

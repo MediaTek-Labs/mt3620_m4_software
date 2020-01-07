@@ -380,17 +380,6 @@ int mtk_os_hal_gpio_pmx_set_mode(os_hal_gpio_pin pin, os_hal_gpio_mode mode);
 int mtk_os_hal_gpio_pmx_get_mode(os_hal_gpio_pin pin, os_hal_gpio_mode *pvalue);
 
 /**
- * @brief  Init GPIO controller.
- *
- * @return To indicate that whether this function call is successful or not.\n
- *	  If the return value is -#EINVAL,
- *	  it means that a wrong parameter(except for pin number) is given,
- *	  and the parameter must be verified.\n
- *	  If the return value is 0, it means success.\n
- */
-int mtk_os_hal_gpio_ctlr_init(void);
-
-/**
 * @}
 * @}
 */

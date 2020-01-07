@@ -23,13 +23,13 @@ INCLUDE_DIRECTORIES(../OS_HAL/inc
 ADD_EXECUTABLE(${PROJECT_NAME} main.c
                                ../../../MT3620_M4_BSP/printf/printf.c
                                ../OS_HAL/src/os_hal_uart.c
-							   ../OS_HAL/src/os_hal_gpio.c
-							   ../OS_HAL/src/os_hal_gpt.c)
+                               ../OS_HAL/src/os_hal_gpio.c
+                               ../OS_HAL/src/os_hal_gpt.c)
 
 # Libraries
 ADD_SUBDIRECTORY(../../../MT3620_M4_Driver ./lib/MT3620_M4_Driver)
 ADD_SUBDIRECTORY(../../../MT3620_M4_BSP ./lib/BSP)
-TARGET_LINK_LIBRARIES(${PROJECT_NAME} MT3620_M4_Driver_UART 
+TARGET_LINK_LIBRARIES(${PROJECT_NAME} MT3620_M4_Driver_UART
                                       MT3620_M4_Driver_GPIO
                                       MT3620_M4_Driver_GPT
                                       MT3620_M4_Driver_OSAI

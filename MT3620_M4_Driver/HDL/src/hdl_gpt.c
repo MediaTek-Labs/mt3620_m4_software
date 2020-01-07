@@ -62,6 +62,7 @@
 
 /* GPT3: up + irq (1M) */
 #define GPT3_CTRL			(0x050)
+#define GPT3_CLKSRC_26M			(26000000)
 #define GPT3_OSC_CNT_1US(tick)		(((tick) & 0x3f) << 16)
 #define GPT3_OSC_CNT_MASK		GPT3_OSC_CNT_1US(0x3f)
 #define GPT3_ICLR			(0x0001 << 15)
@@ -279,25 +280,6 @@ u32 mtk_hdl_gpt_get_count(void __iomem *gpt_reg_base,
 	return _mtk_hdl_gpt_cm4_reg_read(gpt_reg_base, GPT_CNT_LIST[timer_id]);
 }
 
-
-/* A wake method to get xtal frequeny. It comes from top.c: top_xtal_init() */
-static unsigned int _mtk_hdl_gpt_xtal_freq_get(void)
-{
-	unsigned int xtal_strap;
-
-	xtal_strap = (*((volatile unsigned int *)(0x30090190)));
-	switch (xtal_strap & 0x03) {
-	case 0:
-		return 20000000;  /* 20Mhz */
-	case 1:
-		return 40000000;  /* 40Mhz */
-	case 2:
-		return 26000000;  /* 26Mhz */
-	default: /* 3 */
-		return 52000000;  /* 52Mhz */
-	}
-}
-
 void mtk_hdl_gpt_config_clk(void __iomem *gpt_reg_base,
 			    u8 timer_id,
 			    u8 clk_src)
@@ -331,7 +313,7 @@ void mtk_hdl_gpt_config_clk(void __iomem *gpt_reg_base,
 						GPT_CTRL_LIST[timer_id]) &
 						(~GPT3_OSC_CNT_MASK);
 
-		osc_cnt_1us = (_mtk_hdl_gpt_xtal_freq_get() / 1000000) - 1;
+		osc_cnt_1us = (GPT3_CLKSRC_26M / 1000000) - 1;
 
 		_mtk_hdl_gpt_cm4_reg_write(gpt_reg_base,
 				GPT_CTRL_LIST[timer_id],

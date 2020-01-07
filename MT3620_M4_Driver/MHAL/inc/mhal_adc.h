@@ -617,8 +617,6 @@
  *      -Call mtk_os_hal_adc_ctlr_init() to initialize the ADC module.
  *      -Call mtk_os_hal_adc_fsm_param_set() to set dma state
  *        machine parameters.
- *      -Call mtk_os_hal_adc_start() or mtk_os_hal_adc_start_ch() to start
- *        the ADC module.
  *      -Call mtk_os_hal_adc_period_get_data() to retrieve
  *        sample data for a channel.
  *      -ADC hw is no longer in use, call mtk_os_hal_adc_ctlr_deinit() to return
@@ -640,15 +638,15 @@
  *	number that ADC supports, ADC ring buffer size and error return value.
  */
 
-#define EPTR		1
+#define ADC_EPTR		1
 /**< Invalid argument, it means the pointer is NULL */
-#define EPARAMETER	2
+#define ADC_EPARAMETER	2
 /**< Invalid argument, it means the parameter invalid */
-#define ENOMEM		3
+#define ADC_ENOMEM		3
 /**< Out of memory, it means memory malloc fail */
-#define EFAULT		4
+#define ADC_EFAULT		4
 /**< Bad address */
-#define EAGAIN		5
+#define ADC_EAGAIN		5
 /**< Try again */
 
 #define ADC_CH_ID_MASK  (BIT(0)|BIT(1)|BIT(2)|BIT(3))

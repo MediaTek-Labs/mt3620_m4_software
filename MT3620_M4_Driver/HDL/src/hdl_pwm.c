@@ -56,24 +56,6 @@ static unsigned int _mtk_hdl_pwm_readl(void __iomem *base,
 
 	return value;
 }
-/* A wake method to get xtal frequeny. It comes from top.c: top_xtal_init() */
-static unsigned int _mtk_hdl_pwm_xtal_freq_get(void)
-{
-	u32 xtal_strap;
-
-	xtal_strap = (*((volatile u32 *)(0x30090190)));
-
-	switch (xtal_strap & 0x03) {
-	case 0:
-		return 20000000;	/* 20Mhz */
-	case 1:
-		return 40000000;	/* 40Mhz */
-	case 3:
-		return 52000000;	/* 52Mhz */
-	}
-
-	return 26000000;	/* 26Mhz */
-}
 
 void mtk_hdl_pwm_init(void __iomem *base)
 {
@@ -276,7 +258,7 @@ void mtk_hdl_pwm_group_config(void __iomem *base, u8 pwm_num,
 		pwm_s0_s1_stage stage, u16 duty_cycle, u32 pwm_freq)
 {
 	u32 clock_source = 0;
-	u32 clk_frreq = 0;
+	u32 clk_freq = 0;
 	u32 pwm_step = 0;
 	u32 on_time = 0;
 	u32 off_time = 0;
@@ -290,20 +272,20 @@ void mtk_hdl_pwm_group_config(void __iomem *base, u8 pwm_num,
 		clock_source);
 	switch (clock_source) {
 	case PWM_CLK_32K:
-		clk_frreq = (32700);
+		clk_freq = (32700);
 		break;
 	case PWM_CLK_2M:
-		clk_frreq = (2 * 1000 * 1000);
+		clk_freq = (2 * 1000 * 1000);
 		break;
 	case PWM_CLK_XTAL:
-		clk_frreq = _mtk_hdl_pwm_xtal_freq_get();
+		clk_freq = (26000000);
 		break;
 
 	default:
 		break;
 	}
 	pwm_debug("mtk hdl_pwm_group_config clock_source ==%d\n",
-		clk_frreq);
+		clk_freq);
 	/*
 	* T(second)	PWM period
 	* F (Hz)		PWM frequency = 1/T
@@ -324,7 +306,7 @@ void mtk_hdl_pwm_group_config(void __iomem *base, u8 pwm_num,
 	Y = f/F - X = f/F - Df/F = ((1-D)f)/F
 	*/
 
-	pwm_step = (clk_frreq / pwm_freq);
+	pwm_step = (clk_freq / pwm_freq);
 
 	on_time = (duty_cycle * pwm_step) / PWM_DUTY_CYCLE_BASE;
 	off_time = pwm_step - on_time;
@@ -410,7 +392,7 @@ void mtk_hdl_pwm_group_query(void __iomem *base, u8 pwm_num,
 	pwm_s0_s1_stage stage, u16 *duty_cycle, u32 *pwm_freq, u8 *enable)
 {
 	u32 clock_source = 0;
-	u32 clk_frreq = 0;
+	u32 clk_freq = 0;
 	u32 pwm_step = 0;
 	u32 on_time = 0;
 	u32 off_time = 0;
@@ -431,15 +413,15 @@ void mtk_hdl_pwm_group_query(void __iomem *base, u8 pwm_num,
 		clock_source);
 	switch (clock_source) {
 	case PWM_CLK_32K:
-		clk_frreq = (32700);
+		clk_freq = (32700);
 		break;
 
 	case PWM_CLK_2M:
-		clk_frreq = (2 * 1000 * 1000);
+		clk_freq = (2 * 1000 * 1000);
 		break;
 
 	case PWM_CLK_XTAL:
-		clk_frreq = _mtk_hdl_pwm_xtal_freq_get();
+		clk_freq = (26000000);
 		break;
 
 	default:
@@ -475,7 +457,10 @@ void mtk_hdl_pwm_group_query(void __iomem *base, u8 pwm_num,
 	}
 
 	pwm_step = on_time + off_time;
-	(*pwm_freq) = (clk_frreq / pwm_step);
+
+	if (pwm_step != 0)
+		(*pwm_freq) = (clk_freq / pwm_step);
+
 	(*duty_cycle) = on_time;
 	pwm_debug("mtk hdl_pwm_group_query *pwm_freq == %x\n", *pwm_freq);
 }

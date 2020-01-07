@@ -49,7 +49,7 @@ static int _mtk_mhal_dma_config_fullsize_dma(struct dma_controller *controller)
 		dma_err(
 		    "dma control(%p) or config parameters(%p) is NULL!\n",
 		    ctrls, cfg);
-		return -EPARAM;
+		return -DMA_EPARAM;
 	}
 
 	/* dma channel work mode control settings */
@@ -60,15 +60,11 @@ static int _mtk_mhal_dma_config_fullsize_dma(struct dma_controller *controller)
 			 * on destination side
 			 */
 			control_settings |= DMA_CON_WPSD;
-		} else if (ctrls->wrap_side == false) {
+		} else {
 			/* wrap_side = 0, address-wrapping
 			 * on source side
 			 */
 			control_settings &= ~DMA_CON_WPSD;
-		} else {
-			dma_err("invalid wrap address side: %d\n",
-				ctrls->wrap_side);
-			return -EPARAM;
 		}
 	}
 
@@ -106,7 +102,7 @@ static int _mtk_mhal_dma_config_fullsize_dma(struct dma_controller *controller)
 		break;
 	default:
 		dma_err("default size is 0(DMA_CON_SIZE_BYTE)\n");
-		return -EPARAM;
+		return -DMA_EPARAM;
 	}
 
 	switch (ctrls->burst_type) {
@@ -124,7 +120,7 @@ static int _mtk_mhal_dma_config_fullsize_dma(struct dma_controller *controller)
 		break;
 	default:
 		dma_err("unused burst-type: %d\n", ctrls->burst_type);
-		return -EPARAM;
+		return -DMA_EPARAM;
 	}
 
 	/* Before starting dma configuration, should stop dma firstly */
@@ -144,13 +140,13 @@ static int _mtk_mhal_dma_config_fullsize_dma(struct dma_controller *controller)
 
 	if (mtk_hdl_dma_set_count(chn_base, cfg->count, ctrls->transize) < 0) {
 		dma_err("invalid transfer byte count %d!\n", cfg->count);
-		return -EPARAM;
+		return -DMA_EPARAM;
 	}
 
 	if (ctrls->wrap_en == true) {
 		if (cfg->wrap_point > cfg->count) {
 			dma_err("invalid wrap point: 0x%x\n", cfg->wrap_point);
-			return -EPARAM;
+			return -DMA_EPARAM;
 		}
 		mtk_hdl_dma_set_wppt(chn_base, cfg->wrap_point,
 			ctrls->transize);
@@ -177,7 +173,7 @@ static int _mtk_mhal_dma_config_halfsize_dma(struct dma_controller *controller)
 	if (ctrls == NULL || cfg == NULL) {
 		dma_err("dma control(%p) or config parameters(%p) is NULL!\n",
 		    ctrls, cfg);
-		return -EPARAM;
+		return -DMA_EPARAM;
 	}
 
 	/* dma channel work mode control settings */
@@ -187,9 +183,6 @@ static int _mtk_mhal_dma_config_halfsize_dma(struct dma_controller *controller)
 	} else if (ctrls->dir == MEM_2_PERI) {
 		/* dir = 0, read from memory and write to peripheral */
 		control_settings &= ~DMA_CON_DIR;
-	} else {
-		dma_err("invalid transfer direction: %d\n", ctrls->dir);
-		return -EPARAM;
 	}
 	if (ctrls->wrap_en == true) {
 		control_settings |= DMA_CON_WPEN;
@@ -198,15 +191,11 @@ static int _mtk_mhal_dma_config_halfsize_dma(struct dma_controller *controller)
 			 * on destination side
 			 */
 			control_settings |= DMA_CON_WPSD;
-		} else if (ctrls->wrap_side == false) {
+		} else {
 			/* wrap_side = 0, address-wrapping
 			 * on source side
 			 */
 			control_settings &= ~DMA_CON_WPSD;
-		} else {
-			dma_err("invalid wrap address side: %d\n",
-				ctrls->wrap_side);
-			return -EPARAM;
 		}
 	}
 	if (ctrls->int_en == true)
@@ -248,7 +237,7 @@ static int _mtk_mhal_dma_config_halfsize_dma(struct dma_controller *controller)
 		break;
 	default:
 		dma_err("default size is 0(DMA_CON_SIZE_BYTE)\n");
-		return -EPARAM;
+		return -DMA_EPARAM;
 	}
 
 	switch (ctrls->burst_type) {
@@ -266,7 +255,7 @@ static int _mtk_mhal_dma_config_halfsize_dma(struct dma_controller *controller)
 		break;
 	default:
 		dma_err("unused burst-type: %d\n", ctrls->burst_type);
-		return -EPARAM;
+		return -DMA_EPARAM;
 	}
 
 	/* Before starting dma configuration, should stop dma firstly */
@@ -286,19 +275,19 @@ static int _mtk_mhal_dma_config_halfsize_dma(struct dma_controller *controller)
 
 	if ((cfg->addr_2 & 0x3) != 0) {
 		dma_err("fix addr 0x%x isn't 4byte aligned\n", cfg->addr_2);
-		return -EPARAM;
+		return -DMA_EPARAM;
 	}
 	mtk_hdl_dma_set_fixaddr(chn_base, cfg->addr_2);
 
 	if (mtk_hdl_dma_set_count(chn_base, cfg->count, ctrls->transize) < 0) {
-		dma_err("transfer byte count %d is too large.\n", cfg->count);
-		return -EPARAM;
+		dma_err("invalid transfer byte count %d!\n", cfg->count);
+		return -DMA_EPARAM;
 	}
 
 	if (ctrls->wrap_en == true) {
 		if (cfg->wrap_point > cfg->count) {
 			dma_err("invalid wrap point: 0x%x\n", cfg->wrap_point);
-			return -EPARAM;
+			return -DMA_EPARAM;
 		}
 		mtk_hdl_dma_set_wppt(chn_base, cfg->wrap_point,
 			ctrls->transize);
@@ -330,7 +319,7 @@ static int _mtk_mhal_dma_config_vfifo_dma(struct dma_controller *controller)
 	if (ctrls == NULL || cfg == NULL) {
 		dma_err("dma control(%p) or config parameters(%p) is NULL!\n",
 		    ctrls, cfg);
-		return -EPARAM;
+		return -DMA_EPARAM;
 	}
 
 	/* dma channel work mode control settings */
@@ -340,9 +329,6 @@ static int _mtk_mhal_dma_config_vfifo_dma(struct dma_controller *controller)
 	} else if (ctrls->dir == MEM_2_PERI) {
 		/* dir = 0, read from memory and write to peripheral */
 		control_settings &= ~DMA_CON_DIR;
-	} else {
-		dma_err("invalid transfer direction: %d\n", ctrls->dir);
-		return -EPARAM;
 	}
 
 	if (ctrls->int_en == true)
@@ -364,7 +350,7 @@ static int _mtk_mhal_dma_config_vfifo_dma(struct dma_controller *controller)
 		break;
 	default:
 		dma_err("default size is 0(DMA_CON_SIZE_BYTE)\n");
-		return -EPARAM;
+		return -DMA_EPARAM;
 	}
 
 	/* Before starting dma configuration, should stop dma firstly */
@@ -384,13 +370,14 @@ static int _mtk_mhal_dma_config_vfifo_dma(struct dma_controller *controller)
 
 	if ((cfg->addr_2 & 0x3) != 0) {
 		dma_err("fix addr 0x%x isn't 4byte aligned\n", cfg->addr_2);
-		return -EPARAM;
+		return -DMA_EPARAM;
 	}
 	mtk_hdl_dma_set_fixaddr(chn_base, cfg->addr_2);
 
+	dma_debug("cfg->count %d\n", cfg->count);
 	if (mtk_hdl_dma_set_count(chn_base, cfg->count, ctrls->transize) < 0) {
 		dma_err("invalid fifo threshold %d.\n", cfg->count);
-		return -EPARAM;
+		return -DMA_EPARAM;
 	}
 
 	mtk_hdl_dma_set_bw_limiter(chn_base, cfg->bw_limiter);
@@ -405,7 +392,7 @@ static int _mtk_mhal_dma_config_vfifo_dma(struct dma_controller *controller)
 	if (mtk_hdl_dma_set_altlen(chn_base, cfg->alert_cmp_type,
 		cfg->alert_len) < 0) {
 		dma_err("invalid vfifo alert_len: %d\n", cfg->alert_len);
-		return -EPARAM;
+		return -DMA_EPARAM;
 	}
 
 	mtk_hdl_dma_set_timeout_thr(chn_base, cfg->timeout_cnt);
@@ -420,12 +407,12 @@ int mtk_mhal_dma_config(struct dma_controller *controller)
 
 	if (controller == NULL) {
 		dma_err("dma controller is NULL!\n");
-		return -EPTR;
+		return -DMA_EPTR;
 	}
 
 	if (mtk_hdl_dma_chk_run_status(controller->base,
 				       controller->chn)) {
-		return -EBUSY;
+		return -DMA_EBUSY;
 	}
 
 	switch (controller->chn_type) {
@@ -437,7 +424,7 @@ int mtk_mhal_dma_config(struct dma_controller *controller)
 		return _mtk_mhal_dma_config_vfifo_dma(controller);
 	default:
 		dma_err("config invalid dma channel type!\n");
-		return -EPARAM;
+		return -DMA_EPARAM;
 	}
 }
 
@@ -447,12 +434,12 @@ int mtk_mhal_dma_start(struct dma_controller *controller)
 
 	if (controller == NULL) {
 		dma_err("dma controller is NULL!\n");
-		return -EPTR;
+		return -DMA_EPTR;
 	}
 
 	if (mtk_hdl_dma_chk_run_status(controller->base,
 				       controller->chn)) {
-		return -EBUSY;
+		return -DMA_EBUSY;
 	}
 
 	chn_base = DMA_GET_CHN_BASE(controller->base, controller->chn);
@@ -467,7 +454,7 @@ int mtk_mhal_dma_stop(struct dma_controller *controller)
 
 	if (controller == NULL) {
 		dma_err("dma controller is NULL!\n");
-		return -EPTR;
+		return -DMA_EPTR;
 	}
 
 	chn_base = DMA_GET_CHN_BASE(controller->base, controller->chn);
@@ -479,7 +466,7 @@ int mtk_mhal_dma_pause(struct dma_controller *controller)
 {
 	if (controller == NULL) {
 		osai_print("dma controller is NULL!\n");
-		return -EPTR;
+		return -DMA_EPTR;
 	}
 
 	mtk_hdl_dma_pause(controller->base, controller->chn);
@@ -490,7 +477,7 @@ int mtk_mhal_dma_resume(struct dma_controller *controller)
 {
 	if (controller == NULL) {
 		dma_err("dma controller is NULL!\n");
-		return -EPTR;
+		return -DMA_EPTR;
 	}
 
 	if (mtk_hdl_dma_chk_pause_status(controller->base,
@@ -506,7 +493,7 @@ int mtk_mhal_dma_get_status(struct dma_controller *controller)
 
 	if (controller == NULL) {
 		dma_err("dma controller is NULL!\n");
-		return -EPTR;
+		return -DMA_EPTR;
 	}
 
 	if (mtk_hdl_dma_chk_int_status(controller->base,
@@ -535,7 +522,7 @@ int mtk_mhal_dma_set_param(struct dma_controller *controller,
 
 	if (controller == NULL) {
 		dma_err("dma controller is NULL!\n");
-		return -EPTR;
+		return -DMA_EPTR;
 	}
 
 	chn_base = DMA_GET_CHN_BASE(controller->base, controller->chn);
@@ -547,15 +534,14 @@ int mtk_mhal_dma_set_param(struct dma_controller *controller,
 		mtk_hdl_dma_set_pgmaddr(chn_base, value);
 		break;
 	case DMA_PARAM_VFF_FIFO_SIZE:
-		mtk_hdl_dma_set_ffsize(chn_base, value,
+		return mtk_hdl_dma_set_ffsize(chn_base, value,
 			controller->ctrls->transize);
-		break;
 	case DMA_PARAM_VFF_SWPTR:
 		mtk_hdl_dma_set_swptr(chn_base, value);
 		break;
 	default:
 		dma_err("cannot set param %d\n", (u32)param);
-		return -EPARAM;
+		return -DMA_EPARAM;
 	}
 
 	return 0;
@@ -568,7 +554,7 @@ int mtk_mhal_dma_get_param(struct dma_controller *controller,
 
 	if (controller == NULL) {
 		dma_err("dma controller is NULL!\n");
-		return -EPTR;
+		return -DMA_EPTR;
 	}
 
 	chn_base = DMA_GET_CHN_BASE(controller->base, controller->chn);
@@ -592,7 +578,7 @@ int mtk_mhal_dma_get_param(struct dma_controller *controller,
 		return mtk_hdl_dma_get_swptr(chn_base);
 	default:
 		dma_err("cannot get param %d\n", (u32)param);
-		return -EPARAM;
+		return -DMA_EPARAM;
 	}
 }
 
@@ -601,7 +587,7 @@ static int _mtk_mhal_dma_clear_fullsize_irq_status(
 {
 	void __iomem *chn_base = DMA_GET_CHN_BASE(controller->base,
 						  controller->chn);
-	int ret = -EPARAM;
+	int ret = -DMA_EPARAM;
 
 	if (mtk_hdl_dma_chk_int(chn_base)) {
 		if (controller->cfg->isr_callback_1 != NULL) {
@@ -620,7 +606,7 @@ static int _mtk_mhal_dma_clear_halfsize_irq_status(
 {
 	void __iomem *chn_base = DMA_GET_CHN_BASE(controller->base,
 						  controller->chn);
-	int ret = -EPARAM;
+	int ret = -DMA_EPARAM;
 
 	if (mtk_hdl_dma_chk_int(chn_base)) {
 		if (controller->cfg->isr_callback_1 != NULL) {
@@ -647,7 +633,7 @@ static int _mtk_mhal_dma_clear_vfifo_irq_status(
 {
 	void __iomem *chn_base = DMA_GET_CHN_BASE(controller->base,
 						  controller->chn);
-	int ret = -EPARAM;
+	int ret = -DMA_EPARAM;
 
 	if (mtk_hdl_dma_chk_int(chn_base)) {
 		if (controller->cfg->isr_callback_1 != NULL) {
@@ -672,7 +658,7 @@ int mtk_mhal_dma_clear_irq_status(struct dma_controller *controller)
 {
 	if (controller == NULL) {
 		dma_err("dma controller is NULL!\n");
-		return -EPTR;
+		return -DMA_EPTR;
 	}
 
 	dma_debug("dma chn %d, base %p clear irq status\n",
@@ -687,7 +673,7 @@ int mtk_mhal_dma_clear_irq_status(struct dma_controller *controller)
 		return _mtk_mhal_dma_clear_vfifo_irq_status(controller);
 	default:
 		dma_err("invalid dma channel type clear irq status!\n");
-		return -EPARAM;
+		return -DMA_EPARAM;
 	}
 }
 
@@ -695,7 +681,7 @@ int mtk_mhal_dma_dump_reg(struct dma_controller *controller)
 {
 	if (controller == NULL) {
 		dma_err("dma controller is NULL!\n");
-		return -EPTR;
+		return -DMA_EPTR;
 	}
 
 	mtk_hdl_dma_dump_chn_reg(
@@ -709,7 +695,7 @@ int mtk_mhal_dma_clock_enable(struct dma_controller *controller)
 {
 	if (controller == NULL) {
 		dma_err("dma controller is NULL!\n");
-		return -EPTR;
+		return -DMA_EPTR;
 	}
 
 	mtk_hdl_dma_clock_enable(controller->base, controller->chn);
@@ -721,7 +707,7 @@ int mtk_mhal_dma_clock_disable(struct dma_controller *controller)
 {
 	if (controller == NULL) {
 		dma_err("dma controller is NULL!\n");
-		return -EPTR;
+		return -DMA_EPTR;
 	}
 
 	mtk_hdl_dma_clock_disable(controller->base, controller->chn);
@@ -733,7 +719,7 @@ int mtk_mhal_dma_reset(struct dma_controller *controller)
 {
 	if (controller == NULL) {
 		dma_err("dma controller is NULL!\n");
-		return -EPTR;
+		return -DMA_EPTR;
 	}
 
 	mtk_hdl_dma_reset_chn(controller->base, controller->chn);
@@ -775,7 +761,7 @@ int mtk_mhal_dma_update_swptr(struct dma_controller *controller,
 	ffsize = mtk_mhal_dma_get_param(controller, DMA_PARAM_VFF_FIFO_SIZE);
 	if (length_byte > ffsize) {
 		dma_err("invalid update byte length: 0x%x\n", length_byte);
-		return -EPARAM;
+		return -DMA_EPARAM;
 	}
 	/* get the current value of swptr */
 	swptr_cr = mtk_mhal_dma_get_param(controller, DMA_PARAM_VFF_SWPTR);
@@ -799,13 +785,13 @@ int mtk_mhal_dma_vff_read_data(struct dma_controller *controller,
 
 	if (controller == NULL) {
 		dma_err("dma controller is NULL!\n");
-		return -EPTR;
+		return -DMA_EPTR;
 	}
 
 	if (buffer == NULL || length == 0) {
 		dma_err("[%s]buffer %p, length %d\n", __func__, buffer,
 			   length);
-		return -EPARAM;
+		return -DMA_EPARAM;
 	}
 
 	fifo_data_cnt = mtk_mhal_dma_get_param(controller,
@@ -840,7 +826,7 @@ int mtk_mhal_dma_clr_dreq(struct dma_controller *controller)
 {
 	if (controller == NULL) {
 		dma_err("dma controller is NULL!\n");
-		return -EPTR;
+		return -DMA_EPTR;
 	}
 
 	mtk_hdl_dma_clr_dreq(controller->base, controller->chn);

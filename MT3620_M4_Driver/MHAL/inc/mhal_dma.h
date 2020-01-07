@@ -334,7 +334,6 @@
  *		       ctrl->ctrls->int_en = !!(setting->interrupt_flag
  *			       & DMA_INT_COMPLETION);
  *	       } else {
- *		       ctrl->ctrls->dreq = setting->dreq;
  *		       ctrl->ctrls->dir = (enum dma_dir)setting->dir;
  *		       if (ctrl->ctrls->dir == MEM_2_PERI) {
  *			       ctrl->cfg->addr_1 = setting->src_addr;
@@ -349,7 +348,6 @@
  *		       }
  *		       ctrl->cfg->count = setting->count;
  *		       ctrl->cfg->reload_en = setting->reload_en;
- *		       ctrl->ctrls->dreq = setting->dreq;
  *		       if (ctrl->chn_type == DMA_TYPE_VFF) {
  *			       ctrl->cfg->count = setting->vfifo.fifo_thrsh;
  *			       ctrl->cfg->timeout_cnt =
@@ -644,13 +642,11 @@
  */
 
 /** Invalid argument, it means the pointer is NULL. */
-#define EPTR 1
+#define DMA_EPTR 1
 /** Invalid parameter, it means the users input error parameters. */
-#define EPARAM 2
-/** Out of memory, it means memory malloc fail. */
-#define ENOMEM 3
+#define DMA_EPARAM 2
 /** DMA channel is busy. */
-#define EBUSY 4
+#define DMA_EBUSY 3
 
 /**
  * @}
@@ -871,9 +867,9 @@ struct dma_config {
 	 * during data transfer.\n Only for FULL-SIZE DMA and HALF-SIZE DMA.
 	 */
 	u32 wrap_point;
-	/** Wrap to point from start address. If wrap_en in dma_ctrl is enable,
-	 * DMA channel read/write pointer will jump to #wrap_to_addr at
-	 * #wrap_point during data transfer.\n Only for FULL-SIZE DMA and
+	/** The address which DMA will wrap to. If wrap_en in dma_ctrl is
+	 * enable, DMA channel read/write pointer will jump to #wrap_to_addr
+	 * at #wrap_point during data transfer.\n Only for FULL-SIZE DMA and
 	 * HALF-SIZE DMA.
 	 */
 	u32 wrap_to_addr;
@@ -948,9 +944,9 @@ struct dma_controller {
  *
  * @return
  * Return 0 if users configure DMA channel successfully.\n
- * Return -#EPARAM if users input error parameters.\n
- * Return -#EBUSY if DMA channel is running.\n
- * Return -#EPTR if controller is NULL.
+ * Return -#DMA_EPARAM if users input error parameters.\n
+ * Return -#DMA_EBUSY if DMA channel is running.\n
+ * Return -#DMA_EPTR if controller is NULL.
  */
 int mtk_mhal_dma_config(struct dma_controller *controller);
 
@@ -962,8 +958,8 @@ int mtk_mhal_dma_config(struct dma_controller *controller);
  *
  * @return
  * Return 0 if users start DMA channel successfully.\n
- * Return -#EBUSY if DMA channel is running.\n
- * Return -#EPTR if controller is NULL.
+ * Return -#DMA_EBUSY if DMA channel is running.\n
+ * Return -#DMA_EPTR if controller is NULL.
  */
 int mtk_mhal_dma_start(struct dma_controller *controller);
 
@@ -976,7 +972,7 @@ int mtk_mhal_dma_start(struct dma_controller *controller);
  *
  * @return
  * Return 0 if users stop DMA channel successfully.\n
- * Return -#EPTR if controller is NULL.
+ * Return -#DMA_EPTR if controller is NULL.
  */
 int mtk_mhal_dma_stop(struct dma_controller *controller);
 
@@ -989,7 +985,7 @@ int mtk_mhal_dma_stop(struct dma_controller *controller);
  *
  * @return
  * Return 0 if users pause DMA channel successfully.\n
- * Return -#EPTR if controller is NULL.
+ * Return -#DMA_EPTR if controller is NULL.
  */
 int mtk_mhal_dma_pause(struct dma_controller *controller);
 
@@ -1001,7 +997,7 @@ int mtk_mhal_dma_pause(struct dma_controller *controller);
  *
  * @return
  * Return 0 if users resume DMA channel successfully.\n
- * Return -#EPTR if controller is NULL.
+ * Return -#DMA_EPTR if controller is NULL.
  */
 int mtk_mhal_dma_resume(struct dma_controller *controller);
 
@@ -1014,7 +1010,7 @@ int mtk_mhal_dma_resume(struct dma_controller *controller);
  *
  * @return
  * Return the DMA channel status if get status successfully.\n
- * Return -#EPTR if controller is NULL.\n
+ * Return -#DMA_EPTR if controller is NULL.\n
  * Bit 0 specifies interrupt status, Bit 1 specifies running status and Bit 2
  * specifies pause status. Bit 0 is 1 when interrupt is pending and is 0 when
  * \n no interrupt is generated. Bit 1 is 0 when DMA channel has been stopped
@@ -1029,11 +1025,13 @@ int mtk_mhal_dma_get_status(struct dma_controller *controller);
  * @brief Usage: Users should call this function carefully if DMA channel
  * is running.
  * @param [in] controller : The pointer of struct dma_controller.
+ * @param [in] param : The parameter type whose value to be set.
+ * @param [in] value : The new parameter value.
  *
  * @return
  * Return 0 if users set DMA channel parameter successfully.\n
- * Return -#EPARAM if users input error parameter type or value.\n
- * Return -#EPTR if controller is NULL.
+ * Return -#DMA_EPARAM if users input error parameter type or value.\n
+ * Return -#DMA_EPTR if controller is NULL.
  */
 int mtk_mhal_dma_set_param(struct dma_controller *controller,
 			   enum dma_param param, u32 value);
@@ -1044,11 +1042,12 @@ int mtk_mhal_dma_set_param(struct dma_controller *controller,
  * @brief Usage: Users should call this function carefully if DMA channel
  * is running.
  * @param [in] controller : The pointer of struct dma_controller.
+ * @param [in] param : The parameter type whose value to be got.
  *
  * @return
  * Return the parameter value if users get DMA parameters successfully.\n
- * Return -#EPARAM if users input error parameter type.\n
- * Return -#EPTR if controller is NULL.
+ * Return -#DMA_EPARAM if users input error parameter type.\n
+ * Return -#DMA_EPTR if controller is NULL.
  */
 int mtk_mhal_dma_get_param(struct dma_controller *controller,
 			   enum dma_param param);
@@ -1060,7 +1059,7 @@ int mtk_mhal_dma_get_param(struct dma_controller *controller,
  *
  * @return
  * Return 0 if users resume DMA channel successfully.\n
- * Return -#EPTR if controller is NULL.
+ * Return -#DMA_EPTR if controller is NULL.
  */
 int mtk_mhal_dma_clear_irq_status(struct dma_controller *controller);
 
@@ -1071,7 +1070,7 @@ int mtk_mhal_dma_clear_irq_status(struct dma_controller *controller);
  *
  * @return
  * Return 0 if users resume DMA channel successfully.\n
- * Return -#EPTR if controller is NULL.
+ * Return -#DMA_EPTR if controller is NULL.
  */
 int mtk_mhal_dma_dump_reg(struct dma_controller *controller);
 
@@ -1082,7 +1081,7 @@ int mtk_mhal_dma_dump_reg(struct dma_controller *controller);
  *
  * @return
  * Return 0 if users enable DMA channel clock successfully.\n
- * Return -#EPTR if controller is NULL.
+ * Return -#DMA_EPTR if controller is NULL.
  */
 int mtk_mhal_dma_clock_enable(struct dma_controller *controller);
 
@@ -1093,7 +1092,7 @@ int mtk_mhal_dma_clock_enable(struct dma_controller *controller);
  *
  * @return
  * Return 0 if users disable DMA channel clock successfully.\n
- * Return -#EPTR if controller is NULL.
+ * Return -#DMA_EPTR if controller is NULL.
  */
 int mtk_mhal_dma_clock_disable(struct dma_controller *controller);
 
@@ -1104,7 +1103,7 @@ int mtk_mhal_dma_clock_disable(struct dma_controller *controller);
  *
  * @return
  * Return 0 if users reset DMA channel successfully.\n
- * Return -#EPTR if controller is NULL.
+ * Return -#DMA_EPTR if controller is NULL.
  */
 int mtk_mhal_dma_reset(struct dma_controller *controller);
 
@@ -1119,8 +1118,8 @@ int mtk_mhal_dma_reset(struct dma_controller *controller);
  * larger than vfifo size.
  *
  * @return
- * Return 0 if users update VFF DMA channel swptr.\n
- * Return -#EPTR if controller is NULL.
+ * Return 0 if users update VFF DMA channel swptr successfully.\n
+ * Return -#DMA_EPTR if controller is NULL.
  */
 int mtk_mhal_dma_update_swptr(struct dma_controller *controller,
 					u32 length_byte);
@@ -1136,7 +1135,7 @@ int mtk_mhal_dma_update_swptr(struct dma_controller *controller,
  *
  * @return
  * Return the actual read data byte count if successfully.\n
- * Return -#EPTR if controller is NULL.
+ * Return -#DMA_EPTR if controller is NULL.
  */
 int mtk_mhal_dma_vff_read_data(struct dma_controller *controller,
 					u8 *buffer, u32 length);
@@ -1148,7 +1147,7 @@ int mtk_mhal_dma_vff_read_data(struct dma_controller *controller,
  *
  * @return
  * Return 0 if users clear dreq signal of DMA channel successfully.\n
- * Return -#EPTR if controller is NULL.
+ * Return -#DMA_EPTR if controller is NULL.
  */
 int mtk_mhal_dma_clr_dreq(struct dma_controller *controller);
 /**

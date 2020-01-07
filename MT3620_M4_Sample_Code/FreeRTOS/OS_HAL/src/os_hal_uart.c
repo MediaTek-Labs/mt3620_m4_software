@@ -40,8 +40,6 @@
 #include "os_hal_gpio.h"
 #include "os_hal_dma.h"
 
-#define MTK_UART_MAX_PORT_NUMBER 6
-
 #define CM4_UART_BASE			0x21040000
 #define ISU0_UART_BASE			0x38070500
 #define ISU1_UART_BASE			0x38080500
@@ -49,7 +47,7 @@
 #define ISU3_UART_BASE			0x380a0500
 #define ISU4_UART_BASE			0x380b0500
 
-static unsigned long uart_base_addr[MTK_UART_MAX_PORT_NUMBER] = {
+static unsigned long uart_base_addr[OS_HAL_UART_MAX_PORT] = {
 	CM4_UART_BASE,
 	ISU0_UART_BASE,
 	ISU1_UART_BASE,
@@ -65,7 +63,7 @@ static unsigned long uart_base_addr[MTK_UART_MAX_PORT_NUMBER] = {
 #define ISU3_UART_CG_BASE	0x380a0000
 #define ISU4_UART_CG_BASE	0x380b0000
 
-static unsigned long uart_cg_base_addr[MTK_UART_MAX_PORT_NUMBER] = {
+static unsigned long uart_cg_base_addr[OS_HAL_UART_MAX_PORT] = {
 	CM4_UART_CG_BASE,
 	ISU0_UART_CG_BASE,
 	ISU1_UART_CG_BASE,
@@ -74,7 +72,7 @@ static unsigned long uart_cg_base_addr[MTK_UART_MAX_PORT_NUMBER] = {
 	ISU4_UART_CG_BASE,
 };
 
-static u8 uart_half_dma_chan[MTK_UART_MAX_PORT_NUMBER-1][2] = {
+static u8 uart_half_dma_chan[OS_HAL_UART_MAX_PORT-1][2] = {
 	/* [0]:tx, [1]:rx */
 	{DMA_ISU0_TX_CH0, DMA_ISU0_RX_CH1},
 	{DMA_ISU1_TX_CH2, DMA_ISU1_RX_CH3},
@@ -83,7 +81,7 @@ static u8 uart_half_dma_chan[MTK_UART_MAX_PORT_NUMBER-1][2] = {
 	{DMA_ISU4_TX_CH8, DMA_ISU4_RX_CH9},
 };
 
-static u8 uart_vff_dma_chan[MTK_UART_MAX_PORT_NUMBER-1][2] = {
+static u8 uart_vff_dma_chan[OS_HAL_UART_MAX_PORT-1][2] = {
 	/* [0]:tx, [1]:rx */
 	{VDMA_ISU0_TX_CH13, VDMA_ISU0_RX_CH14},
 	{VDMA_ISU1_TX_CH15, VDMA_ISU1_RX_CH16},
@@ -105,16 +103,16 @@ struct mtk_uart_controller_rtos {
 };
 
 static struct mtk_uart_private
-	g_uart_mdata[MTK_UART_MAX_PORT_NUMBER];
+	g_uart_mdata[OS_HAL_UART_MAX_PORT];
 static struct mtk_uart_controller
-	g_uart_ctlr[MTK_UART_MAX_PORT_NUMBER];
+	g_uart_ctlr[OS_HAL_UART_MAX_PORT];
 static struct mtk_uart_controller_rtos
-	g_uart_ctlr_rtos[MTK_UART_MAX_PORT_NUMBER];
+	g_uart_ctlr_rtos[OS_HAL_UART_MAX_PORT];
 
 static struct mtk_uart_controller_rtos
 	*_mtk_os_hal_uart_get_ctlr(UART_PORT port_num)
 {
-	if (port_num >= MTK_UART_MAX_PORT_NUMBER)
+	if (port_num >= OS_HAL_UART_MAX_PORT)
 		return NULL;
 
 	return &g_uart_ctlr_rtos[port_num];
@@ -507,6 +505,8 @@ int mtk_os_hal_uart_dma_send_data(UART_PORT port_num,
 		mtk_mhal_uart_stop_dma_tx(ctlr);
 	}
 
+	vSemaphoreDelete(ctlr_rtos->xTX_Queue);
+
 	mtk_mhal_uart_update_dma_tx_info(ctlr);
 	mtk_mhal_uart_release_dma_tx_ch(ctlr);
 
@@ -568,6 +568,8 @@ int mtk_os_hal_uart_dma_get_data(UART_PORT port_num,
 		printf("Take UART RX Semaphore timeout!\n");
 		mtk_mhal_uart_stop_dma_rx(ctlr);
 	}
+
+	vSemaphoreDelete(ctlr_rtos->xRX_Queue);
 
 	mtk_mhal_uart_update_dma_rx_info(ctlr);
 	mtk_mhal_uart_release_dma_rx_ch(ctlr);

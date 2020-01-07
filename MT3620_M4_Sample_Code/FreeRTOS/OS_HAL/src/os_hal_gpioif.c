@@ -80,71 +80,77 @@ static struct mtk_gpioif_int_count g_gpioif_int_cnt[MTK_GPIOIF_MAX_GRP_NUM];
 static struct mtk_gpioif_controller g_gpioif_ctlr[MTK_GPIOIF_MAX_GRP_NUM];
 
 static struct mtk_gpioif_controller_rtos *_mtk_os_hal_gpioif_get_ctlr(
-	u8 group)
+	gpioif_group group)
 {
 	if (group >= MTK_GPIOIF_MAX_GRP_NUM) {
-		printf("gpioif get group[%d] fail\n", group);
+		printf("gpioif get group[%d] fail\n", (u32)group);
 		return NULL;
 	}
 
 	return &g_gpioif_ctlr_rtos[group];
 }
 
-static int _mtk_os_hal_gpioif_config_gpio(u8 group)
+static int _mtk_os_hal_gpioif_config_gpio(gpioif_group group)
 {
 	int ret;
 	u32 pin;
 
 	if (group >= MTK_GPIOIF_MAX_GRP_NUM)
-		return -EINVAL;
+		return -GPIOIF_EINVAL;
 
 	switch (group) {
-	case 0:
+	case GPIOIF_GROUP_0:
 		for (pin = 0; pin <= 3; pin++) {
-			ret = mtk_os_hal_gpio_request(pin);
+			ret = mtk_os_hal_gpio_request((os_hal_gpio_pin)pin);
 			if (ret != 0)
 				printf("request gpio[%d] fail\n", pin);
-			mtk_os_hal_gpio_pmx_set_mode(pin, 0);
+			mtk_os_hal_gpio_pmx_set_mode((os_hal_gpio_pin)pin,
+				OS_HAL_MODE_0);
 		}
 		break;
-	case 1:
+	case GPIOIF_GROUP_1:
 		for (pin = 4; pin <= 7; pin++) {
-			ret = mtk_os_hal_gpio_request(pin);
+			ret = mtk_os_hal_gpio_request((os_hal_gpio_pin)pin);
 			if (ret != 0)
 				printf("request gpio[%d] fail\n", pin);
-			mtk_os_hal_gpio_pmx_set_mode(pin, 0);
+			mtk_os_hal_gpio_pmx_set_mode((os_hal_gpio_pin)pin,
+				OS_HAL_MODE_0);
 		}
 		break;
-	case 2:
+	case GPIOIF_GROUP_2:
 		for (pin = 8; pin <= 11; pin++) {
-			ret = mtk_os_hal_gpio_request(pin);
+			ret = mtk_os_hal_gpio_request((os_hal_gpio_pin)pin);
 			if (ret != 0)
 				printf("request gpio[%d] fail\n", pin);
-			mtk_os_hal_gpio_pmx_set_mode(pin, 0);
+			mtk_os_hal_gpio_pmx_set_mode((os_hal_gpio_pin)pin,
+				OS_HAL_MODE_0);
 		}
 		break;
-	case 3:
+	case GPIOIF_GROUP_3:
 		for (pin = 12; pin <= 15; pin++) {
-			ret = mtk_os_hal_gpio_request(pin);
+			ret = mtk_os_hal_gpio_request((os_hal_gpio_pin)pin);
 			if (ret != 0)
 				printf("request gpio[%d] fail\n", pin);
-			mtk_os_hal_gpio_pmx_set_mode(pin, 0);
+			mtk_os_hal_gpio_pmx_set_mode((os_hal_gpio_pin)pin,
+				OS_HAL_MODE_0);
 		}
 		break;
-	case 4:
+	case GPIOIF_GROUP_4:
 		for (pin = 16; pin <= 19; pin++) {
-			ret = mtk_os_hal_gpio_request(pin);
+			ret = mtk_os_hal_gpio_request((os_hal_gpio_pin)pin);
 			if (ret != 0)
 				printf("request gpio[%d] fail\n", pin);
-			mtk_os_hal_gpio_pmx_set_mode(pin, 0);
+			mtk_os_hal_gpio_pmx_set_mode((os_hal_gpio_pin)pin,
+				OS_HAL_MODE_0);
 		}
 		break;
-	case 5:
+	case GPIOIF_GROUP_5:
 		for (pin = 20; pin <= 23; pin++) {
-			ret = mtk_os_hal_gpio_request(pin);
+			ret = mtk_os_hal_gpio_request((os_hal_gpio_pin)pin);
 			if (ret != 0)
 				printf("request gpio[%d] fail\n", pin);
-			mtk_os_hal_gpio_pmx_set_mode(pin, 0);
+			mtk_os_hal_gpio_pmx_set_mode((os_hal_gpio_pin)pin,
+				OS_HAL_MODE_0);
 		}
 		break;
 	}
@@ -152,53 +158,53 @@ static int _mtk_os_hal_gpioif_config_gpio(u8 group)
 	return 0;
 }
 
-static int _mtk_os_hal_gpioif_free_gpio(u8 group)
+static int _mtk_os_hal_gpioif_free_gpio(gpioif_group group)
 {
 	int ret;
 	u32 pin;
 
 	if (group >= MTK_GPIOIF_MAX_GRP_NUM)
-		return -EINVAL;
+		return -GPIOIF_EINVAL;
 
 	switch (group) {
-	case 0:
+	case GPIOIF_GROUP_0:
 		for (pin = 0; pin <= 3; pin++) {
-			ret = mtk_os_hal_gpio_free(pin);
+			ret = mtk_os_hal_gpio_free((os_hal_gpio_pin)pin);
 			if (ret != 0)
 				printf("free gpio[%d] fail\n", pin);
 		}
 		break;
-	case 1:
+	case GPIOIF_GROUP_1:
 		for (pin = 4; pin <= 7; pin++) {
-			ret = mtk_os_hal_gpio_free(pin);
+			ret = mtk_os_hal_gpio_free((os_hal_gpio_pin)pin);
 			if (ret != 0)
 				printf("free gpio[%d] fail\n", pin);
 		}
 		break;
-	case 2:
+	case GPIOIF_GROUP_2:
 		for (pin = 8; pin <= 11; pin++) {
-			ret = mtk_os_hal_gpio_free(pin);
+			ret = mtk_os_hal_gpio_free((os_hal_gpio_pin)pin);
 			if (ret != 0)
 				printf("free gpio[%d] fail\n", pin);
 		}
 		break;
-	case 3:
+	case GPIOIF_GROUP_3:
 		for (pin = 12; pin <= 15; pin++) {
-			ret = mtk_os_hal_gpio_free(pin);
+			ret = mtk_os_hal_gpio_free((os_hal_gpio_pin)pin);
 			if (ret != 0)
 				printf("free gpio[%d] fail\n", pin);
 		}
 		break;
-	case 4:
+	case GPIOIF_GROUP_4:
 		for (pin = 16; pin <= 19; pin++) {
-			ret = mtk_os_hal_gpio_free(pin);
+			ret = mtk_os_hal_gpio_free((os_hal_gpio_pin)pin);
 			if (ret != 0)
 				printf("free gpio[%d] fail\n", pin);
 		}
 		break;
-	case 5:
+	case GPIOIF_GROUP_5:
 		for (pin = 20; pin <= 23; pin++) {
-			ret = mtk_os_hal_gpio_free(pin);
+			ret = mtk_os_hal_gpio_free((os_hal_gpio_pin)pin);
 			if (ret != 0)
 				printf("free gpio[%d] fail\n", pin);
 		}
@@ -211,14 +217,14 @@ static int _mtk_os_hal_gpioif_free_gpio(u8 group)
 /** This function is used to register user's interrupt callback
   *   to OS-HAL layer
   */
-int mtk_os_hal_gpioif_int_callback_register(u8 group,
+int mtk_os_hal_gpioif_int_callback_register(gpioif_group group,
 	gpioif_int_callback callback, void *user_data)
 {
 	struct mtk_gpioif_controller_rtos *ctlr_rtos =
 	    _mtk_os_hal_gpioif_get_ctlr(group);
 
 	if (!ctlr_rtos || !callback || !user_data)
-		return -EINVAL;
+		return -GPIOIF_EINVAL;
 
 	ctlr_rtos->user_data = user_data;
 	ctlr_rtos->int_callback = callback;
@@ -226,14 +232,14 @@ int mtk_os_hal_gpioif_int_callback_register(u8 group,
 	return 0;
 }
 
-static int _mtk_os_hal_gpioif_irq_handler(u8 group)
+static int _mtk_os_hal_gpioif_irq_handler(gpioif_group group)
 {
 	struct mtk_gpioif_controller_rtos *ctlr_rtos =
 	    _mtk_os_hal_gpioif_get_ctlr(group);
 	struct mtk_gpioif_controller *ctlr;
 
 	if (!ctlr_rtos)
-		return -EINVAL;
+		return -GPIOIF_EINVAL;
 	ctlr = ctlr_rtos->ctlr;
 
 	printf("now in gpioif%d_irq_handler\n", group);
@@ -246,71 +252,71 @@ static int _mtk_os_hal_gpioif_irq_handler(u8 group)
 
 static void _mtk_os_hal_gpioif_grp0_irq_event(void)
 {
-	_mtk_os_hal_gpioif_irq_handler(0);
+	_mtk_os_hal_gpioif_irq_handler(GPIOIF_GROUP_0);
 }
 
 static void _mtk_os_hal_gpioif_grp1_irq_event(void)
 {
-	_mtk_os_hal_gpioif_irq_handler(1);
+	_mtk_os_hal_gpioif_irq_handler(GPIOIF_GROUP_1);
 }
 
 static void _mtk_os_hal_gpioif_grp2_irq_event(void)
 {
-	_mtk_os_hal_gpioif_irq_handler(2);
+	_mtk_os_hal_gpioif_irq_handler(GPIOIF_GROUP_2);
 }
 
 static void _mtk_os_hal_gpioif_grp3_irq_event(void)
 {
-	_mtk_os_hal_gpioif_irq_handler(3);
+	_mtk_os_hal_gpioif_irq_handler(GPIOIF_GROUP_3);
 }
 
 static void _mtk_os_hal_gpioif_grp4_irq_event(void)
 {
-	_mtk_os_hal_gpioif_irq_handler(4);
+	_mtk_os_hal_gpioif_irq_handler(GPIOIF_GROUP_4);
 }
 
 static void _mtk_os_hal_gpioif_grp5_irq_event(void)
 {
-	_mtk_os_hal_gpioif_irq_handler(5);
+	_mtk_os_hal_gpioif_irq_handler(GPIOIF_GROUP_5);
 }
 
-static int _mtk_os_hal_gpioif_request_irq(u8 group)
+static int _mtk_os_hal_gpioif_request_irq(gpioif_group group)
 {
 	if (group >= MTK_GPIOIF_MAX_GRP_NUM)
-		return -EINVAL;
+		return -GPIOIF_EINVAL;
 
 	switch (group) {
-	case 0:
+	case GPIOIF_GROUP_0:
 		CM4_Install_NVIC(CM4_IRQ_GPIO_G0_CNT, DEFAULT_PRI,
 				 IRQ_LEVEL_TRIGGER,
 				 _mtk_os_hal_gpioif_grp0_irq_event,
 				 TRUE);
 		break;
-	case 1:
+	case GPIOIF_GROUP_1:
 		CM4_Install_NVIC(CM4_IRQ_GPIO_G1_CNT, DEFAULT_PRI,
 				 IRQ_LEVEL_TRIGGER,
 				 _mtk_os_hal_gpioif_grp1_irq_event,
 				 TRUE);
 		break;
-	case 2:
+	case GPIOIF_GROUP_2:
 		CM4_Install_NVIC(CM4_IRQ_GPIO_G2_CNT, DEFAULT_PRI,
 				 IRQ_LEVEL_TRIGGER,
 				 _mtk_os_hal_gpioif_grp2_irq_event,
 				 TRUE);
 		break;
-	case 3:
+	case GPIOIF_GROUP_3:
 		CM4_Install_NVIC(CM4_IRQ_GPIO_G3_CNT, DEFAULT_PRI,
 				 IRQ_LEVEL_TRIGGER,
 				 _mtk_os_hal_gpioif_grp3_irq_event,
 				 TRUE);
 		break;
-	case 4:
+	case GPIOIF_GROUP_4:
 		CM4_Install_NVIC(CM4_IRQ_GPIO_G4_CNT, DEFAULT_PRI,
 				 IRQ_LEVEL_TRIGGER,
 				 _mtk_os_hal_gpioif_grp4_irq_event,
 				 TRUE);
 		break;
-	case 5:
+	case GPIOIF_GROUP_5:
 		CM4_Install_NVIC(CM4_IRQ_GPIO_G5_CNT, DEFAULT_PRI,
 				 IRQ_LEVEL_TRIGGER,
 				 _mtk_os_hal_gpioif_grp5_irq_event,
@@ -321,28 +327,28 @@ static int _mtk_os_hal_gpioif_request_irq(u8 group)
 	return 0;
 }
 
-static int _mtk_os_hal_gpioif_free_irq(u8 group)
+static int _mtk_os_hal_gpioif_free_irq(gpioif_group group)
 {
 	if (group >= MTK_GPIOIF_MAX_GRP_NUM)
-		return -EINVAL;
+		return -GPIOIF_EINVAL;
 
 	switch (group) {
-	case 0:
+	case GPIOIF_GROUP_0:
 		NVIC_DisableIRQ((IRQn_Type)CM4_IRQ_GPIO_G0_CNT);
 		break;
-	case 1:
+	case GPIOIF_GROUP_1:
 		NVIC_DisableIRQ((IRQn_Type)CM4_IRQ_GPIO_G1_CNT);
 		break;
-	case 2:
+	case GPIOIF_GROUP_2:
 		NVIC_DisableIRQ((IRQn_Type)CM4_IRQ_GPIO_G2_CNT);
 		break;
-	case 3:
+	case GPIOIF_GROUP_3:
 		NVIC_DisableIRQ((IRQn_Type)CM4_IRQ_GPIO_G3_CNT);
 		break;
-	case 4:
+	case GPIOIF_GROUP_4:
 		NVIC_DisableIRQ((IRQn_Type)CM4_IRQ_GPIO_G4_CNT);
 		break;
-	case 5:
+	case GPIOIF_GROUP_5:
 		NVIC_DisableIRQ((IRQn_Type)CM4_IRQ_GPIO_G5_CNT);
 		break;
 	}
@@ -350,14 +356,14 @@ static int _mtk_os_hal_gpioif_free_irq(u8 group)
 	return 0;
 }
 
-int mtk_os_hal_gpioif_read_gpio_event_count(u8 group, u32 *pvalue)
+int mtk_os_hal_gpioif_read_gpio_event_count(gpioif_group group, u32 *pvalue)
 {
 	struct mtk_gpioif_controller_rtos *ctlr_rtos =
 	    _mtk_os_hal_gpioif_get_ctlr(group);
 	struct mtk_gpioif_controller *ctlr;
 
 	if (!ctlr_rtos)
-		return -EINVAL;
+		return -GPIOIF_EINVAL;
 	ctlr = ctlr_rtos->ctlr;
 
 	ctlr->mconfig->group = (mhal_gpioif_group)group;
@@ -366,14 +372,14 @@ int mtk_os_hal_gpioif_read_gpio_event_count(u8 group, u32 *pvalue)
 	return 0;
 }
 
-int mtk_os_hal_gpioif_read_reset_val(u8 group, u32 *pvalue)
+int mtk_os_hal_gpioif_read_reset_val(gpioif_group group, u32 *pvalue)
 {
 	struct mtk_gpioif_controller_rtos *ctlr_rtos =
 	    _mtk_os_hal_gpioif_get_ctlr(group);
 	struct mtk_gpioif_controller *ctlr;
 
 	if (!ctlr_rtos)
-		return -EINVAL;
+		return -GPIOIF_EINVAL;
 	ctlr = ctlr_rtos->ctlr;
 
 	ctlr->mconfig->group = (mhal_gpioif_group)group;
@@ -382,14 +388,14 @@ int mtk_os_hal_gpioif_read_reset_val(u8 group, u32 *pvalue)
 	return 0;
 }
 
-int mtk_os_hal_gpioif_read_low_limit_val(u8 group, u32 *pvalue)
+int mtk_os_hal_gpioif_read_low_limit_val(gpioif_group group, u32 *pvalue)
 {
 	struct mtk_gpioif_controller_rtos *ctlr_rtos =
 	    _mtk_os_hal_gpioif_get_ctlr(group);
 	struct mtk_gpioif_controller *ctlr;
 
 	if (!ctlr_rtos)
-		return -EINVAL;
+		return -GPIOIF_EINVAL;
 	ctlr = ctlr_rtos->ctlr;
 
 	ctlr->mconfig->group = (mhal_gpioif_group)group;
@@ -398,14 +404,14 @@ int mtk_os_hal_gpioif_read_low_limit_val(u8 group, u32 *pvalue)
 	return 0;
 }
 
-int mtk_os_hal_gpioif_read_high_limit_val(u8 group, u32 *pvalue)
+int mtk_os_hal_gpioif_read_high_limit_val(gpioif_group group, u32 *pvalue)
 {
 	struct mtk_gpioif_controller_rtos *ctlr_rtos =
 	    _mtk_os_hal_gpioif_get_ctlr(group);
 	struct mtk_gpioif_controller *ctlr;
 
 	if (!ctlr_rtos)
-		return -EINVAL;
+		return -GPIOIF_EINVAL;
 	ctlr = ctlr_rtos->ctlr;
 
 	ctlr->mconfig->group = (mhal_gpioif_group)group;
@@ -414,7 +420,7 @@ int mtk_os_hal_gpioif_read_high_limit_val(u8 group, u32 *pvalue)
 	return 0;
 }
 
-int mtk_os_hal_gpioif_capture_fifo_init(u8 group)
+int mtk_os_hal_gpioif_capture_fifo_init(gpioif_group group)
 {
 	u32 i = 0;
 	struct mtk_gpioif_controller_rtos *ctlr_rtos =
@@ -422,7 +428,7 @@ int mtk_os_hal_gpioif_capture_fifo_init(u8 group)
 	struct mtk_gpioif_controller *ctlr;
 
 	if (!ctlr_rtos)
-		return -EINVAL;
+		return -GPIOIF_EINVAL;
 	ctlr = ctlr_rtos->ctlr;
 
 	for (i = 0; i < MAX_FIFO_ENTRY_CNT ; i++) {
@@ -435,14 +441,14 @@ int mtk_os_hal_gpioif_capture_fifo_init(u8 group)
 	return 0;
 }
 
-int mtk_os_hal_gpioif_interrupt_count_init(u8 group)
+int mtk_os_hal_gpioif_interrupt_count_init(gpioif_group group)
 {
 	struct mtk_gpioif_controller_rtos *ctlr_rtos =
 	    _mtk_os_hal_gpioif_get_ctlr(group);
 	struct mtk_gpioif_controller *ctlr;
 
 	if (!ctlr_rtos)
-		return -EINVAL;
+		return -GPIOIF_EINVAL;
 	ctlr = ctlr_rtos->ctlr;
 
 	ctlr->int_cnt->int_bit = IRQ_GPIOIF_ALL_ENABLE;
@@ -464,8 +470,8 @@ int mtk_os_hal_gpioif_interrupt_count_init(u8 group)
 }
 
 int mtk_os_hal_gpioif_set_direction_mode(
-	u8 group, u8 control_setting, u32 low_limit, u32 high_limit,
-	u32 reset_value, u8 clock_source)
+	gpioif_group group, u8 control_setting, u32 low_limit, u32 high_limit,
+	u32 reset_value, gpioif_source_clock clock_source)
 {
 	mhal_gpioif_event_capture_setting setting;
 	struct mtk_gpioif_controller_rtos *ctlr_rtos =
@@ -473,15 +479,15 @@ int mtk_os_hal_gpioif_set_direction_mode(
 	struct mtk_gpioif_controller *ctlr;
 
 	if (!ctlr_rtos)
-		return -EINVAL;
+		return -GPIOIF_EINVAL;
 	ctlr = ctlr_rtos->ctlr;
 
 	if ((control_setting > MAX_CTRL_SETTING)
-		|| (clock_source >= MHAL_GPIOIF_CLOCK_MAX)
+		|| (clock_source >= GPIOIF_CLOCK_MAX)
 		|| (low_limit >= MTK_GPIOIF_MAX_VAL)
 		|| (high_limit >= MTK_GPIOIF_MAX_VAL)
 		|| (reset_value >= MTK_GPIOIF_MAX_VAL))
-		return -EINVAL;
+		return -GPIOIF_EINVAL;
 
 	setting.control_setting = control_setting;
 	setting.reset_value = reset_value;
@@ -506,8 +512,8 @@ int mtk_os_hal_gpioif_set_direction_mode(
 }
 
 int mtk_os_hal_gpioif_set_updown_mode(
-	u8 group, u8 control_setting, u32 low_limit, u32 high_limit,
-	u32 reset_value, u8 clock_source)
+	gpioif_group group, u8 control_setting, u32 low_limit, u32 high_limit,
+	u32 reset_value, gpioif_source_clock clock_source)
 {
 	mhal_gpioif_event_capture_setting setting;
 	struct mtk_gpioif_controller_rtos *ctlr_rtos =
@@ -515,15 +521,15 @@ int mtk_os_hal_gpioif_set_updown_mode(
 	struct mtk_gpioif_controller *ctlr;
 
 	if (!ctlr_rtos)
-		return -EINVAL;
+		return -GPIOIF_EINVAL;
 	ctlr = ctlr_rtos->ctlr;
 
 	if ((control_setting > MAX_CTRL_SETTING)
-		|| (clock_source >= MHAL_GPIOIF_CLOCK_MAX)
+		|| (clock_source >= GPIOIF_CLOCK_MAX)
 		|| (low_limit >= MTK_GPIOIF_MAX_VAL)
 		|| (high_limit >= MTK_GPIOIF_MAX_VAL)
 		|| (reset_value >= MTK_GPIOIF_MAX_VAL))
-		return -EINVAL;
+		return -GPIOIF_EINVAL;
 
 	setting.control_setting = control_setting;
 	setting.reset_value = reset_value;
@@ -544,8 +550,8 @@ int mtk_os_hal_gpioif_set_updown_mode(
 	return 0;
 }
 int mtk_os_hal_gpioif_set_quadrature_mode(
-	u8 group, u8 control_setting, u32 low_limit,
-	u32 high_limit, u32 reset_value, u8 clock_source)
+	gpioif_group group, u8 control_setting, u32 low_limit,
+	u32 high_limit, u32 reset_value, gpioif_source_clock clock_source)
 {
 	mhal_gpioif_event_capture_setting setting;
 	struct mtk_gpioif_controller_rtos *ctlr_rtos =
@@ -553,15 +559,15 @@ int mtk_os_hal_gpioif_set_quadrature_mode(
 	struct mtk_gpioif_controller *ctlr;
 
 	if (!ctlr_rtos)
-		return -EINVAL;
+		return -GPIOIF_EINVAL;
 	ctlr = ctlr_rtos->ctlr;
 
 	if ((control_setting > MAX_CTRL_SETTING)
-		|| (clock_source >= MHAL_GPIOIF_CLOCK_MAX)
+		|| (clock_source >= GPIOIF_CLOCK_MAX)
 		|| (low_limit > MTK_GPIOIF_MAX_VAL)
 		|| (high_limit > MTK_GPIOIF_MAX_VAL)
 		|| (reset_value > MTK_GPIOIF_MAX_VAL))
-		return -EINVAL;
+		return -GPIOIF_EINVAL;
 
 	setting.control_setting = control_setting;
 	setting.reset_value = reset_value;
@@ -582,7 +588,8 @@ int mtk_os_hal_gpioif_set_quadrature_mode(
 	return 0;
 }
 int mtk_os_hal_gpioif_set_capture_mode(
-	u8 group, u8 edge_type_gpio_0, u8 edge_type_gpio_1, u8 clock_source)
+	gpioif_group group, u8 edge_type_gpio_0, u8 edge_type_gpio_1,
+	gpioif_source_clock clock_source)
 {
 	mhal_gpioif_event_capture_setting setting;
 	struct mtk_gpioif_controller_rtos *ctlr_rtos =
@@ -590,13 +597,13 @@ int mtk_os_hal_gpioif_set_capture_mode(
 	struct mtk_gpioif_controller *ctlr;
 
 	if (!ctlr_rtos)
-		return -EINVAL;
+		return -GPIOIF_EINVAL;
 	ctlr = ctlr_rtos->ctlr;
 
-	if ((clock_source >= MHAL_GPIOIF_CLOCK_MAX)
+	if ((clock_source >= GPIOIF_CLOCK_MAX)
 		|| (edge_type_gpio_0 >= MHAL_GPIOIF_GPIO_0_EDGE_TYPE_MAX)
 		|| (edge_type_gpio_1 >= MHAL_GPIOIF_GPIO_1_EDGE_TYPE_MAX))
-		return -EINVAL;
+		return -GPIOIF_EINVAL;
 
 	setting.edge_type_gpio_0 = edge_type_gpio_0;
 	setting.edge_type_gpio_1 = edge_type_gpio_1;
@@ -614,18 +621,18 @@ int mtk_os_hal_gpioif_set_capture_mode(
 	return 0;
 }
 int mtk_os_hal_gpioif_interrupt_control(
-	u8 group, u8 enable, u8 clear, u32 bit)
+	gpioif_group group, u8 enable, u8 clear, u32 bit)
 {
 	struct mtk_gpioif_controller_rtos *ctlr_rtos =
 	    _mtk_os_hal_gpioif_get_ctlr(group);
 	struct mtk_gpioif_controller *ctlr;
 
 	if (!ctlr_rtos)
-		return -EINVAL;
+		return -GPIOIF_EINVAL;
 	ctlr = ctlr_rtos->ctlr;
 
 	if ((enable > 1) || (clear > 1) || (bit > MTK_GPIOIF_MAX_VAL))
-		return -EINVAL;
+		return -GPIOIF_EINVAL;
 
 	ctlr->mconfig->group = (mhal_gpioif_group)group;
 	if (enable)
@@ -645,18 +652,19 @@ int mtk_os_hal_gpioif_interrupt_control(
 	return 0;
 }
 
-int mtk_os_hal_gpioif_interrupt_bit_wise(u8 group, u32 bit, u8 enable)
+int mtk_os_hal_gpioif_interrupt_bit_wise(gpioif_group group,
+	u32 bit, u8 enable)
 {
 	struct mtk_gpioif_controller_rtos *ctlr_rtos =
 	    _mtk_os_hal_gpioif_get_ctlr(group);
 	struct mtk_gpioif_controller *ctlr;
 
 	if (!ctlr_rtos)
-		return -EINVAL;
+		return -GPIOIF_EINVAL;
 	ctlr = ctlr_rtos->ctlr;
 
 	if ((enable > 1) || (bit > MTK_GPIOIF_MAX_VAL))
-		return -EINVAL;
+		return -GPIOIF_EINVAL;
 
 	ctlr->mconfig->group = (mhal_gpioif_group)group;
 	return mtk_mhal_gpioif_interrupt_bit_wise(ctlr, bit, enable);
@@ -664,19 +672,20 @@ int mtk_os_hal_gpioif_interrupt_bit_wise(u8 group, u32 bit, u8 enable)
 
 
 int mtk_os_hal_gpioif_limit_comparator(
-	u8 group, u8 sa_limit_v, u8 interrupt_limit_v)
+	gpioif_group group, gpioif_sa_mode_limit_select sa_limit_v,
+	gpioif_interrupt_limit_select interrupt_limit_v)
 {
 	struct mtk_gpioif_controller_rtos *ctlr_rtos =
 	    _mtk_os_hal_gpioif_get_ctlr(group);
 	struct mtk_gpioif_controller *ctlr;
 
 	if (!ctlr_rtos)
-		return -EINVAL;
+		return -GPIOIF_EINVAL;
 	ctlr = ctlr_rtos->ctlr;
 
-	if ((sa_limit_v >= MHAL_GPIOIF_SA_MAX)
-		|| (interrupt_limit_v >= MHAL_GPIOIF_INTERRUPT_MAX))
-		return -EINVAL;
+	if ((sa_limit_v >= GPIOIF_SA_MAX)
+		|| (interrupt_limit_v >= GPIOIF_INTERRUPT_MAX))
+		return -GPIOIF_EINVAL;
 
 	ctlr->mconfig->group = (mhal_gpioif_group)group;
 	ctlr->mconfig->sa_mode_lim =
@@ -690,19 +699,19 @@ int mtk_os_hal_gpioif_limit_comparator(
 }
 
 int mtk_os_hal_gpioif_de_glitch(
-	u8 group, u8 gpio, u8 enable, u32 min_p, u32 init_v)
+	gpioif_group group, u8 gpio, u8 enable, u32 min_p, u32 init_v)
 {
 	struct mtk_gpioif_controller_rtos *ctlr_rtos =
 	    _mtk_os_hal_gpioif_get_ctlr(group);
 	struct mtk_gpioif_controller *ctlr;
 
 	if (!ctlr_rtos)
-		return -EINVAL;
+		return -GPIOIF_EINVAL;
 	ctlr = ctlr_rtos->ctlr;
 
 	if ((gpio > 2)	|| (enable > 1) || (init_v > 1)
 		|| (min_p > MAX_MIN_PURSE_WIDTH))
-		return -EINVAL;
+		return -GPIOIF_EINVAL;
 
 	ctlr->mconfig->group = (mhal_gpioif_group)group;
 	mtk_mhal_gpioif_de_glitch(ctlr, gpio,
@@ -711,14 +720,14 @@ int mtk_os_hal_gpioif_de_glitch(
 	return 0;
 }
 
-int mtk_os_hal_gpioif_global_cr_reset(u8 group)
+int mtk_os_hal_gpioif_global_cr_reset(gpioif_group group)
 {
 	struct mtk_gpioif_controller_rtos *ctlr_rtos =
 	    _mtk_os_hal_gpioif_get_ctlr(group);
 	struct mtk_gpioif_controller *ctlr;
 
 	if (!ctlr_rtos)
-		return -EINVAL;
+		return -GPIOIF_EINVAL;
 	ctlr = ctlr_rtos->ctlr;
 
 	ctlr->mconfig->group = (mhal_gpioif_group)group;
@@ -727,7 +736,8 @@ int mtk_os_hal_gpioif_global_cr_reset(u8 group)
 	return 0;
 }
 
-int mtk_os_hal_gpioif_hardware_reset(u8 group, u8 mode, u8 active_reset)
+int mtk_os_hal_gpioif_hardware_reset(gpioif_group group,
+	mtk_os_gpioif_mode mode, u8 active_reset)
 {
 	u32 value = 0;
 	struct mtk_gpioif_controller_rtos *ctlr_rtos =
@@ -735,25 +745,25 @@ int mtk_os_hal_gpioif_hardware_reset(u8 group, u8 mode, u8 active_reset)
 	struct mtk_gpioif_controller *ctlr;
 
 	if (!ctlr_rtos)
-		return -EINVAL;
+		return -GPIOIF_EINVAL;
 	ctlr = ctlr_rtos->ctlr;
 
-	if ((active_reset > 1) || (mode >= MHAL_GPIOIF_MODE_MAX))
-		return -EINVAL;
+	if ((active_reset > 1) || (mode >= MTK_OS_GPIOIF_MODE_MAX))
+		return -GPIOIF_EINVAL;
 
 	ctlr->mconfig->group = (mhal_gpioif_group)group;
 	ctlr->mconfig->mode = (mhal_gpioif_mode)mode;
 	mtk_mhal_gpioif_hardware_reset_by_gpio_2(ctlr, active_reset);
 
-	if (mode == MHAL_GPIOIF_EVENT_COUNTER_MODE) {
+	if (mode == MTK_OS_GPIOIF_EVENT_COUNTER_MODE) {
 		mtk_mhal_gpioif_read_gpio_event_count(ctlr,
 		&value);
 		printf("event counter value 0x%x\n", value);
-	} else if (mode == MHAL_GPIOIF_CAP_COUNTER_MODE) {
+	} else if (mode == MTK_OS_GPIOIF_CAP_COUNTER_MODE) {
 		mtk_mhal_gpioif_read_gpio_cap_fifo0_value(ctlr,
 		&value);
 		printf("capture counter value 0x%x\n", value);
-	} else if (mode == MHAL_GPIOIF_EVENT_CAP_COUNTER_MODE) {
+	} else if (mode == MTK_OS_GPIOIF_EVENT_CAP_COUNTER_MODE) {
 		mtk_mhal_gpioif_read_gpio_event_count(ctlr,
 		&value);
 		printf("event counter value 0x%x\n", value);
@@ -768,18 +778,19 @@ int mtk_os_hal_gpioif_hardware_reset(u8 group, u8 mode, u8 active_reset)
 	return 0;
 }
 
-int mtk_os_hal_gpioif_select_clock_source(u8 group, u8 clock_source)
+int mtk_os_hal_gpioif_select_clock_source(gpioif_group group,
+	gpioif_source_clock clock_source)
 {
 	struct mtk_gpioif_controller_rtos *ctlr_rtos =
 	    _mtk_os_hal_gpioif_get_ctlr(group);
 	struct mtk_gpioif_controller *ctlr;
 
 	if (!ctlr_rtos)
-		return -EINVAL;
+		return -GPIOIF_EINVAL;
 	ctlr = ctlr_rtos->ctlr;
 
-	if (clock_source >= MHAL_GPIOIF_CLOCK_MAX)
-		return -EINVAL;
+	if (clock_source >= GPIOIF_CLOCK_MAX)
+		return -GPIOIF_EINVAL;
 
 	ctlr->mconfig->clk = (mhal_gpioif_source_clock)clock_source;
 	mtk_mhal_gpioif_select_clock_source(ctlr);
@@ -787,18 +798,18 @@ int mtk_os_hal_gpioif_select_clock_source(u8 group, u8 clock_source)
 	return 0;
 }
 
-int mtk_os_hal_gpioif_counter_clock_setting(u8 group, u8 enable)
+int mtk_os_hal_gpioif_counter_clock_setting(gpioif_group group, u8 enable)
 {
 	struct mtk_gpioif_controller_rtos *ctlr_rtos =
 	    _mtk_os_hal_gpioif_get_ctlr(group);
 	struct mtk_gpioif_controller *ctlr;
 
 	if (!ctlr_rtos)
-		return -EINVAL;
+		return -GPIOIF_EINVAL;
 	ctlr = ctlr_rtos->ctlr;
 
 	if (enable > 1)
-		return -EINVAL;
+		return -GPIOIF_EINVAL;
 
 	ctlr->mconfig->group = (mhal_gpioif_group)group;
 
@@ -807,18 +818,19 @@ int mtk_os_hal_gpioif_counter_clock_setting(u8 group, u8 enable)
 	return 0;
 }
 
-int mtk_os_hal_gpioif_software_reset(u8 group, u8 mode)
+int mtk_os_hal_gpioif_software_reset(gpioif_group group,
+	mtk_os_gpioif_mode mode)
 {
 	struct mtk_gpioif_controller_rtos *ctlr_rtos =
 	    _mtk_os_hal_gpioif_get_ctlr(group);
 	struct mtk_gpioif_controller *ctlr;
 
 	if (!ctlr_rtos)
-		return -EINVAL;
+		return -GPIOIF_EINVAL;
 	ctlr = ctlr_rtos->ctlr;
 
-	if (mode >= MHAL_GPIOIF_MODE_MAX)
-		return -EINVAL;
+	if (mode >= MTK_OS_GPIOIF_MODE_MAX)
+		return -GPIOIF_EINVAL;
 
 	ctlr->mconfig->group = (mhal_gpioif_group)group;
 	ctlr->mconfig->mode = (mhal_gpioif_mode)mode;
@@ -828,14 +840,14 @@ int mtk_os_hal_gpioif_software_reset(u8 group, u8 mode)
 	return 0;
 }
 
-int mtk_os_hal_gpioif_enable_event_counter(u8 group)
+int mtk_os_hal_gpioif_enable_event_counter(gpioif_group group)
 {
 	struct mtk_gpioif_controller_rtos *ctlr_rtos =
 	    _mtk_os_hal_gpioif_get_ctlr(group);
 	struct mtk_gpioif_controller *ctlr;
 
 	if (!ctlr_rtos)
-		return -EINVAL;
+		return -GPIOIF_EINVAL;
 	ctlr = ctlr_rtos->ctlr;
 
 	ctlr->mconfig->group = (mhal_gpioif_group)group;
@@ -845,8 +857,42 @@ int mtk_os_hal_gpioif_enable_event_counter(u8 group)
 	return 0;
 }
 
+int mtk_os_hal_gpioif_disable_event_counter(gpioif_group group)
+{
+	struct mtk_gpioif_controller_rtos *ctlr_rtos =
+	    _mtk_os_hal_gpioif_get_ctlr(group);
+	struct mtk_gpioif_controller *ctlr;
+
+	if (!ctlr_rtos)
+		return -GPIOIF_EINVAL;
+	ctlr = ctlr_rtos->ctlr;
+
+	ctlr->mconfig->group = (mhal_gpioif_group)group;
+
+	mtk_mhal_gpioif_disable_event_counter(ctlr);
+
+	return 0;
+}
+
+int mtk_os_hal_gpioif_disable_capture_counter(gpioif_group group)
+{
+	struct mtk_gpioif_controller_rtos *ctlr_rtos =
+	    _mtk_os_hal_gpioif_get_ctlr(group);
+	struct mtk_gpioif_controller *ctlr;
+
+	if (!ctlr_rtos)
+		return -GPIOIF_EINVAL;
+	ctlr = ctlr_rtos->ctlr;
+
+	ctlr->mconfig->group = (mhal_gpioif_group)group;
+
+	mtk_mhal_gpioif_disable_capture_counter(ctlr);
+
+	return 0;
+}
+
 int mtk_os_hal_gpioif_event_counter_setting(
-	u8 group, u8 control_setting, u32 low_limit, u32 high_limit,
+	gpioif_group group, u8 control_setting, u32 low_limit, u32 high_limit,
 	u32 reset_value, u8 event_cnt_mode)
 {
 	mhal_gpioif_event_capture_setting setting;
@@ -855,7 +901,7 @@ int mtk_os_hal_gpioif_event_counter_setting(
 	struct mtk_gpioif_controller *ctlr;
 
 	if (!ctlr_rtos)
-		return -EINVAL;
+		return -GPIOIF_EINVAL;
 	ctlr = ctlr_rtos->ctlr;
 
 	if ((control_setting > MAX_CTRL_SETTING)
@@ -863,7 +909,7 @@ int mtk_os_hal_gpioif_event_counter_setting(
 		|| (low_limit > MTK_GPIOIF_MAX_VAL)
 		|| (high_limit > MTK_GPIOIF_MAX_VAL)
 		|| (reset_value > MTK_GPIOIF_MAX_VAL))
-		return -EINVAL;
+		return -GPIOIF_EINVAL;
 
 	setting.control_setting = control_setting;
 	setting.reset_value = reset_value;
@@ -879,41 +925,43 @@ int mtk_os_hal_gpioif_event_counter_setting(
 	return 0;
 }
 
-int mtk_os_hal_gpioif_read_gpio_cap_fifo0_value(u8 group, u32 *pvalue)
+int mtk_os_hal_gpioif_read_gpio_cap_fifo0_value(
+	gpioif_group group, u32 *pvalue)
 {
 	struct mtk_gpioif_controller_rtos *ctlr_rtos =
 	    _mtk_os_hal_gpioif_get_ctlr(group);
 	struct mtk_gpioif_controller *ctlr;
 
 	if (!ctlr_rtos)
-		return -EINVAL;
+		return -GPIOIF_EINVAL;
 	ctlr = ctlr_rtos->ctlr;
 
 	ctlr->mconfig->group = (mhal_gpioif_group)group;
 	return mtk_mhal_gpioif_read_gpio_cap_fifo0_value(ctlr, pvalue);
 }
 
-int mtk_os_hal_gpioif_read_gpio_cap_fifo1_value(u8 group, u32 *pvalue)
+int mtk_os_hal_gpioif_read_gpio_cap_fifo1_value(
+	gpioif_group group, u32 *pvalue)
 {
 	struct mtk_gpioif_controller_rtos *ctlr_rtos =
 	    _mtk_os_hal_gpioif_get_ctlr(group);
 	struct mtk_gpioif_controller *ctlr;
 
 	if (!ctlr_rtos)
-		return -EINVAL;
+		return -GPIOIF_EINVAL;
 	ctlr = ctlr_rtos->ctlr;
 	ctlr->mconfig->group = (mhal_gpioif_group)group;
 	return mtk_mhal_gpioif_read_gpio_cap_fifo1_value(ctlr, pvalue);
 }
 
-int mtk_os_hal_gpioif_dump_int(u8 group)
+int mtk_os_hal_gpioif_dump_int(gpioif_group group)
 {
 	struct mtk_gpioif_controller_rtos *ctlr_rtos =
 	    _mtk_os_hal_gpioif_get_ctlr(group);
 	struct mtk_gpioif_controller *ctlr;
 
 	if (!ctlr_rtos)
-		return -EINVAL;
+		return -GPIOIF_EINVAL;
 	ctlr = ctlr_rtos->ctlr;
 
 	printf("int_cnt=0x%x\n", ctlr->int_cnt->int_bit);
@@ -947,245 +995,245 @@ int mtk_os_hal_gpioif_dump_int(u8 group)
 	return 0;
 }
 
-int mtk_os_hal_gpioif_get_int_event_low_count(u8 group)
+int mtk_os_hal_gpioif_get_int_event_low_count(gpioif_group group)
 {
 	struct mtk_gpioif_controller_rtos *ctlr_rtos =
 	    _mtk_os_hal_gpioif_get_ctlr(group);
 	struct mtk_gpioif_controller *ctlr;
 
 	if (!ctlr_rtos)
-		return -EINVAL;
+		return -GPIOIF_EINVAL;
 	ctlr = ctlr_rtos->ctlr;
 
 	return ctlr->int_cnt->int_event_low_count;
 }
 
-int mtk_os_hal_gpioif_get_int_event_high_count(u8 group)
+int mtk_os_hal_gpioif_get_int_event_high_count(gpioif_group group)
 {
 	struct mtk_gpioif_controller_rtos *ctlr_rtos =
 	    _mtk_os_hal_gpioif_get_ctlr(group);
 	struct mtk_gpioif_controller *ctlr;
 
 	if (!ctlr_rtos)
-		return -EINVAL;
+		return -GPIOIF_EINVAL;
 	ctlr = ctlr_rtos->ctlr;
 
 	return ctlr->int_cnt->int_event_high_count;
 }
 
-int mtk_os_hal_gpioif_get_int_gpio2_rst_done_count(u8 group)
+int mtk_os_hal_gpioif_get_int_gpio2_rst_done_count(gpioif_group group)
 {
 	struct mtk_gpioif_controller_rtos *ctlr_rtos =
 	    _mtk_os_hal_gpioif_get_ctlr(group);
 	struct mtk_gpioif_controller *ctlr;
 
 	if (!ctlr_rtos)
-		return -EINVAL;
+		return -GPIOIF_EINVAL;
 	ctlr = ctlr_rtos->ctlr;
 
 	return ctlr->int_cnt->int_gpio2_rst_done_count;
 }
 
-int mtk_os_hal_gpioif_get_int_event_over_count(u8 group)
+int mtk_os_hal_gpioif_get_int_event_over_count(gpioif_group group)
 {
 	struct mtk_gpioif_controller_rtos *ctlr_rtos =
 	    _mtk_os_hal_gpioif_get_ctlr(group);
 	struct mtk_gpioif_controller *ctlr;
 
 	if (!ctlr_rtos)
-		return -EINVAL;
+		return -GPIOIF_EINVAL;
 	ctlr = ctlr_rtos->ctlr;
 
 	return ctlr->int_cnt->int_event_over_count;
 }
 
-int mtk_os_hal_gpioif_get_int_event_uf_count(u8 group)
+int mtk_os_hal_gpioif_get_int_event_uf_count(gpioif_group group)
 {
 	struct mtk_gpioif_controller_rtos *ctlr_rtos =
 	    _mtk_os_hal_gpioif_get_ctlr(group);
 	struct mtk_gpioif_controller *ctlr;
 
 	if (!ctlr_rtos)
-		return -EINVAL;
+		return -GPIOIF_EINVAL;
 	ctlr = ctlr_rtos->ctlr;
 
 	return ctlr->int_cnt->int_event_uf_count;
 }
 
-int mtk_os_hal_gpioif_get_int_cap_f0_full_count(u8 group)
+int mtk_os_hal_gpioif_get_int_cap_f0_full_count(gpioif_group group)
 {
 	struct mtk_gpioif_controller_rtos *ctlr_rtos =
 	    _mtk_os_hal_gpioif_get_ctlr(group);
 	struct mtk_gpioif_controller *ctlr;
 
 	if (!ctlr_rtos)
-		return -EINVAL;
+		return -GPIOIF_EINVAL;
 	ctlr = ctlr_rtos->ctlr;
 
 	return ctlr->int_cnt->int_cap_f0_full_count;
 }
 
-int mtk_os_hal_gpioif_get_int_cap_f1_full_count(u8 group)
+int mtk_os_hal_gpioif_get_int_cap_f1_full_count(gpioif_group group)
 {
 	struct mtk_gpioif_controller_rtos *ctlr_rtos =
 	    _mtk_os_hal_gpioif_get_ctlr(group);
 	struct mtk_gpioif_controller *ctlr;
 
 	if (!ctlr_rtos)
-		return -EINVAL;
+		return -GPIOIF_EINVAL;
 	ctlr = ctlr_rtos->ctlr;
 
 	return ctlr->int_cnt->int_cap_f1_full_count;
 }
 
-int mtk_os_hal_gpioif_get_int_reset_cap_f0_full_count(u8 group)
+int mtk_os_hal_gpioif_get_int_reset_cap_f0_full_count(gpioif_group group)
 {
 	struct mtk_gpioif_controller_rtos *ctlr_rtos =
 	    _mtk_os_hal_gpioif_get_ctlr(group);
 	struct mtk_gpioif_controller *ctlr;
 
 	if (!ctlr_rtos)
-		return -EINVAL;
+		return -GPIOIF_EINVAL;
 	ctlr = ctlr_rtos->ctlr;
 
 	return ctlr->int_cnt->int_reset_cap_f0_full_count;
 }
 
-int mtk_os_hal_gpioif_get_int_reset_cap_f1_full_count(u8 group)
+int mtk_os_hal_gpioif_get_int_reset_cap_f1_full_count(gpioif_group group)
 {
 	struct mtk_gpioif_controller_rtos *ctlr_rtos =
 	    _mtk_os_hal_gpioif_get_ctlr(group);
 	struct mtk_gpioif_controller *ctlr;
 
 	if (!ctlr_rtos)
-		return -EINVAL;
+		return -GPIOIF_EINVAL;
 	ctlr = ctlr_rtos->ctlr;
 
 	return ctlr->int_cnt->int_reset_cap_f1_full_count;
 }
 
-int mtk_os_hal_gpioif_get_int_cap_f0_np_count(u8 group)
+int mtk_os_hal_gpioif_get_int_cap_f0_np_count(gpioif_group group)
 {
 	struct mtk_gpioif_controller_rtos *ctlr_rtos =
 	    _mtk_os_hal_gpioif_get_ctlr(group);
 	struct mtk_gpioif_controller *ctlr;
 
 	if (!ctlr_rtos)
-		return -EINVAL;
+		return -GPIOIF_EINVAL;
 	ctlr = ctlr_rtos->ctlr;
 
 	return ctlr->int_cnt->int_cap_f0_np_count;
 }
 
-int mtk_os_hal_gpioif_get_int_cap_f1_np_count(u8 group)
+int mtk_os_hal_gpioif_get_int_cap_f1_np_count(gpioif_group group)
 {
 	struct mtk_gpioif_controller_rtos *ctlr_rtos =
 	    _mtk_os_hal_gpioif_get_ctlr(group);
 	struct mtk_gpioif_controller *ctlr;
 
 	if (!ctlr_rtos)
-		return -EINVAL;
+		return -GPIOIF_EINVAL;
 	ctlr = ctlr_rtos->ctlr;
 
 	return ctlr->int_cnt->int_cap_f1_np_count;
 }
 
-int mtk_os_hal_gpioif_get_int_cap_f0_p_count(u8 group)
+int mtk_os_hal_gpioif_get_int_cap_f0_p_count(gpioif_group group)
 {
 	struct mtk_gpioif_controller_rtos *ctlr_rtos =
 	    _mtk_os_hal_gpioif_get_ctlr(group);
 	struct mtk_gpioif_controller *ctlr;
 
 	if (!ctlr_rtos)
-		return -EINVAL;
+		return -GPIOIF_EINVAL;
 	ctlr = ctlr_rtos->ctlr;
 
 	return ctlr->int_cnt->int_cap_f0_p_count;
 }
 
-int mtk_os_hal_gpioif_get_int_cap_f1_p_count(u8 group)
+int mtk_os_hal_gpioif_get_int_cap_f1_p_count(gpioif_group group)
 {
 	struct mtk_gpioif_controller_rtos *ctlr_rtos =
 	    _mtk_os_hal_gpioif_get_ctlr(group);
 	struct mtk_gpioif_controller *ctlr;
 
 	if (!ctlr_rtos)
-		return -EINVAL;
+		return -GPIOIF_EINVAL;
 	ctlr = ctlr_rtos->ctlr;
 
 	return ctlr->int_cnt->int_cap_f1_p_count;
 }
 
-int mtk_os_hal_gpioif_get_cap_fifo0_count(u8 group)
+int mtk_os_hal_gpioif_get_cap_fifo0_count(gpioif_group group)
 {
 	struct mtk_gpioif_controller_rtos *ctlr_rtos =
 	    _mtk_os_hal_gpioif_get_ctlr(group);
 	struct mtk_gpioif_controller *ctlr;
 
 	if (!ctlr_rtos)
-		return -EINVAL;
+		return -GPIOIF_EINVAL;
 	ctlr = ctlr_rtos->ctlr;
 
 	return ctlr->int_cnt->cap_fifo0_count;
 }
 
-int mtk_os_hal_gpioif_get_cap_fifo1_count(u8 group)
+int mtk_os_hal_gpioif_get_cap_fifo1_count(gpioif_group group)
 {
 	struct mtk_gpioif_controller_rtos *ctlr_rtos =
 	    _mtk_os_hal_gpioif_get_ctlr(group);
 	struct mtk_gpioif_controller *ctlr;
 
 	if (!ctlr_rtos)
-		return -EINVAL;
+		return -GPIOIF_EINVAL;
 	ctlr = ctlr_rtos->ctlr;
 
 	return ctlr->int_cnt->cap_fifo1_count;
 }
 
-int mtk_os_hal_gpioif_get_cap_fifo0_val(u8 group, u32 idex)
+int mtk_os_hal_gpioif_get_cap_fifo0_val(gpioif_group group, u32 idex)
 {
 	struct mtk_gpioif_controller_rtos *ctlr_rtos =
 	    _mtk_os_hal_gpioif_get_ctlr(group);
 	struct mtk_gpioif_controller *ctlr;
 
 	if (!ctlr_rtos)
-		return -EINVAL;
+		return -GPIOIF_EINVAL;
 	ctlr = ctlr_rtos->ctlr;
 
 	if (idex >= MAX_FIFO_ENTRY_CNT)
-		return -EINVAL;
+		return -GPIOIF_EINVAL;
 
 	return ctlr->int_cnt->cap_fifo0[idex];
 }
 
-int mtk_os_hal_gpioif_get_cap_fifo1_val(u8 group, u32 idex)
+int mtk_os_hal_gpioif_get_cap_fifo1_val(gpioif_group group, u32 idex)
 {
 	struct mtk_gpioif_controller_rtos *ctlr_rtos =
 	    _mtk_os_hal_gpioif_get_ctlr(group);
 	struct mtk_gpioif_controller *ctlr;
 
 	if (!ctlr_rtos)
-		return -EINVAL;
+		return -GPIOIF_EINVAL;
 	ctlr = ctlr_rtos->ctlr;
 
 	if (idex >= MAX_FIFO_ENTRY_CNT)
-		return -EINVAL;
+		return -GPIOIF_EINVAL;
 
 	return ctlr->int_cnt->cap_fifo1[idex];
 }
 
-int mtk_os_hal_gpioif_ctlr_init(u8 group)
+int mtk_os_hal_gpioif_ctlr_init(gpioif_group group)
 {
 	struct mtk_gpioif_controller_rtos *ctlr_rtos =
 	    _mtk_os_hal_gpioif_get_ctlr(group);
 	struct mtk_gpioif_controller *ctlr;
 
 	if (!ctlr_rtos)
-		return -EINVAL;
+		return -GPIOIF_EINVAL;
 	ctlr = ctlr_rtos->ctlr;
 
 	if (group >= MTK_GPIOIF_MAX_GRP_NUM)
-		return -EINVAL;
+		return -GPIOIF_EINVAL;
 
 	ctlr_rtos->ctlr = &g_gpioif_ctlr[group];
 	ctlr = ctlr_rtos->ctlr;
@@ -1205,7 +1253,7 @@ int mtk_os_hal_gpioif_ctlr_init(u8 group)
 	return 0;
 }
 
-int mtk_os_hal_gpioif_ctlr_deinit(u8 group)
+int mtk_os_hal_gpioif_ctlr_deinit(gpioif_group group)
 {
 	_mtk_os_hal_gpioif_free_gpio(group);
 

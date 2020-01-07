@@ -43,15 +43,16 @@
 #include "mt3620.h"
 
 #include "os_hal_uart.h"
+#include "os_hal_gpt.h"
 
 /******************************************************************************/
 /* Configurations */
 /******************************************************************************/
 static const uint8_t uart_port_num = OS_HAL_UART_ISU0;
-static const uint8_t uart_dat_len = UART_DATA_8_BITS;
-static const uint8_t uart_parity = UART_NONE_PARITY;
-static const uint8_t uart_stop_bit = UART_STOP_1_BIT;
-static const uint32_t uart_baudrate = 115200;
+static const uint8_t gpt_timer_0_id = OS_HAL_GPT0;		// OS_HAL_GPT0 clock speed: 1KHz or 32KHz
+static const uint32_t gpt_timer_0_interval = 1000;		// 1000ms
+static const uint8_t gpt_timer_3_id = OS_HAL_GPT3;		// OS_HAL_GPT3 clock speed: 1MHz
+static const uint32_t gpt_timer_3_interval = 5000000;	// 5000ms
 
 #define APP_STACK_SIZE_BYTES (1024 / 4)
 
@@ -78,30 +79,46 @@ void _putchar(char character)
 /******************************************************************************/
 /* Functions */
 /******************************************************************************/
-static void uart_rx_task(void* pParameters)
+static void TimerHandlerGpt0(void* cb_data)
 {
-	uint8_t data;
-	printf("UART Rx task started, keep monitoring user input.\r\n");
-	while (1) {
-		// Delay 10ms
-		vTaskDelay(pdMS_TO_TICKS(10));
-
-		// Get UART input. (Non-blocking operation)
-		data = mtk_os_hal_uart_get_char(uart_port_num);
-
-		printf("UART Rx: %c\r\n", data);
-	}
+	extern volatile uint32_t sys_tick_in_ms;
+	printf("%s (SysTick=%ld)\r\n", __func__, sys_tick_in_ms);
 }
 
-static void uart_tx_task(void* pParameters)
+static void TimerHandlerGpt3(void* cb_data)
 {
-	uint8_t counter=0;
-	printf("UART Tx task started, print log for every second.\r\n");
-	while (1) {
-		// Delay 1000ms
-		vTaskDelay(pdMS_TO_TICKS(1000));
+	extern volatile uint32_t sys_tick_in_ms;
+	printf("%s (SysTick=%ld)\r\n", __func__, sys_tick_in_ms);
+	mtk_os_hal_gpt_restart(gpt_timer_3_id);
+}
 
-		printf("UART Tx Counter ... %d\r\n", counter++);
+static void gpt_task(void* pParameters)
+{
+	struct os_gpt_int gpt0_int;
+	struct os_gpt_int gpt1_int;
+
+	gpt0_int.gpt_cb_hdl = TimerHandlerGpt0;
+	gpt0_int.gpt_cb_data = NULL;
+	gpt1_int.gpt_cb_hdl = TimerHandlerGpt3;
+	gpt1_int.gpt_cb_data = NULL;
+
+	// Start GPT0
+	printf("    Set GPT0 AutoRepeat = true, Timeout = %dms\r\n", (int)gpt_timer_0_interval);
+	mtk_os_hal_gpt_config(gpt_timer_0_id, false, &gpt0_int);
+	mtk_os_hal_gpt_reset_timer(gpt_timer_0_id, gpt_timer_0_interval, true);
+	mtk_os_hal_gpt_start(gpt_timer_0_id);
+
+	// Start GPT3
+	printf("    Set GPT3 AutoRepeat = false, Timeout = %dms\r\n", (int)(gpt_timer_3_interval/1000));
+	mtk_os_hal_gpt_config(gpt_timer_3_id, false, &gpt1_int);
+	mtk_os_hal_gpt_reset_timer(gpt_timer_3_id, gpt_timer_3_interval, false);
+	mtk_os_hal_gpt_start(gpt_timer_3_id);
+
+	// Note, only GPT0 and GPT1 supports repeat mode.
+	// For more information, please refer to https://support.mediatek.com/AzureSphere/mt3620/M4_API_Reference_Manual/group___g_p_t.html
+
+	while(1) {
+		vTaskDelay(pdMS_TO_TICKS(10));
 	}
 }
 
@@ -112,18 +129,13 @@ _Noreturn void RTCoreMain(void)
 
 	// Init UART
 	mtk_os_hal_uart_ctlr_init(uart_port_num);
-	mtk_os_hal_uart_set_format(uart_port_num, uart_dat_len, uart_parity,
-								uart_stop_bit);
-	mtk_os_hal_uart_set_baudrate(uart_port_num, uart_baudrate);
-	printf("\r\nFreeRTOS UART Demo\r\n");
+	printf("FreeRTOS GPT demo\r\n");
 
-	// Create UART Tx Task
-	xTaskCreate(uart_tx_task, "UART Tx Task", APP_STACK_SIZE_BYTES, NULL, 5,
-				NULL);
+	// Init GPT
+	mtk_os_hal_gpt_init();
 
-	// Create UART Rx Task
-	xTaskCreate(uart_rx_task, "UART Rx Task", APP_STACK_SIZE_BYTES, NULL, 4,
-				NULL);
+	// Create GPT Task
+	xTaskCreate(gpt_task, "GPT Task", APP_STACK_SIZE_BYTES, NULL, 4, NULL);
 	vTaskStartScheduler();
 
 	for (;;) {

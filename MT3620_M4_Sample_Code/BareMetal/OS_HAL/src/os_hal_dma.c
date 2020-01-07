@@ -61,7 +61,7 @@ static struct dma_controller g_dma_ctlr[DMA_CHANNEL_MAX];
 static struct dma_ctrl g_dma_ctrl_mode[DMA_CHANNEL_MAX];
 static struct dma_config g_dma_config[DMA_CHANNEL_MAX];
 
-static inline enum dma_type _mtk_os_hal_dma_get_chn_type(u8 chn)
+static inline enum dma_type _mtk_os_hal_dma_get_chn_type(enum dma_channel chn)
 {
 	if (chn <= DMA_ISU4_RX_CH9)
 		return DMA_TYPE_HALFSIZE;
@@ -75,7 +75,8 @@ static inline enum dma_type _mtk_os_hal_dma_get_chn_type(u8 chn)
 		return (enum dma_type)-1;
 }
 
-static struct dma_controller_rtos *_mtk_os_hal_dma_get_ctlr(u8 chn)
+static struct dma_controller_rtos *_mtk_os_hal_dma_get_ctlr(
+	enum dma_channel chn)
 {
 	if (_mtk_os_hal_dma_get_chn_type(chn) == (enum dma_type)-1)
 		return NULL;
@@ -85,12 +86,12 @@ static struct dma_controller_rtos *_mtk_os_hal_dma_get_ctlr(u8 chn)
 static void _mtk_os_hal_dma_irq_handler(void)
 {
 	struct dma_controller_rtos *ctrl_rtos;
-	int chn;
+	enum dma_channel chn;
 	int status;
 
 	NVIC_DisableIRQ((IRQn_Type)CM4_IRQ_M4DMA);
 
-	for (chn = 0; chn < DMA_CHANNEL_MAX; chn++) {
+	for (chn = DMA_ISU0_TX_CH0; chn <= VDMA_ADC_RX_CH29; chn++) {
 		ctrl_rtos = _mtk_os_hal_dma_get_ctlr(chn);
 		if (ctrl_rtos == NULL || ctrl_rtos->ctlr == NULL)
 			continue;
@@ -149,14 +150,14 @@ static void _mtk_os_hal_dma_reset_controller_rtos(
 	ctrl_rtos->status = IDLE;
 }
 
-int mtk_os_hal_dma_alloc_chan(u8 chn)
+int mtk_os_hal_dma_alloc_chan(enum dma_channel chn)
 {
 	struct dma_controller_rtos *ctrl_rtos;
 	int ret = 0;
 
 	ctrl_rtos = _mtk_os_hal_dma_get_ctlr(chn);
 	if (ctrl_rtos == NULL)
-		return -EPTR;
+		return -DMA_EPTR;
 	if (ctrl_rtos->status == IDLE) {
 		/* clear dma_controller_rtos setting */
 		if (ctrl_rtos->ctlr != NULL)
@@ -172,7 +173,7 @@ int mtk_os_hal_dma_alloc_chan(u8 chn)
 			_mtk_os_hal_dma_get_chn_type(chn);
 		if (ctrl_rtos->ctlr->chn_type == -1) {
 			printf("invalid dma channel number: %d\n", chn);
-			return -EPARAM;
+			return -DMA_EPARAM;
 		}
 
 		mtk_mhal_dma_clock_enable(ctrl_rtos->ctlr);
@@ -187,7 +188,7 @@ int mtk_os_hal_dma_alloc_chan(u8 chn)
 			printf("chn(%d) status(%d)\n", ctrl_rtos->ctlr->chn,
 				   ctrl_rtos->status);
 		}
-		ret = -EBUSY;
+		ret = -DMA_EBUSY;
 	}
 	return ret;
 }
@@ -206,19 +207,19 @@ static void _mtk_os_hal_dma_set_control_mode(struct dma_controller *ctrl,
 	ctrl->cfg->wrap_to_addr = ctrl_mode->wrap_settings.wrap_to_addr;
 }
 
-int mtk_os_hal_dma_config(u8 chn, struct dma_setting *setting)
+int mtk_os_hal_dma_config(enum dma_channel chn, struct dma_setting *setting)
 {
 	struct dma_controller_rtos *ctrl_rtos;
 	struct dma_controller *ctrl;
 
 	ctrl_rtos = _mtk_os_hal_dma_get_ctlr(chn);
 	if (ctrl_rtos == NULL)
-		return -EPTR;
+		return -DMA_EPTR;
 
 	ctrl = ctrl_rtos->ctlr;
 	if (ctrl == NULL) {
 		printf("dma channel has not been allocated!\n");
-		return -EPTR;
+		return -DMA_EPTR;
 	}
 
 	_mtk_os_hal_dma_set_control_mode(ctrl, &(setting->ctrl_mode));
@@ -233,7 +234,6 @@ int mtk_os_hal_dma_config(u8 chn, struct dma_setting *setting)
 		ctrl->ctrls->int_en = !!(setting->interrupt_flag
 			& DMA_INT_COMPLETION);
 	} else {
-		ctrl->ctrls->dreq = setting->dreq;
 		ctrl->ctrls->dir = (enum dma_dir)setting->dir;
 		if (ctrl->ctrls->dir == MEM_2_PERI) {
 			ctrl->cfg->addr_1 = setting->src_addr;
@@ -248,7 +248,6 @@ int mtk_os_hal_dma_config(u8 chn, struct dma_setting *setting)
 		}
 		ctrl->cfg->count = setting->count;
 		ctrl->cfg->reload_en = setting->reload_en;
-		ctrl->ctrls->dreq = setting->dreq;
 		if (ctrl->chn_type == DMA_TYPE_VFF) {
 			ctrl->cfg->count = setting->vfifo.fifo_thrsh;
 			ctrl->cfg->timeout_cnt = setting->vfifo.timeout_cnt;
@@ -280,70 +279,71 @@ int mtk_os_hal_dma_config(u8 chn, struct dma_setting *setting)
 	return mtk_mhal_dma_config(ctrl);
 }
 
-int mtk_os_hal_dma_start(u8 chn)
+int mtk_os_hal_dma_start(enum dma_channel chn)
 {
 	struct dma_controller_rtos *ctrl_rtos;
 
 	ctrl_rtos = _mtk_os_hal_dma_get_ctlr(chn);
 	if (ctrl_rtos == NULL)
-		return -EPTR;
+		return -DMA_EPTR;
 
 	return mtk_mhal_dma_start(ctrl_rtos->ctlr);
 }
 
-int mtk_os_hal_dma_stop(u8 chn)
+int mtk_os_hal_dma_stop(enum dma_channel chn)
 {
 	struct dma_controller_rtos *ctrl_rtos;
 
 	ctrl_rtos = _mtk_os_hal_dma_get_ctlr(chn);
 	if (ctrl_rtos == NULL)
-		return -EPTR;
+		return -DMA_EPTR;
 	ctrl_rtos->status = IDLE;
 
 	return mtk_mhal_dma_stop(ctrl_rtos->ctlr);
 }
 
-int mtk_os_hal_dma_pause(u8 chn)
+int mtk_os_hal_dma_pause(enum dma_channel chn)
 {
 	struct dma_controller_rtos *ctrl_rtos;
 
 	ctrl_rtos = _mtk_os_hal_dma_get_ctlr(chn);
 	if (ctrl_rtos == NULL)
-		return -EPTR;
+		return -DMA_EPTR;
 
 	return mtk_mhal_dma_pause(ctrl_rtos->ctlr);
 }
 
-int mtk_os_hal_dma_resume(u8 chn)
+int mtk_os_hal_dma_resume(enum dma_channel chn)
 {
 	struct dma_controller_rtos *ctrl_rtos;
 
 	ctrl_rtos = _mtk_os_hal_dma_get_ctlr(chn);
 	if (ctrl_rtos == NULL)
-		return -EPTR;
+		return -DMA_EPTR;
 
 	return mtk_mhal_dma_resume(ctrl_rtos->ctlr);
 }
 
-int mtk_os_hal_dma_get_status(u8 chn)
+int mtk_os_hal_dma_get_status(enum dma_channel chn)
 {
 	struct dma_controller_rtos *ctrl_rtos;
 
 	ctrl_rtos = _mtk_os_hal_dma_get_ctlr(chn);
 	if (ctrl_rtos == NULL)
-		return -EPTR;
+		return -DMA_EPTR;
 
 	return mtk_mhal_dma_get_status(ctrl_rtos->ctlr);
 }
 
-int mtk_os_hal_dma_register_isr(u8 chn, dma_interrupt_callback isr_cb,
-				void *cb_data, enum dma_interrupt_type isr_type)
+int mtk_os_hal_dma_register_isr(enum dma_channel chn,
+	dma_interrupt_callback isr_cb, void *cb_data,
+	enum dma_interrupt_type isr_type)
 {
 	struct dma_controller_rtos *ctrl_rtos;
 
 	ctrl_rtos = _mtk_os_hal_dma_get_ctlr(chn);
 	if (ctrl_rtos == NULL)
-		return -EPTR;
+		return -DMA_EPTR;
 
 	switch (isr_type) {
 	case DMA_INT_COMPLETION:
@@ -364,78 +364,79 @@ int mtk_os_hal_dma_register_isr(u8 chn, dma_interrupt_callback isr_cb,
 		break;
 	default:
 		printf("unknown dma isr_type %d\n", isr_type);
-		return -EPARAM;
+		return -DMA_EPARAM;
 	}
 
 	return 0;
 }
 
-int mtk_os_hal_dma_dump_register(u8 chn)
+int mtk_os_hal_dma_dump_register(enum dma_channel chn)
 {
 	struct dma_controller_rtos *ctrl_rtos;
 
 	ctrl_rtos = _mtk_os_hal_dma_get_ctlr(chn);
 	if (ctrl_rtos == NULL)
-		return -EPTR;
+		return -DMA_EPTR;
 
 	return mtk_mhal_dma_dump_reg(ctrl_rtos->ctlr);
 }
 
-int mtk_os_hal_dma_set_param(u8 chn, enum dma_param_type param_type,
-			     u32 value)
+int mtk_os_hal_dma_set_param(enum dma_channel chn,
+	enum dma_param_type param_type, u32 value)
 {
 	struct dma_controller_rtos *ctrl_rtos;
 
 	ctrl_rtos = _mtk_os_hal_dma_get_ctlr(chn);
 	if (ctrl_rtos == NULL)
-		return -EPTR;
+		return -DMA_EPTR;
 
 	return mtk_mhal_dma_set_param(ctrl_rtos->ctlr,
 				      (enum dma_param)param_type, value);
 }
 
-int mtk_os_hal_dma_get_param(u8 chn, enum dma_param_type param_type)
+int mtk_os_hal_dma_get_param(enum dma_channel chn,
+	enum dma_param_type param_type)
 {
 	struct dma_controller_rtos *ctrl_rtos = NULL;
 
 	ctrl_rtos = _mtk_os_hal_dma_get_ctlr(chn);
 	if (ctrl_rtos == NULL)
-		return -EPTR;
+		return -DMA_EPTR;
 
 	return mtk_mhal_dma_get_param(ctrl_rtos->ctlr,
 				      (enum dma_param)param_type);
 }
 
-int mtk_os_hal_dma_update_swptr(u8 chn, u32 length_byte)
+int mtk_os_hal_dma_update_swptr(enum dma_channel chn, u32 length_byte)
 {
 	struct dma_controller_rtos *ctrl_rtos = NULL;
 
 	ctrl_rtos = _mtk_os_hal_dma_get_ctlr(chn);
 	if (ctrl_rtos == NULL)
-		return -EPTR;
+		return -DMA_EPTR;
 
 	return mtk_mhal_dma_update_swptr(ctrl_rtos->ctlr, length_byte);
 }
 
-int mtk_os_hal_dma_vff_read_data(u8 chn, u8 *buffer, u32 length)
+int mtk_os_hal_dma_vff_read_data(enum dma_channel chn, u8 *buffer, u32 length)
 {
 	struct dma_controller_rtos *ctrl_rtos = NULL;
 
 	ctrl_rtos = _mtk_os_hal_dma_get_ctlr(chn);
 	if (ctrl_rtos == NULL)
-		return -EPTR;
+		return -DMA_EPTR;
 
 	return mtk_mhal_dma_vff_read_data(ctrl_rtos->ctlr, buffer, length);
 }
 
-int mtk_os_hal_dma_release_chan(u8 chn)
+int mtk_os_hal_dma_release_chan(enum dma_channel chn)
 {
 	int ret;
 	struct dma_controller_rtos *ctrl_rtos;
 
 	ctrl_rtos = _mtk_os_hal_dma_get_ctlr(chn);
 	if (ctrl_rtos == NULL)
-		return -EPTR;
+		return -DMA_EPTR;
 
 	ret = mtk_mhal_dma_stop(ctrl_rtos->ctlr);
 	if (ret) {
@@ -450,25 +451,25 @@ int mtk_os_hal_dma_release_chan(u8 chn)
 	return ret;
 }
 
-int mtk_os_hal_dma_reset(u8 chn)
+int mtk_os_hal_dma_reset(enum dma_channel chn)
 {
 	struct dma_controller_rtos *ctrl_rtos;
 
 	ctrl_rtos = _mtk_os_hal_dma_get_ctlr(chn);
 	if (ctrl_rtos == NULL)
-		return -EPTR;
+		return -DMA_EPTR;
 	ctrl_rtos->status = IDLE;
 
 	return mtk_mhal_dma_reset(ctrl_rtos->ctlr);
 }
 
-int mtk_os_hal_dma_clr_dreq(u8 chn)
+int mtk_os_hal_dma_clr_dreq(enum dma_channel chn)
 {
 	struct dma_controller_rtos *ctrl_rtos;
 
 	ctrl_rtos = _mtk_os_hal_dma_get_ctlr(chn);
 	if (ctrl_rtos == NULL)
-		return -EPTR;
+		return -DMA_EPTR;
 
 	return mtk_mhal_dma_clr_dreq(ctrl_rtos->ctlr);
 }

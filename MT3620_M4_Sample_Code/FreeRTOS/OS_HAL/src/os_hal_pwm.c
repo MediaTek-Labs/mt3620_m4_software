@@ -47,9 +47,9 @@ static const unsigned long pwm_base_addr[MAX_GROUP_NUM] = {
 };
 
 static const pwm_clks pwm_clock_source[MAX_GROUP_NUM] = {
-	PWM_CLOCK_2M,
-	PWM_CLOCK_2M,
-	PWM_CLOCK_2M
+	PWM_CLOCK_XTAL,
+	PWM_CLOCK_XTAL,
+	PWM_CLOCK_XTAL
 };
 
 static const unsigned long group0_register[MAX_CHANNEL_NUM] = {
@@ -244,7 +244,7 @@ static int _mtk_os_hal_pwm_release_gpio(pwm_groups group_num,
 	int ret = 0;
 
 	switch (group_num) {
-	case 0:
+	case OS_HAL_PWM_GROUP0:
 		if (channel_bit_map & 0x1) {
 			ret = mtk_os_hal_gpio_free(OS_HAL_GPIO_0);
 			if (ret != 0)
@@ -270,7 +270,7 @@ static int _mtk_os_hal_pwm_release_gpio(pwm_groups group_num,
 					OS_HAL_GPIO_3);
 		}
 		break;
-	case 1:
+	case OS_HAL_PWM_GROUP1:
 		if (channel_bit_map & 0x1) {
 			ret = mtk_os_hal_gpio_free(OS_HAL_GPIO_4);
 			if (ret != 0)
@@ -296,7 +296,7 @@ static int _mtk_os_hal_pwm_release_gpio(pwm_groups group_num,
 					OS_HAL_GPIO_7);
 		}
 		break;
-	case 2:
+	case OS_HAL_PWM_GROUP2:
 		if (channel_bit_map & 0x1) {
 			ret = mtk_os_hal_gpio_free(OS_HAL_GPIO_8);
 			if (ret != 0)
@@ -343,7 +343,7 @@ int mtk_os_hal_pwm_ctlr_init(pwm_groups group_num, u32 channel_bit_map)
 
 	if (!ctlr_rtos->ctlr)
 		return -PWM_EPTR;
-	printf("mtk_os_hal_pwm_ctlr_init\n");
+
 	ctlr = ctlr_rtos->ctlr;
 
 	ctlr->base = (void __iomem *)pwm_base_addr[group_num];
@@ -403,16 +403,14 @@ int mtk_os_hal_pwm_config_freq_duty_normal(pwm_groups group_num,
 
 	ctlr->data->frequency = frequency;
 	ctlr->data->duty_cycle = duty_cycle;
-	printf("set frequency == %d, duty_cycle== %d\n",
-		ctlr->data->frequency, ctlr->data->duty_cycle);
+
 	ret = mtk_mhal_pwm_set_frequency(ctlr_rtos->ctlr, pwm_num);
 	if (ret)
 		return ret;
-	printf("set frequency end\n");
+
 	ret = mtk_mhal_pwm_set_duty_cycle(ctlr_rtos->ctlr, pwm_num);
 	if (ret)
 		return ret;
-	printf("set duty end\n");
 
 	return 0;
 }
@@ -457,9 +455,7 @@ int mtk_os_hal_pwm_config_freq_duty_2_state(pwm_groups group_num,
 		return -PWM_EPTR;
 
 	ctlr = ctlr_rtos->ctlr;
-	printf("state_config->frequency %d\n", state_config.frequency);
-	printf("state_config->duty_cycle %d\n", state_config.duty_cycle);
-	printf("state_config->stage %d\n", state_config.stage);
+
 	ctlr->data->frequency = state_config.frequency;
 	ctlr->data->duty_cycle = state_config.duty_cycle;
 	ctlr->data->stage = state_config.stage;
