@@ -28,7 +28,7 @@ This repository maintains the MT3620 M4 driver and real-time application sample 
         * Lower layer: **HDL** (Hardware Driving Layer), which handles the low-level hardware control.  
 * **MT3620_M4_Sample_Code/**
     * This is the executable CMake project sample code which utilizes the M-HAL APIs to access the peripheral interfaces.
-    * Bot **Bare Metal** and **FreeRTOS** sample code are included.  
+    * Both **Bare Metal** and **FreeRTOS** sample code are included.  
 
 Please refer to the **[MT3620 M4 API Reference Manual](https://support.mediatek.com/AzureSphere/mt3620/M4_API_Reference_Manual)** for the detailed API description.  
 Use of the real-time cores is currently a **Beta** feature.
