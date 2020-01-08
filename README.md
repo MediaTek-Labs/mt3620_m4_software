@@ -1,8 +1,15 @@
 # MediaTek MT3620 M4 Driver & Real-Time Application Sample Code (Beta)
 ### Current Status
-* FreeRTOS BSP is supported.
-* Available **Bare Metal** sample codes: GPIO / Hello World
-* Available **FreeRTOS** sample codes: GPIO / GPT / UART
+* Avaiable sample code
+    * **FreeRTOS**: GPIO / GPT / UART
+    * **Bare Metal**: GPIO / Hello World
+* Known Issue
+    * DMA is not working.
+        * Caused by Azure Sphere OS firewall setting problem, issue reported to Microsoft.
+    * External interrupt is not working.
+        * Caused by Azure Sphere OS firewall setting problem, issue reported to Microsoft.
+    * SPI slave is not working.
+        * App Manifest file does not support SPI slave, issue reported to Microsoft.
 
 ### To clone this repository:
 ```
