@@ -34,7 +34,6 @@
  */
 
 #include "os_hal_pwm.h"
-#include "os_hal_gpio.h"
 
 #define GROUP0_PWM_BASE			0x38011000
 #define GROUP1_PWM_BASE			0x38021000
@@ -98,237 +97,6 @@ static struct mtk_pwm_controller_rtos *_mtk_os_hal_pwm_get_ctlr(
 	return &g_pwm_ctlr_rtos[group_num];
 }
 
-static int _mtk_os_hal_pwm_config_gpio(pwm_groups group_num,
-	u32 channel_bit_map)
-{
-	int ret = 0;
-
-	switch (group_num) {
-	case OS_HAL_PWM_GROUP0:
-		if (channel_bit_map & 0x1) {
-			ret = mtk_os_hal_gpio_request(OS_HAL_GPIO_0);
-			if (ret != 0)
-				printf("request gpio[%d] fail\n",
-					OS_HAL_GPIO_0);
-			ret |= mtk_os_hal_gpio_pmx_set_mode(OS_HAL_GPIO_0,
-						OS_HAL_MODE_1);
-			ret |= mtk_os_hal_gpio_set_direction(OS_HAL_GPIO_0,
-						OS_HAL_GPIO_DIR_OUTPUT);
-		}
-		if (channel_bit_map & 0x2) {
-			ret = mtk_os_hal_gpio_request(OS_HAL_GPIO_1);
-			if (ret != 0)
-				printf("request gpio[%d] fail\n",
-					OS_HAL_GPIO_1);
-			ret |= mtk_os_hal_gpio_pmx_set_mode(OS_HAL_GPIO_1,
-						OS_HAL_MODE_1);
-			ret |= mtk_os_hal_gpio_set_direction(OS_HAL_GPIO_1,
-						OS_HAL_GPIO_DIR_OUTPUT);
-		}
-		if (channel_bit_map & 0x4) {
-			ret = mtk_os_hal_gpio_request(OS_HAL_GPIO_2);
-			if (ret != 0)
-				printf("request gpio[%d] fail\n",
-					OS_HAL_GPIO_2);
-			ret |= mtk_os_hal_gpio_pmx_set_mode(OS_HAL_GPIO_2,
-						OS_HAL_MODE_1);
-			ret |= mtk_os_hal_gpio_set_direction(OS_HAL_GPIO_2,
-						OS_HAL_GPIO_DIR_OUTPUT);
-		}
-		if (channel_bit_map & 0x8) {
-			ret = mtk_os_hal_gpio_request(OS_HAL_GPIO_3);
-			if (ret != 0)
-				printf("request gpio[%d] fail\n",
-					OS_HAL_GPIO_3);
-			ret |= mtk_os_hal_gpio_pmx_set_mode(OS_HAL_GPIO_3,
-						OS_HAL_MODE_1);
-			ret |= mtk_os_hal_gpio_set_direction(OS_HAL_GPIO_3,
-						OS_HAL_GPIO_DIR_OUTPUT);
-		}
-		break;
-	case OS_HAL_PWM_GROUP1:
-		if (channel_bit_map & 0x1) {
-			ret = mtk_os_hal_gpio_request(OS_HAL_GPIO_4);
-			if (ret != 0)
-				printf("request gpio[%d] fail\n",
-					OS_HAL_GPIO_4);
-			ret |= mtk_os_hal_gpio_pmx_set_mode(OS_HAL_GPIO_4,
-						OS_HAL_MODE_1);
-			ret |= mtk_os_hal_gpio_set_direction(OS_HAL_GPIO_4,
-						OS_HAL_GPIO_DIR_OUTPUT);
-		}
-		if (channel_bit_map & 0x2) {
-			ret = mtk_os_hal_gpio_request(OS_HAL_GPIO_5);
-			if (ret != 0)
-				printf("request gpio[%d] fail\n",
-					OS_HAL_GPIO_5);
-			ret |= mtk_os_hal_gpio_pmx_set_mode(OS_HAL_GPIO_5,
-						OS_HAL_MODE_1);
-			ret |= mtk_os_hal_gpio_set_direction(OS_HAL_GPIO_5,
-						OS_HAL_GPIO_DIR_OUTPUT);
-		}
-		if (channel_bit_map & 0x4) {
-			ret = mtk_os_hal_gpio_request(OS_HAL_GPIO_6);
-			if (ret != 0)
-				printf("request gpio[%d] fail\n",
-					OS_HAL_GPIO_6);
-			ret |= mtk_os_hal_gpio_pmx_set_mode(OS_HAL_GPIO_6,
-						OS_HAL_MODE_1);
-			ret |= mtk_os_hal_gpio_set_direction(OS_HAL_GPIO_6,
-						OS_HAL_GPIO_DIR_OUTPUT);
-		}
-		if (channel_bit_map & 0x8) {
-			ret = mtk_os_hal_gpio_request(OS_HAL_GPIO_7);
-			if (ret != 0)
-				printf("request gpio[%d] fail\n",
-					OS_HAL_GPIO_7);
-			ret |= mtk_os_hal_gpio_pmx_set_mode(OS_HAL_GPIO_7,
-						OS_HAL_MODE_1);
-			ret |= mtk_os_hal_gpio_set_direction(OS_HAL_GPIO_7,
-						OS_HAL_GPIO_DIR_OUTPUT);
-		}
-		break;
-	case OS_HAL_PWM_GROUP2:
-		if (channel_bit_map & 0x1) {
-			ret = mtk_os_hal_gpio_request(OS_HAL_GPIO_8);
-			if (ret != 0)
-				printf("request gpio[%d] fail\n",
-					OS_HAL_GPIO_8);
-			ret |= mtk_os_hal_gpio_pmx_set_mode(OS_HAL_GPIO_8,
-						OS_HAL_MODE_1);
-			ret |= mtk_os_hal_gpio_set_direction(OS_HAL_GPIO_8,
-						OS_HAL_GPIO_DIR_OUTPUT);
-		}
-		if (channel_bit_map & 0x2) {
-			ret = mtk_os_hal_gpio_request(OS_HAL_GPIO_9);
-			if (ret != 0)
-				printf("request gpio[%d] fail\n",
-					OS_HAL_GPIO_9);
-			ret |= mtk_os_hal_gpio_pmx_set_mode(OS_HAL_GPIO_9,
-						OS_HAL_MODE_1);
-			ret |= mtk_os_hal_gpio_set_direction(OS_HAL_GPIO_9,
-						OS_HAL_GPIO_DIR_OUTPUT);
-		}
-		if (channel_bit_map & 0x4) {
-			ret = mtk_os_hal_gpio_request(OS_HAL_GPIO_10);
-			if (ret != 0)
-				printf("request gpio[%d] fail\n",
-					OS_HAL_GPIO_10);
-			ret |= mtk_os_hal_gpio_pmx_set_mode(OS_HAL_GPIO_10,
-						OS_HAL_MODE_1);
-			ret |= mtk_os_hal_gpio_set_direction(OS_HAL_GPIO_10,
-						OS_HAL_GPIO_DIR_OUTPUT);
-		}
-		if (channel_bit_map & 0x8) {
-			ret = mtk_os_hal_gpio_request(OS_HAL_GPIO_11);
-			if (ret != 0)
-				printf("request gpio[%d] fail\n",
-					OS_HAL_GPIO_11);
-			ret |= mtk_os_hal_gpio_pmx_set_mode(OS_HAL_GPIO_11,
-						OS_HAL_MODE_1);
-			ret |= mtk_os_hal_gpio_set_direction(OS_HAL_GPIO_11,
-						OS_HAL_GPIO_DIR_OUTPUT);
-		}
-		break;
-	case OS_HAL_PWM_GROUP_MAX:
-		break;
-	}
-
-	return ret;
-}
-
-
-static int _mtk_os_hal_pwm_release_gpio(pwm_groups group_num,
-	u32 channel_bit_map)
-{
-	int ret = 0;
-
-	switch (group_num) {
-	case OS_HAL_PWM_GROUP0:
-		if (channel_bit_map & 0x1) {
-			ret = mtk_os_hal_gpio_free(OS_HAL_GPIO_0);
-			if (ret != 0)
-				printf("release gpio[%d] fail\n",
-					OS_HAL_GPIO_0);
-		}
-		if (channel_bit_map & 0x2) {
-			ret = mtk_os_hal_gpio_free(OS_HAL_GPIO_1);
-			if (ret != 0)
-				printf("release gpio[%d] fail\n",
-					OS_HAL_GPIO_1);
-		}
-		if (channel_bit_map & 0x4) {
-			ret = mtk_os_hal_gpio_free(OS_HAL_GPIO_2);
-			if (ret != 0)
-				printf("release gpio[%d] fail\n",
-					OS_HAL_GPIO_2);
-		}
-		if (channel_bit_map & 0x8) {
-			ret = mtk_os_hal_gpio_free(OS_HAL_GPIO_3);
-			if (ret != 0)
-				printf("release gpio[%d] fail\n",
-					OS_HAL_GPIO_3);
-		}
-		break;
-	case OS_HAL_PWM_GROUP1:
-		if (channel_bit_map & 0x1) {
-			ret = mtk_os_hal_gpio_free(OS_HAL_GPIO_4);
-			if (ret != 0)
-				printf("release gpio[%d] fail\n",
-					OS_HAL_GPIO_4);
-		}
-		if (channel_bit_map & 0x2) {
-			ret = mtk_os_hal_gpio_free(OS_HAL_GPIO_5);
-			if (ret != 0)
-				printf("release gpio[%d] fail\n",
-					OS_HAL_GPIO_5);
-		}
-		if (channel_bit_map & 0x4) {
-			ret = mtk_os_hal_gpio_free(OS_HAL_GPIO_6);
-			if (ret != 0)
-				printf("release gpio[%d] fail\n",
-					OS_HAL_GPIO_6);
-		}
-		if (channel_bit_map & 0x8) {
-			ret = mtk_os_hal_gpio_free(OS_HAL_GPIO_7);
-			if (ret != 0)
-				printf("release gpio[%d] fail\n",
-					OS_HAL_GPIO_7);
-		}
-		break;
-	case OS_HAL_PWM_GROUP2:
-		if (channel_bit_map & 0x1) {
-			ret = mtk_os_hal_gpio_free(OS_HAL_GPIO_8);
-			if (ret != 0)
-				printf("release gpio[%d] fail\n",
-					OS_HAL_GPIO_8);
-		}
-		if (channel_bit_map & 0x2) {
-			ret = mtk_os_hal_gpio_free(OS_HAL_GPIO_9);
-			if (ret != 0)
-				printf("release gpio[%d] fail\n",
-					OS_HAL_GPIO_9);
-		}
-		if (channel_bit_map & 0x4) {
-			ret = mtk_os_hal_gpio_free(OS_HAL_GPIO_10);
-			if (ret != 0)
-				printf("release gpio[%d] fail\n",
-					OS_HAL_GPIO_10);
-		}
-		if (channel_bit_map & 0x8) {
-			ret = mtk_os_hal_gpio_free(OS_HAL_GPIO_11);
-			if (ret != 0)
-				printf("release gpio[%d] fail\n",
-					OS_HAL_GPIO_11);
-		}
-		break;
-	case OS_HAL_PWM_GROUP_MAX:
-		break;
-	}
-
-	return ret;
-}
-
 int mtk_os_hal_pwm_ctlr_init(pwm_groups group_num, u32 channel_bit_map)
 {
 	struct mtk_pwm_controller_rtos *ctlr_rtos;
@@ -352,10 +120,6 @@ int mtk_os_hal_pwm_ctlr_init(pwm_groups group_num, u32 channel_bit_map)
 
 	ctlr->data = pwm_common_data[group_num];
 
-	ret = _mtk_os_hal_pwm_config_gpio(group_num, channel_bit_map);
-	if (ret)
-		return ret;
-
 	ret = mtk_mhal_pwm_init(ctlr, channel_bit_map);
 	if (ret)
 		return ret;
@@ -378,10 +142,6 @@ int mtk_os_hal_pwm_ctlr_deinit(pwm_groups group_num, u32 channel_bit_map)
 	bit_map = channel_bit_map;
 
 	ret = mtk_mhal_pwm_deinit(ctlr, bit_map);
-	if (ret)
-		return ret;
-
-	ret = _mtk_os_hal_pwm_release_gpio(group_num, bit_map);
 	if (ret)
 		return ret;
 

@@ -37,7 +37,6 @@
 #include <semphr.h>
 
 #include "os_hal_uart.h"
-#include "os_hal_gpio.h"
 #include "os_hal_dma.h"
 
 #define CM4_UART_BASE			0x21040000
@@ -118,106 +117,6 @@ static struct mtk_uart_controller_rtos
 	return &g_uart_ctlr_rtos[port_num];
 }
 
-static void _mtk_os_hal_uart_config_gpio(UART_PORT port_num)
-{
-	switch (port_num) {
-	case OS_HAL_UART_PORT0:
-		break;
-	case OS_HAL_UART_ISU0:
-		mtk_os_hal_gpio_request(OS_HAL_GPIO_26);
-		mtk_os_hal_gpio_pmx_set_mode(OS_HAL_GPIO_26, OS_HAL_MODE_1);
-		mtk_os_hal_gpio_request(OS_HAL_GPIO_27);
-		mtk_os_hal_gpio_pmx_set_mode(OS_HAL_GPIO_27, OS_HAL_MODE_1);
-		mtk_os_hal_gpio_request(OS_HAL_GPIO_28);
-		mtk_os_hal_gpio_pmx_set_mode(OS_HAL_GPIO_28, OS_HAL_MODE_1);
-		mtk_os_hal_gpio_request(OS_HAL_GPIO_29);
-		mtk_os_hal_gpio_pmx_set_mode(OS_HAL_GPIO_29, OS_HAL_MODE_1);
-		break;
-	case OS_HAL_UART_ISU1:
-		mtk_os_hal_gpio_request(OS_HAL_GPIO_31);
-		mtk_os_hal_gpio_pmx_set_mode(OS_HAL_GPIO_31, OS_HAL_MODE_1);
-		mtk_os_hal_gpio_request(OS_HAL_GPIO_32);
-		mtk_os_hal_gpio_pmx_set_mode(OS_HAL_GPIO_32, OS_HAL_MODE_1);
-		mtk_os_hal_gpio_request(OS_HAL_GPIO_33);
-		mtk_os_hal_gpio_pmx_set_mode(OS_HAL_GPIO_33, OS_HAL_MODE_1);
-		mtk_os_hal_gpio_request(OS_HAL_GPIO_34);
-		mtk_os_hal_gpio_pmx_set_mode(OS_HAL_GPIO_34, OS_HAL_MODE_1);
-		break;
-	case OS_HAL_UART_ISU2:
-		mtk_os_hal_gpio_request(OS_HAL_GPIO_36);
-		mtk_os_hal_gpio_pmx_set_mode(OS_HAL_GPIO_36, OS_HAL_MODE_1);
-		mtk_os_hal_gpio_request(OS_HAL_GPIO_37);
-		mtk_os_hal_gpio_pmx_set_mode(OS_HAL_GPIO_37, OS_HAL_MODE_1);
-		mtk_os_hal_gpio_request(OS_HAL_GPIO_38);
-		mtk_os_hal_gpio_pmx_set_mode(OS_HAL_GPIO_38, OS_HAL_MODE_1);
-		mtk_os_hal_gpio_request(OS_HAL_GPIO_39);
-		mtk_os_hal_gpio_pmx_set_mode(OS_HAL_GPIO_39, OS_HAL_MODE_1);
-		break;
-	case OS_HAL_UART_ISU3:
-		mtk_os_hal_gpio_request(OS_HAL_GPIO_66);
-		mtk_os_hal_gpio_pmx_set_mode(OS_HAL_GPIO_66, OS_HAL_MODE_1);
-		mtk_os_hal_gpio_request(OS_HAL_GPIO_67);
-		mtk_os_hal_gpio_pmx_set_mode(OS_HAL_GPIO_67, OS_HAL_MODE_1);
-		mtk_os_hal_gpio_request(OS_HAL_GPIO_68);
-		mtk_os_hal_gpio_pmx_set_mode(OS_HAL_GPIO_68, OS_HAL_MODE_1);
-		mtk_os_hal_gpio_request(OS_HAL_GPIO_69);
-		mtk_os_hal_gpio_pmx_set_mode(OS_HAL_GPIO_69, OS_HAL_MODE_1);
-		break;
-	case OS_HAL_UART_ISU4:
-		mtk_os_hal_gpio_request(OS_HAL_GPIO_71);
-		mtk_os_hal_gpio_pmx_set_mode(OS_HAL_GPIO_71, OS_HAL_MODE_1);
-		mtk_os_hal_gpio_request(OS_HAL_GPIO_72);
-		mtk_os_hal_gpio_pmx_set_mode(OS_HAL_GPIO_72, OS_HAL_MODE_1);
-		mtk_os_hal_gpio_request(OS_HAL_GPIO_73);
-		mtk_os_hal_gpio_pmx_set_mode(OS_HAL_GPIO_73, OS_HAL_MODE_1);
-		mtk_os_hal_gpio_request(OS_HAL_GPIO_74);
-		mtk_os_hal_gpio_pmx_set_mode(OS_HAL_GPIO_74, OS_HAL_MODE_1);
-		break;
-	case OS_HAL_UART_MAX_PORT:
-		break;
-	}
-}
-
-static void _mtk_os_hal_uart_free_gpio(UART_PORT port_num)
-{
-	switch (port_num) {
-	case OS_HAL_UART_PORT0:
-		break;
-	case OS_HAL_UART_ISU0:
-		mtk_os_hal_gpio_free(OS_HAL_GPIO_26);
-		mtk_os_hal_gpio_free(OS_HAL_GPIO_27);
-		mtk_os_hal_gpio_free(OS_HAL_GPIO_28);
-		mtk_os_hal_gpio_free(OS_HAL_GPIO_29);
-		break;
-	case OS_HAL_UART_ISU1:
-		mtk_os_hal_gpio_free(OS_HAL_GPIO_31);
-		mtk_os_hal_gpio_free(OS_HAL_GPIO_32);
-		mtk_os_hal_gpio_free(OS_HAL_GPIO_33);
-		mtk_os_hal_gpio_free(OS_HAL_GPIO_34);
-		break;
-	case OS_HAL_UART_ISU2:
-		mtk_os_hal_gpio_free(OS_HAL_GPIO_36);
-		mtk_os_hal_gpio_free(OS_HAL_GPIO_37);
-		mtk_os_hal_gpio_free(OS_HAL_GPIO_38);
-		mtk_os_hal_gpio_free(OS_HAL_GPIO_39);
-		break;
-	case OS_HAL_UART_ISU3:
-		mtk_os_hal_gpio_free(OS_HAL_GPIO_66);
-		mtk_os_hal_gpio_free(OS_HAL_GPIO_67);
-		mtk_os_hal_gpio_free(OS_HAL_GPIO_68);
-		mtk_os_hal_gpio_free(OS_HAL_GPIO_69);
-		break;
-	case OS_HAL_UART_ISU4:
-		mtk_os_hal_gpio_free(OS_HAL_GPIO_71);
-		mtk_os_hal_gpio_free(OS_HAL_GPIO_72);
-		mtk_os_hal_gpio_free(OS_HAL_GPIO_73);
-		mtk_os_hal_gpio_free(OS_HAL_GPIO_74);
-		break;
-	case OS_HAL_UART_MAX_PORT:
-		break;
-	}
-}
-
 int mtk_os_hal_uart_ctlr_init(UART_PORT port_num)
 {
 	struct mtk_uart_controller_rtos *ctlr_rtos =
@@ -240,8 +139,6 @@ int mtk_os_hal_uart_ctlr_init(UART_PORT port_num)
 	ctlr->parity = UART_NONE_PARITY;
 	ctlr->stop_bit = UART_STOP_1_BIT;
 
-	_mtk_os_hal_uart_config_gpio(port_num);
-
 	mtk_mhal_uart_sw_reset(ctlr_rtos->ctlr);
 	mtk_mhal_uart_enable_clk(ctlr_rtos->ctlr);
 
@@ -257,8 +154,6 @@ int mtk_os_hal_uart_ctlr_deinit(UART_PORT port_num)
 
 	if (!ctlr_rtos)
 		return -UART_EPTR;
-
-	_mtk_os_hal_uart_free_gpio(port_num);
 
 	mtk_mhal_uart_disable_clk(ctlr_rtos->ctlr);
 

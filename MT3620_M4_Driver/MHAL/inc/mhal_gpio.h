@@ -188,17 +188,6 @@
  *	return mtk_mhal_gpio_set_pullen_pullsel(&pctl, pin, enable, isup);
  *}
  *
- *int mtk_os_hal_gpio_pmx_set_mode(
- *	u32 pin, u32 mode)
- *{
- *	return mtk_mhal_gpio_pmx_set_mode(&pctl, pin, mode);
- *}
- *
- *int mtk_os_hal_gpio_pmx_get_mode(u32 pin, u32 *pvalue)
- *{
- *	return mtk_mhal_gpio_pmx_get_mode(&pctl, pin, pvalue);
- *}
- *
  *
  * @endcode
  * - \b How \b to \b develop \b user \b application \b by \b using
@@ -208,8 +197,6 @@
  *
  *    - Set GPIO output high/low:
  *      -Call mtk_os_hal_gpio_request(pin) to get gpio request resource.
- *      -Call mtk_os_hal_gpio_pmx_set_mode(pin, OS_HAL_MODE_6)
- *        to set the pin as gpio mode.
  *      -Call mtk_os_hal_gpio_set_direction(pin, OS_HAL_GPIO_DIR_OUTPUT)
  *        to set gpio direction as output mode.
  *      -Call mtk_os_hal_gpio_set_output(pin, OS_HAL_GPIO_DATA_HIGH)
@@ -220,8 +207,6 @@
  *
  *    - Set GPIO input mode:
  *      -Call mtk_os_hal_gpio_request(pin) to get gpio request resource.
- *      -Call mtk_os_hal_gpio_pmx_set_mode(pin, OS_HAL_MODE_6)
- *        to set the pin as gpio mode.
  *      -Call mtk_os_hal_gpio_set_direction(pin, OS_HAL_GPIO_DIR_INPUT)
  *        to set gpio direction as input mode.
  *      -Call mtk_os_hal_gpio_set_pullen_pullsel(pin, false, false)
@@ -231,12 +216,6 @@
  *      -Call mtk_os_hal_gpio_set_pullen_pullsel(pin, ture, ture)
  *        to set gpio as pull-up state.
  *      -Call mtk_os_hal_gpio_get_input(pin, pvalue) to get gpio input value.
- *      -Call mtk_os_hal_gpio_free(pin) to free gpio request resource.
- *
- *    - Set multifunction mode:
- *      -Call mtk_os_hal_gpio_request(pin) to get gpio request resource.
- *      -Call mtk_os_hal_gpio_pmx_set_mode(pin, mode)
- *        to set the pin as multifunction mode.
  *      -Call mtk_os_hal_gpio_free(pin) to free gpio request resource.
  *
  *    @endcode

@@ -1,4 +1,4 @@
-# Sample: MT3620 M4 real-time application - FreeRTos GPT
+# Sample: MT3620 M4 real-time application - FreeRTOS GPT
 ### Description
 This sample demonstrates how to use GPT and UART on an MT3620 real-time core.  
 - GPT0/GPT3 are used to print log periodically.

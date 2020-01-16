@@ -35,7 +35,6 @@
 
 #include "nvic.h"
 #include "os_hal_adc.h"
-#include "os_hal_gpio.h"
 #include "os_hal_dma.h"
 
 #define CM4_ADC_BASE					0x38000000
@@ -57,141 +56,6 @@ static struct mtk_adc_controller_rtos *_mtk_os_hal_adc_get_ctlr(void)
 	return &g_adc_ctlr_rtos;
 }
 
-static int _mtk_os_hal_adc_config_gpio(void)
-{
-	int ret = 0;
-
-	ret |= mtk_os_hal_gpio_request(OS_HAL_GPIO_41);
-	if (ret != 0)
-		printf("request gpio[%d] fail\n",
-			OS_HAL_GPIO_41);
-	ret |= mtk_os_hal_gpio_pmx_set_mode(OS_HAL_GPIO_41,
-				OS_HAL_MODE_0);
-	ret |= mtk_os_hal_gpio_set_direction(OS_HAL_GPIO_41,
-				OS_HAL_GPIO_DIR_INPUT);
-	if (ret != 0)
-		printf("config gpio[%d] fail\n",
-			OS_HAL_GPIO_41);
-	ret |= mtk_os_hal_gpio_request(OS_HAL_GPIO_42);
-	if (ret != 0)
-		printf("request gpio[%d] fail\n",
-			OS_HAL_GPIO_42);
-	ret |= mtk_os_hal_gpio_pmx_set_mode(OS_HAL_GPIO_42,
-				OS_HAL_MODE_0);
-	ret |= mtk_os_hal_gpio_set_direction(OS_HAL_GPIO_42,
-				OS_HAL_GPIO_DIR_INPUT);
-	if (ret != 0)
-		printf("config gpio[%d] fail\n",
-			OS_HAL_GPIO_42);
-	ret |= mtk_os_hal_gpio_request(OS_HAL_GPIO_43);
-	if (ret != 0)
-		printf("request gpio[%d] fail\n",
-			OS_HAL_GPIO_43);
-	ret |= mtk_os_hal_gpio_pmx_set_mode(OS_HAL_GPIO_43,
-				OS_HAL_MODE_0);
-	ret |= mtk_os_hal_gpio_set_direction(OS_HAL_GPIO_43,
-				OS_HAL_GPIO_DIR_INPUT);
-	if (ret != 0)
-		printf("config gpio[%d] fail\n",
-			OS_HAL_GPIO_43);
-	ret |= mtk_os_hal_gpio_request(OS_HAL_GPIO_44);
-	if (ret != 0)
-		printf("request gpio[%d] fail\n",
-			OS_HAL_GPIO_44);
-	ret |= mtk_os_hal_gpio_pmx_set_mode(OS_HAL_GPIO_44,
-				OS_HAL_MODE_0);
-	ret |= mtk_os_hal_gpio_set_direction(OS_HAL_GPIO_44,
-				OS_HAL_GPIO_DIR_INPUT);
-	if (ret != 0)
-		printf("config gpio[%d] fail\n",
-			OS_HAL_GPIO_44);
-	ret |= mtk_os_hal_gpio_request(OS_HAL_GPIO_45);
-	if (ret != 0)
-		printf("request gpio[%d] fail\n",
-			OS_HAL_GPIO_45);
-	ret |= mtk_os_hal_gpio_pmx_set_mode(OS_HAL_GPIO_45,
-				OS_HAL_MODE_0);
-	ret |= mtk_os_hal_gpio_set_direction(OS_HAL_GPIO_45,
-				OS_HAL_GPIO_DIR_INPUT);
-	if (ret != 0)
-		printf("config gpio[%d] fail\n",
-			OS_HAL_GPIO_45);
-	ret |= mtk_os_hal_gpio_request(OS_HAL_GPIO_46);
-	if (ret != 0)
-		printf("request gpio[%d] fail\n",
-			OS_HAL_GPIO_46);
-	ret |= mtk_os_hal_gpio_pmx_set_mode(OS_HAL_GPIO_46,
-				OS_HAL_MODE_0);
-	ret |= mtk_os_hal_gpio_set_direction(OS_HAL_GPIO_46,
-				OS_HAL_GPIO_DIR_INPUT);
-	if (ret != 0)
-		printf("config gpio[%d] fail\n",
-			OS_HAL_GPIO_46);
-	ret |= mtk_os_hal_gpio_request(OS_HAL_GPIO_47);
-	if (ret != 0)
-		printf("request gpio[%d] fail\n",
-			OS_HAL_GPIO_47);
-	ret |= mtk_os_hal_gpio_pmx_set_mode(OS_HAL_GPIO_47,
-				OS_HAL_MODE_0);
-	ret |= mtk_os_hal_gpio_set_direction(OS_HAL_GPIO_47,
-				OS_HAL_GPIO_DIR_INPUT);
-	if (ret != 0)
-		printf("config gpio[%d] fail\n",
-			OS_HAL_GPIO_47);
-	ret |= mtk_os_hal_gpio_request(OS_HAL_GPIO_48);
-	if (ret != 0)
-		printf("request gpio[%d] fail\n",
-			OS_HAL_GPIO_48);
-	ret |= mtk_os_hal_gpio_pmx_set_mode(OS_HAL_GPIO_48,
-				OS_HAL_MODE_0);
-	ret |= mtk_os_hal_gpio_set_direction(OS_HAL_GPIO_48,
-				OS_HAL_GPIO_DIR_INPUT);
-	if (ret != 0)
-		printf("config gpio[%d] fail\n",
-			OS_HAL_GPIO_48);
-
-	return ret;
-}
-
-static int _mtk_os_hal_adc_release_gpio(void)
-{
-	int ret = 0;
-
-	ret = mtk_os_hal_gpio_free(OS_HAL_GPIO_41);
-	if (ret != 0)
-		printf("release gpio[%d] fail\n",
-			OS_HAL_GPIO_41);
-	ret = mtk_os_hal_gpio_free(OS_HAL_GPIO_42);
-	if (ret != 0)
-		printf("release gpio[%d] fail\n",
-			OS_HAL_GPIO_42);
-	ret = mtk_os_hal_gpio_free(OS_HAL_GPIO_43);
-	if (ret != 0)
-		printf("release gpio[%d] fail\n",
-			OS_HAL_GPIO_43);
-	ret = mtk_os_hal_gpio_free(OS_HAL_GPIO_44);
-	if (ret != 0)
-		printf("release gpio[%d] fail\n",
-			OS_HAL_GPIO_44);
-	ret = mtk_os_hal_gpio_free(OS_HAL_GPIO_45);
-	if (ret != 0)
-		printf("release gpio[%d] fail\n",
-			OS_HAL_GPIO_45);
-	ret = mtk_os_hal_gpio_free(OS_HAL_GPIO_46);
-	if (ret != 0)
-		printf("release gpio[%d] fail\n",
-			OS_HAL_GPIO_46);
-	ret = mtk_os_hal_gpio_free(OS_HAL_GPIO_47);
-	if (ret != 0)
-		printf("release gpio[%d] fail\n",
-			OS_HAL_GPIO_47);
-	ret = mtk_os_hal_gpio_free(OS_HAL_GPIO_48);
-	if (ret != 0)
-		printf("release gpio[%d] fail\n",
-			OS_HAL_GPIO_48);
-
-	return ret;
-}
 static int _mtk_os_hal_adc_irq_handler(struct mtk_adc_controller *ctlr)
 {
 	if (!ctlr)
@@ -278,10 +142,6 @@ int mtk_os_hal_adc_ctlr_init(adc_pmode pmode, adc_fifo_mode fifo_mode,
 
 	ctlr->base = (void __iomem *)CM4_ADC_BASE;
 	ctlr->cg_base = (void __iomem *)CM4_ADC_TOPCFGAON_CLK_RG;
-
-	ret = _mtk_os_hal_adc_config_gpio();
-	if (ret)
-		return ret;
 
 	ret = mtk_mhal_adc_enable_clk(ctlr);
 	if (ret)
@@ -380,10 +240,6 @@ int mtk_os_hal_adc_ctlr_deinit(void)
 		return ret;
 
 	ret = mtk_mhal_adc_disable_clk(ctlr_rtos->ctlr);
-	if (ret)
-		return ret;
-
-	ret = _mtk_os_hal_adc_release_gpio();
 	if (ret)
 		return ret;
 

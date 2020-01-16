@@ -1,9 +1,10 @@
-# Sample: MT3620 M4 real-time application - FreeRTOS SPIM
+# Sample: MT3620 M4 real-time application - FreeRTOS PWM
 ### Description
-This sample demonstrates how to use SPIM on an MT3620 real-time core.
-- ISU1 SPIM interface is used to do the SPI master loopback test.
+This sample demonstrates how to use PWM on an MT3620 real-time core.  
 - ISU0 UART interface is used to print the output log.
-- Please connect the ISU1_MISO1 to ISU1_MOSI1 for the loopback test.  
+- PWM_8 (PWM Gorup_2, Channel_0)(GPIO_8) is used to control LED Red.
+- PWM_9 (PWM Gorup_2, Channel_1)(GPIO_9) is used to control LED Green.
+- PWM_10 (PWM Gorup_2, Channel_2)(GPIO_10) is used to control LED Blue.  
 (Note, UART port number in main.c could be changed from **OS_HAL_UART_ISU0** to **OS_HAL_UART_PORT0** to use M4 dedicate UART port.)  
 Please refer to the [MT3620 M4 API Rerference Manual](https://support.mediatek.com/AzureSphere/mt3620/M4_API_Reference_Manual) for the detailed API description.
 
@@ -29,16 +30,10 @@ Please refer to the [MT3620 M4 API Rerference Manual](https://support.mediatek.c
 
 ### Hardware configuration
 * [AVNET MT3620 Starter Kit](https://www.avnet.com/shop/us/products/avnet-engineering-services/aes-ms-mt3620-sk-g-3074457345636825680/)
-    * Connect ISSU1_MISO1 to ISU1_MISO0 for SPI loopback:
-        ![image](https://raw.githubusercontent.com/MediaTek-Labs/mt3620_m4_software/master/MT3620_M4_Sample_Code/BareMetal/MT3620_RTApp_BareMetal_HelloWorld/pic/avnet_spim_loopback.png)  
-        ![image](https://raw.githubusercontent.com/MediaTek-Labs/mt3620_m4_software/master/MT3620_M4_Sample_Code/BareMetal/MT3620_RTApp_BareMetal_HelloWorld/pic/avnet_spim_loopback_connect.png)  
     * Connect PC UART Rx to AVNET MT3620 Starter Kit Click #1 TX (ISU0_UART_TX):
         ![image](https://raw.githubusercontent.com/MediaTek-Labs/mt3620_m4_software/master/MT3620_M4_Sample_Code/BareMetal/MT3620_RTApp_BareMetal_HelloWorld/pic/avnet.jpg)  
         ![image](https://raw.githubusercontent.com/MediaTek-Labs/mt3620_m4_software/master/MT3620_M4_Sample_Code/BareMetal/MT3620_RTApp_BareMetal_HelloWorld/pic/avnet_connect.jpg)  
 * [Seeed MT3620 Development Kit](https://aka.ms/azurespheredevkits)
-    * Connect ISSU1_MISO1 to ISU1_MISO0 for SPI loopback:
-        ![image](https://raw.githubusercontent.com/MediaTek-Labs/mt3620_m4_software/master/MT3620_M4_Sample_Code/BareMetal/MT3620_RTApp_BareMetal_HelloWorld/pic/seeed_spim_loopback.png)  
-        ![image](https://raw.githubusercontent.com/MediaTek-Labs/mt3620_m4_software/master/MT3620_M4_Sample_Code/BareMetal/MT3620_RTApp_BareMetal_HelloWorld/pic/seeed_spim_loopback_connect.png)  
     * Connect PC UART Rx to Seeed MT3620 Development Kit GPIO 26 / TXD0  (ISU0_UART_TX):
         ![image](https://raw.githubusercontent.com/MediaTek-Labs/mt3620_m4_software/master/MT3620_M4_Sample_Code/BareMetal/MT3620_RTApp_BareMetal_HelloWorld/pic/seeed.jpg)  
         ![image](https://raw.githubusercontent.com/MediaTek-Labs/mt3620_m4_software/master/MT3620_M4_Sample_Code/BareMetal/MT3620_RTApp_BareMetal_HelloWorld/pic/seeed_connect.jpg)  

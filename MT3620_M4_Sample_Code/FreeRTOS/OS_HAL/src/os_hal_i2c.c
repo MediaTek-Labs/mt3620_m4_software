@@ -38,8 +38,6 @@
 #include "nvic.h"
 #include "os_hal_i2c.h"
 #include "os_hal_dma.h"
-#include "os_hal_gpio.h"
-
 
 #define ISU0_I2C_BASE	0x38070200
 #define ISU1_I2C_BASE	0x38080200
@@ -91,76 +89,6 @@ struct mtk_i2c_ctrl_rtos {
 static struct mtk_i2c_ctrl_rtos g_i2c_ctrl_rtos[OS_HAL_I2C_ISU_MAX];
 struct mtk_i2c_controller g_i2c_ctrl[OS_HAL_I2C_ISU_MAX];
 struct mtk_i2c_private g_i2c_mdata[OS_HAL_I2C_ISU_MAX];
-
-static int _mtk_os_hal_i2c_pinmux(os_hal_gpio_pin pin_scl,
-				  os_hal_gpio_pin pin_sda)
-{
-	int ret = 0;
-
-	ret = mtk_os_hal_gpio_request(pin_scl);
-	ret |= mtk_os_hal_gpio_request(pin_sda);
-
-	if (ret < 0) {
-		printf("I2C request gpio pin fail, ret = %d\n", ret);
-		return ret;
-	}
-
-	mtk_os_hal_gpio_pmx_set_mode(pin_scl, OS_HAL_MODE_2);
-	mtk_os_hal_gpio_pmx_set_mode(pin_sda, OS_HAL_MODE_2);
-
-	return 0;
-}
-
-static int _mtk_os_hal_i2c_config_pinmux(u8 bus_num)
-{
-	int ret = 0;
-
-	switch (bus_num) {
-	case OS_HAL_I2C_ISU0:
-		ret = _mtk_os_hal_i2c_pinmux(OS_HAL_GPIO_27, OS_HAL_GPIO_28);
-		break;
-	case OS_HAL_I2C_ISU1:
-		ret = _mtk_os_hal_i2c_pinmux(OS_HAL_GPIO_32, OS_HAL_GPIO_33);
-		break;
-	case OS_HAL_I2C_ISU2:
-		ret = _mtk_os_hal_i2c_pinmux(OS_HAL_GPIO_37, OS_HAL_GPIO_38);
-		break;
-	case OS_HAL_I2C_ISU3:
-		ret = _mtk_os_hal_i2c_pinmux(OS_HAL_GPIO_67, OS_HAL_GPIO_68);
-		break;
-	case OS_HAL_I2C_ISU4:
-		ret = _mtk_os_hal_i2c_pinmux(OS_HAL_GPIO_72, OS_HAL_GPIO_73);
-		break;
-	}
-
-	return ret;
-}
-
-static void _mtk_os_hal_i2c_free_pinmux(u8 bus_num)
-{
-	switch (bus_num) {
-	case OS_HAL_I2C_ISU0:
-		mtk_os_hal_gpio_free(OS_HAL_GPIO_27);
-		mtk_os_hal_gpio_free(OS_HAL_GPIO_28);
-		break;
-	case OS_HAL_I2C_ISU1:
-		mtk_os_hal_gpio_free(OS_HAL_GPIO_32);
-		mtk_os_hal_gpio_free(OS_HAL_GPIO_33);
-		break;
-	case OS_HAL_I2C_ISU2:
-		mtk_os_hal_gpio_free(OS_HAL_GPIO_37);
-		mtk_os_hal_gpio_free(OS_HAL_GPIO_38);
-		break;
-	case OS_HAL_I2C_ISU3:
-		mtk_os_hal_gpio_free(OS_HAL_GPIO_67);
-		mtk_os_hal_gpio_free(OS_HAL_GPIO_68);
-		break;
-	case OS_HAL_I2C_ISU4:
-		mtk_os_hal_gpio_free(OS_HAL_GPIO_72);
-		mtk_os_hal_gpio_free(OS_HAL_GPIO_73);
-		break;
-	}
-}
 
 static void _mtk_os_hal_i2c_irq_handler(int bus_num)
 {
@@ -341,18 +269,10 @@ int mtk_os_hal_i2c_ctrl_init(i2c_num bus_num)
 	if (!ctrl_rtos->xfer_completion)
 		ctrl_rtos->xfer_completion = xSemaphoreCreateBinary();
 
-	ret = _mtk_os_hal_i2c_config_pinmux(bus_num);
-	if (ret < 0) {
-		printf("I2C%d config i2c pinmux fail, ret = %d\n",
-			bus_num, ret);
-		return ret;
-	}
-
 	ret = mtk_mhal_i2c_request_dma(i2c);
 	if (ret < 0) {
 		printf("I2C%d request dma channel fail, ret = %d\n",
 				bus_num, ret);
-		_mtk_os_hal_i2c_free_pinmux(bus_num);
 		return ret;
 	}
 
@@ -385,7 +305,6 @@ int mtk_os_hal_i2c_ctrl_deinit(i2c_num bus_num)
 
 	_mtk_os_hal_i2c_free_irq(bus_num);
 	mtk_mhal_i2c_release_dma(i2c);
-	_mtk_os_hal_i2c_free_pinmux(bus_num);
 	mtk_mhal_i2c_disable_clk(i2c);
 
 	i2c = NULL;

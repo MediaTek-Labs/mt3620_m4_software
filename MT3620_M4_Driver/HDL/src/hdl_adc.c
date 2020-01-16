@@ -73,6 +73,7 @@ void mtk_hal_adc_init(void __iomem *base)
 	adc_mod_reg(base, ADC_REG_AUXADC_INVERT_PMU_CLK,
 		ADC_INVERT_PMU_CLK_DISABLE);
 	adc_mod_reg(base, ADC_REG_AUXADC_ADC_CLK_SRC, ADC_CLK_SRC_BUCK);
+	adc_mod_reg(base, ADC_REG_AUXADC_ADC_VCM_VREF, ADC_VREF25_SUPPORT);
 }
 
 void mtk_hal_adc_uninit(void __iomem *base)

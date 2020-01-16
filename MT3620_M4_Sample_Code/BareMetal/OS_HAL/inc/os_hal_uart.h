@@ -145,7 +145,6 @@ u8 mtk_os_hal_uart_get_char_nowait(UART_PORT port_num);
  */
 void mtk_os_hal_uart_put_char(UART_PORT port_num, u8 data);
 
-
 /**
  * @brief  Set UART hardware flow control.
  *

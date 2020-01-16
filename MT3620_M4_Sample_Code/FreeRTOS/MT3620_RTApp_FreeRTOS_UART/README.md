@@ -1,4 +1,4 @@
-# Sample: MT3620 M4 real-time application -FreeRTOS UART
+# Sample: MT3620 M4 real-time application - FreeRTOS UART
 ### Description
 This sample demonstrates how to use UART on an MT3620 real-time core.  
 - ISU0 UART interface is used to print the output log.  

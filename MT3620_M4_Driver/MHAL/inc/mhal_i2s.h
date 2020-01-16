@@ -200,39 +200,6 @@
  *			return -I2S_EPTR;
  *		}
  *
- *		if (i2s_port == MHAL_I2S0) {
- *			mtk_os_hal_gpio_request(OS_HAL_GPIO_56);
- *			mtk_os_hal_gpio_pmx_set_mode(OS_HAL_GPIO_56,
- *						     OS_HAL_MODE_0);
- *			mtk_os_hal_gpio_request(OS_HAL_GPIO_57);
- *			mtk_os_hal_gpio_pmx_set_mode(OS_HAL_GPIO_57,
- *						     OS_HAL_MODE_0);
- *			mtk_os_hal_gpio_request(OS_HAL_GPIO_58);
- *			mtk_os_hal_gpio_pmx_set_mode(OS_HAL_GPIO_58,
- *						     OS_HAL_MODE_0);
- *			mtk_os_hal_gpio_request(OS_HAL_GPIO_59);
- *			mtk_os_hal_gpio_pmx_set_mode(OS_HAL_GPIO_59,
- *						     OS_HAL_MODE_0);
- *			mtk_os_hal_gpio_request(OS_HAL_GPIO_60);
- *			mtk_os_hal_gpio_pmx_set_mode(OS_HAL_GPIO_60,
- *						     OS_HAL_MODE_0);
- *		} else {
- *			mtk_os_hal_gpio_request(OS_HAL_GPIO_61);
- *			mtk_os_hal_gpio_pmx_set_mode(OS_HAL_GPIO_61,
- *						     OS_HAL_MODE_0);
- *			mtk_os_hal_gpio_request(OS_HAL_GPIO_62);
- *			mtk_os_hal_gpio_pmx_set_mode(OS_HAL_GPIO_62,
- *						     OS_HAL_MODE_0);
- *			mtk_os_hal_gpio_request(OS_HAL_GPIO_63);
- *			mtk_os_hal_gpio_pmx_set_mode(OS_HAL_GPIO_63,
- *						     OS_HAL_MODE_0);
- *			mtk_os_hal_gpio_request(OS_HAL_GPIO_64);
- *			mtk_os_hal_gpio_pmx_set_mode(OS_HAL_GPIO_64,
- *						     OS_HAL_MODE_0);
- *			mtk_os_hal_gpio_request(OS_HAL_GPIO_65);
- *			mtk_os_hal_gpio_pmx_set_mode(OS_HAL_GPIO_65,
- *						     OS_HAL_MODE_0);
- *		}
  *		return 0;
  *	}
  *
@@ -259,19 +226,6 @@
  *			return -I2S_EPTR;
  *		}
  *
- *		if (i2s_port == MHAL_I2S0) {
- *			mtk_os_hal_gpio_free(OS_HAL_GPIO_56);
- *			mtk_os_hal_gpio_free(OS_HAL_GPIO_57);
- *			mtk_os_hal_gpio_free(OS_HAL_GPIO_58);
- *			mtk_os_hal_gpio_free(OS_HAL_GPIO_59);
- *			mtk_os_hal_gpio_free(OS_HAL_GPIO_60);
- *		} else {
- *			mtk_os_hal_gpio_free(OS_HAL_GPIO_61);
- *			mtk_os_hal_gpio_free(OS_HAL_GPIO_62);
- *			mtk_os_hal_gpio_free(OS_HAL_GPIO_63);
- *			mtk_os_hal_gpio_free(OS_HAL_GPIO_64);
- *			mtk_os_hal_gpio_free(OS_HAL_GPIO_65);
- *		}
  *		return 0;
  *	}
  *	int mtk_os_hal_config_i2s(i2s_no i2s_port, audio_parameter *parameter)

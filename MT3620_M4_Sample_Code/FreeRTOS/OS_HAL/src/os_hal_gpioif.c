@@ -90,130 +90,6 @@ static struct mtk_gpioif_controller_rtos *_mtk_os_hal_gpioif_get_ctlr(
 	return &g_gpioif_ctlr_rtos[group];
 }
 
-static int _mtk_os_hal_gpioif_config_gpio(gpioif_group group)
-{
-	int ret;
-	u32 pin;
-
-	if (group >= MTK_GPIOIF_MAX_GRP_NUM)
-		return -GPIOIF_EINVAL;
-
-	switch (group) {
-	case GPIOIF_GROUP_0:
-		for (pin = 0; pin <= 3; pin++) {
-			ret = mtk_os_hal_gpio_request((os_hal_gpio_pin)pin);
-			if (ret != 0)
-				printf("request gpio[%d] fail\n", pin);
-			mtk_os_hal_gpio_pmx_set_mode((os_hal_gpio_pin)pin,
-				OS_HAL_MODE_0);
-		}
-		break;
-	case GPIOIF_GROUP_1:
-		for (pin = 4; pin <= 7; pin++) {
-			ret = mtk_os_hal_gpio_request((os_hal_gpio_pin)pin);
-			if (ret != 0)
-				printf("request gpio[%d] fail\n", pin);
-			mtk_os_hal_gpio_pmx_set_mode((os_hal_gpio_pin)pin,
-				OS_HAL_MODE_0);
-		}
-		break;
-	case GPIOIF_GROUP_2:
-		for (pin = 8; pin <= 11; pin++) {
-			ret = mtk_os_hal_gpio_request((os_hal_gpio_pin)pin);
-			if (ret != 0)
-				printf("request gpio[%d] fail\n", pin);
-			mtk_os_hal_gpio_pmx_set_mode((os_hal_gpio_pin)pin,
-				OS_HAL_MODE_0);
-		}
-		break;
-	case GPIOIF_GROUP_3:
-		for (pin = 12; pin <= 15; pin++) {
-			ret = mtk_os_hal_gpio_request((os_hal_gpio_pin)pin);
-			if (ret != 0)
-				printf("request gpio[%d] fail\n", pin);
-			mtk_os_hal_gpio_pmx_set_mode((os_hal_gpio_pin)pin,
-				OS_HAL_MODE_0);
-		}
-		break;
-	case GPIOIF_GROUP_4:
-		for (pin = 16; pin <= 19; pin++) {
-			ret = mtk_os_hal_gpio_request((os_hal_gpio_pin)pin);
-			if (ret != 0)
-				printf("request gpio[%d] fail\n", pin);
-			mtk_os_hal_gpio_pmx_set_mode((os_hal_gpio_pin)pin,
-				OS_HAL_MODE_0);
-		}
-		break;
-	case GPIOIF_GROUP_5:
-		for (pin = 20; pin <= 23; pin++) {
-			ret = mtk_os_hal_gpio_request((os_hal_gpio_pin)pin);
-			if (ret != 0)
-				printf("request gpio[%d] fail\n", pin);
-			mtk_os_hal_gpio_pmx_set_mode((os_hal_gpio_pin)pin,
-				OS_HAL_MODE_0);
-		}
-		break;
-	}
-
-	return 0;
-}
-
-static int _mtk_os_hal_gpioif_free_gpio(gpioif_group group)
-{
-	int ret;
-	u32 pin;
-
-	if (group >= MTK_GPIOIF_MAX_GRP_NUM)
-		return -GPIOIF_EINVAL;
-
-	switch (group) {
-	case GPIOIF_GROUP_0:
-		for (pin = 0; pin <= 3; pin++) {
-			ret = mtk_os_hal_gpio_free((os_hal_gpio_pin)pin);
-			if (ret != 0)
-				printf("free gpio[%d] fail\n", pin);
-		}
-		break;
-	case GPIOIF_GROUP_1:
-		for (pin = 4; pin <= 7; pin++) {
-			ret = mtk_os_hal_gpio_free((os_hal_gpio_pin)pin);
-			if (ret != 0)
-				printf("free gpio[%d] fail\n", pin);
-		}
-		break;
-	case GPIOIF_GROUP_2:
-		for (pin = 8; pin <= 11; pin++) {
-			ret = mtk_os_hal_gpio_free((os_hal_gpio_pin)pin);
-			if (ret != 0)
-				printf("free gpio[%d] fail\n", pin);
-		}
-		break;
-	case GPIOIF_GROUP_3:
-		for (pin = 12; pin <= 15; pin++) {
-			ret = mtk_os_hal_gpio_free((os_hal_gpio_pin)pin);
-			if (ret != 0)
-				printf("free gpio[%d] fail\n", pin);
-		}
-		break;
-	case GPIOIF_GROUP_4:
-		for (pin = 16; pin <= 19; pin++) {
-			ret = mtk_os_hal_gpio_free((os_hal_gpio_pin)pin);
-			if (ret != 0)
-				printf("free gpio[%d] fail\n", pin);
-		}
-		break;
-	case GPIOIF_GROUP_5:
-		for (pin = 20; pin <= 23; pin++) {
-			ret = mtk_os_hal_gpio_free((os_hal_gpio_pin)pin);
-			if (ret != 0)
-				printf("free gpio[%d] fail\n", pin);
-		}
-		break;
-	}
-
-	return 0;
-}
-
 /** This function is used to register user's interrupt callback
   *   to OS-HAL layer
   */
@@ -1248,14 +1124,11 @@ int mtk_os_hal_gpioif_ctlr_init(gpioif_group group)
 
 	_mtk_os_hal_gpioif_request_irq(group);
 
-	_mtk_os_hal_gpioif_config_gpio(group);
-
 	return 0;
 }
 
 int mtk_os_hal_gpioif_ctlr_deinit(gpioif_group group)
 {
-	_mtk_os_hal_gpioif_free_gpio(group);
 
 	_mtk_os_hal_gpioif_free_irq(group);
 

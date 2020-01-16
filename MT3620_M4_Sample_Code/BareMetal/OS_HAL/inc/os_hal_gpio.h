@@ -335,51 +335,6 @@ int mtk_os_hal_gpio_set_pullen_pullsel(
 	os_hal_gpio_pin pin, bool enable, bool isup);
 
 /**
- * @brief This function is used to configure pinmux of the target GPIO.
- * @brief Usage: OS-HAL driver should call it in GPIO pinmux function to
- *    set multifunction mode.
- *    Pinmux represents Pin Multiplexor which connects the pin
- *    and the onboard peripherals, so the pin will operate in a specific mode
- *    once this pin is programmed to a peripheral's function.
- * @param[in] pin : Specifies the pin number to configure.(0~93)
- * @param[in] mode : Specifies the function for the pin.(0~7)
- * @return To indicate that whether this function call is successful or not.\n
- *    If the return value is -#EPIN,
- *    it means that a wrong parameter(except for pin number) is given,
- *    and the parameter must be verified.\n
- *    If the return value is -#EINVALFUNC,
- *    it means that a wrong pinmux function is given,
- *    and the parameter must be verified.\n
- *    If the return value is -#ERROR, it means failure.\n
- *    If the return value is 0, it means success.\n
- */
-int mtk_os_hal_gpio_pmx_set_mode(os_hal_gpio_pin pin, os_hal_gpio_mode mode);
-
-/**
- * @brief This function is used to get the configuration pinmux of
- *	  the target GPIO.
- * @brief Usage: OS-HAL driver should call it in GPIO pinmux function to
- *	  get multifunction mode. Pinmux represents Pin Multiplexor which
- *	  connects the pin and the onboard peripherals,
- *	  so the pin will operate in a specific mode
- *	  once this pin is programmed to a peripheral's function.
- *	  This API function get the mode value of pin and save it to
- *	  mtk_pinctrl_controller->mtk_pins[pin].mode.
- * @param[in] pin : Specifies pin number to configure.(0~93)
- * @param [out] pvalue : Get mode value and save it to address pvalue
- * @return To indicate that whether this function call is successful or not.\n
- *	  If the return value is -#EINVAL,
- *	  it means that a wrong parameter(except for pin number) is given,
- *	  and the parameter must be verified.\n
- *	  If the return value is -#EPIN,
- *	  it means that a wrong pin number is given,
- *	  and the parameter must be verified.\n
- *	  If the return value is -#ERROR, it means failure.\n
- *	  If the return value is 0, it means success.\n
- */
-int mtk_os_hal_gpio_pmx_get_mode(os_hal_gpio_pin pin, os_hal_gpio_mode *pvalue);
-
-/**
 * @}
 * @}
 */

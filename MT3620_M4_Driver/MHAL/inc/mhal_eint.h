@@ -97,12 +97,8 @@
  *	- sample code (FreeRTOS doesn't have EINT framework,
  * so this sample code provides APIs to user application):
  *	  @code
- *	#include "irq.h"
  *	#include "nvic.h"
- *	#include "common.h"
  *	#include "cirq_common.h"
- *	#include "mt3620_cm4_hw_memmap.h"
- *	#include "os_hal_gpio.h"
  *	#include "os_hal_eint.h"
  *	#include "mhal_eint.h"
  *
@@ -110,49 +106,47 @@
  *
  *	typedef struct {
  *		eint_number eint_number;
- *		os_hal_gpio_pin gpio_pin;
  *		u32 irq;
- *	} eint_gpio_irq_map_t;
+ *	} eint_irq_map_t;
  *
- *	eint_gpio_irq_map_t eint_gpio_irq_table[] = {
- *		{HAL_EINT_NUMBER_0,  OS_HAL_GPIO_0, CM4_IRQ_GPIO_G0_0},
- *		{HAL_EINT_NUMBER_1,  OS_HAL_GPIO_1, CM4_IRQ_GPIO_G0_1},
- *		{HAL_EINT_NUMBER_2,  OS_HAL_GPIO_2, CM4_IRQ_GPIO_G0_2},
- *		{HAL_EINT_NUMBER_3,  OS_HAL_GPIO_3, CM4_IRQ_GPIO_G0_3},
- *		{HAL_EINT_NUMBER_4,  OS_HAL_GPIO_4, CM4_IRQ_GPIO_G1_0},
- *		{HAL_EINT_NUMBER_5,  OS_HAL_GPIO_5, CM4_IRQ_GPIO_G1_1},
- *		{HAL_EINT_NUMBER_6,  OS_HAL_GPIO_6, CM4_IRQ_GPIO_G1_2},
- *		{HAL_EINT_NUMBER_7,  OS_HAL_GPIO_7, CM4_IRQ_GPIO_G1_3},
- *		{HAL_EINT_NUMBER_8,  OS_HAL_GPIO_8, CM4_IRQ_GPIO_G2_0},
- *		{HAL_EINT_NUMBER_9,  OS_HAL_GPIO_9, CM4_IRQ_GPIO_G2_1},
- *		{HAL_EINT_NUMBER_10,  OS_HAL_GPIO_10, CM4_IRQ_GPIO_G2_2},
- *		{HAL_EINT_NUMBER_11,  OS_HAL_GPIO_11, CM4_IRQ_GPIO_G2_3},
- *		{HAL_EINT_NUMBER_12,  OS_HAL_GPIO_12, CM4_IRQ_GPIO_G3_0},
- *		{HAL_EINT_NUMBER_13,  OS_HAL_GPIO_13, CM4_IRQ_GPIO_G3_1},
- *		{HAL_EINT_NUMBER_14,  OS_HAL_GPIO_14, CM4_IRQ_GPIO_G3_2},
- *		{HAL_EINT_NUMBER_15,  OS_HAL_GPIO_15, CM4_IRQ_GPIO_G3_3},
- *		{HAL_EINT_NUMBER_16,  OS_HAL_GPIO_16, CM4_IRQ_GPIO_G4_0},
- *		{HAL_EINT_NUMBER_17,  OS_HAL_GPIO_17, CM4_IRQ_GPIO_G4_1},
- *		{HAL_EINT_NUMBER_18,  OS_HAL_GPIO_18, CM4_IRQ_GPIO_G4_2},
- *		{HAL_EINT_NUMBER_19,  OS_HAL_GPIO_19, CM4_IRQ_GPIO_G4_3},
- *		{HAL_EINT_NUMBER_20,  OS_HAL_GPIO_20, CM4_IRQ_GPIO_G5_0},
- *		{HAL_EINT_NUMBER_21,  OS_HAL_GPIO_21, CM4_IRQ_GPIO_G5_1},
- *		{HAL_EINT_NUMBER_22,  OS_HAL_GPIO_22, CM4_IRQ_GPIO_G5_2},
- *		{HAL_EINT_NUMBER_23,  OS_HAL_GPIO_23, CM4_IRQ_GPIO_G5_3}
+ *	eint_irq_map_t eint_irq_table[] = {
+ *		{HAL_EINT_NUMBER_0, CM4_IRQ_GPIO_G0_0},
+ *		{HAL_EINT_NUMBER_1, CM4_IRQ_GPIO_G0_1},
+ *		{HAL_EINT_NUMBER_2, CM4_IRQ_GPIO_G0_2},
+ *		{HAL_EINT_NUMBER_3, CM4_IRQ_GPIO_G0_3},
+ *		{HAL_EINT_NUMBER_4, CM4_IRQ_GPIO_G1_0},
+ *		{HAL_EINT_NUMBER_5, CM4_IRQ_GPIO_G1_1},
+ *		{HAL_EINT_NUMBER_6, CM4_IRQ_GPIO_G1_2},
+ *		{HAL_EINT_NUMBER_7, CM4_IRQ_GPIO_G1_3},
+ *		{HAL_EINT_NUMBER_8, CM4_IRQ_GPIO_G2_0},
+ *		{HAL_EINT_NUMBER_9, CM4_IRQ_GPIO_G2_1},
+ *		{HAL_EINT_NUMBER_10, CM4_IRQ_GPIO_G2_2},
+ *		{HAL_EINT_NUMBER_11, CM4_IRQ_GPIO_G2_3},
+ *		{HAL_EINT_NUMBER_12, CM4_IRQ_GPIO_G3_0},
+ *		{HAL_EINT_NUMBER_13, CM4_IRQ_GPIO_G3_1},
+ *		{HAL_EINT_NUMBER_14, CM4_IRQ_GPIO_G3_2},
+ *		{HAL_EINT_NUMBER_15, CM4_IRQ_GPIO_G3_3},
+ *		{HAL_EINT_NUMBER_16, CM4_IRQ_GPIO_G4_0},
+ *		{HAL_EINT_NUMBER_17, CM4_IRQ_GPIO_G4_1},
+ *		{HAL_EINT_NUMBER_18, CM4_IRQ_GPIO_G4_2},
+ *		{HAL_EINT_NUMBER_19, CM4_IRQ_GPIO_G4_3},
+ *		{HAL_EINT_NUMBER_20, CM4_IRQ_GPIO_G5_0},
+ *		{HAL_EINT_NUMBER_21, CM4_IRQ_GPIO_G5_1},
+ *		{HAL_EINT_NUMBER_22, CM4_IRQ_GPIO_G5_2},
+ *		{HAL_EINT_NUMBER_23, CM4_IRQ_GPIO_G5_3}
  *	};
  *
  *	static int _mtk_os_hal_eint_convert_gpio_irq(eint_number eint_num,
- *				os_hal_gpio_pin *gpio_pin, IRQn_Type *irq)
+ *				IRQn_Type *irq)
  *	{
  *		u32 count;
  *		u32 index = 0;
  *
  *		count = ARRAY_SIZE(eint_gpio_irq_table);
  *		for (index = 0; index < count; index++) {
- *			if (eint_gpio_irq_table[index].eint_number ==
+ *			if (eint_irq_table[index].eint_number ==
  *						eint_num) {
- *				*gpio_pin = eint_gpio_irq_table[index].gpio_pin;
- *				*irq=(IRQn_Type)eint_gpio_irq_table[index].irq;
+ *				*irq=(IRQn_Type)eint_irq_table[index].irq;
  *				return 0;
  *			}
  *		}
@@ -165,12 +159,11 @@
  *	{
  *		IRQn_Type irq;
  *		int state = 0;
- *		os_hal_gpio_pin gpio_pin;
  *		void __iomem *eint_base =
  *			(void __iomem *)EINT_DEBOUNCE_BASE_ADDR;
  *
  *		if (_mtk_os_hal_eint_convert_gpio_irq(
- *				eint_num, &gpio_pin, &irq) != 0)
+ *				eint_num, &irq) != 0)
  *			return -EINT_EINVAL;
  *
  *		if (trigger_mode > HAL_EINT_EDGE_FALLING_AND_RISING) {
@@ -216,12 +209,11 @@
  *	{
  *		IRQn_Type irq;
  *		int state = 0;
- *		os_hal_gpio_pin gpio_pin;
  *		void __iomem *eint_base =
  *			(void __iomem *)EINT_DEBOUNCE_BASE_ADDR;
  *
  *		if (_mtk_os_hal_eint_convert_gpio_irq(
- *				eint_num, &gpio_pin, &irq) != 0)
+ *				eint_num, &irq) != 0)
  *			return -EINT_EINVAL;
  *
  *		NVIC_DisableIRQ(irq);
@@ -267,12 +259,11 @@
  *		u32 sens;
  *		IRQn_Type irq;
  *		int state = 0;
- *		os_hal_gpio_pin gpio_pin;
  *		void __iomem *eint_base =
  *				(void __iomem *)EINT_DEBOUNCE_BASE_ADDR;
  *
  *		if (_mtk_os_hal_eint_convert_gpio_irq(
- *				eint_num, &gpio_pin, &irq) != 0)
+ *				eint_num, &irq) != 0)
  *			return -EINT_EINVAL;
  *
  *		if (trigger_mode > HAL_EINT_EDGE_FALLING_AND_RISING) {
@@ -281,14 +272,6 @@
  *		}
  *
  *		NVIC_DisableIRQ(irq);
- *
- *		state = mtk_os_hal_gpio_request(gpio_pin);
- *		if (state != 0)
- *			return state;
- *
- *		state = mtk_os_hal_gpio_pmx_set_mode(gpio_pin, OS_HAL_MODE_5);
- *		if (state != 0)
- *			return state;
  *
  *		if ((trigger_mode == HAL_EINT_LEVEL_LOW) ||
  *			(trigger_mode == HAL_EINT_EDGE_FALLING) ||
@@ -326,18 +309,14 @@
  *	{
  *		IRQn_Type irq;
  *		int state = 0;
- *		os_hal_gpio_pin gpio_pin;
  *		void __iomem *eint_base =
  *				(void __iomem *)EINT_DEBOUNCE_BASE_ADDR;
  *
  *		if (_mtk_os_hal_eint_convert_gpio_irq(
- *					eint_num, &gpio_pin, &irq) != 0)
+ *					eint_num, &irq) != 0)
  *			return -EINT_EINVAL;
  *
  *		NVIC_UnRegister(irq);
- *		state = mtk_os_hal_gpio_free(gpio_pin);
- *		if (state != 0)
- *			return state;
  *
  *		state = mtk_mhal_eint_set_dual(eint_num, 0, eint_base);
  *		if (state != 0)

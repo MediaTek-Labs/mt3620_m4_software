@@ -88,7 +88,6 @@ static int gpio_output(u8 gpio_no, u8 level)
 		printf("request gpio[%d] fail\r\n", gpio_no);
 		return ret;
 	}
-	mtk_os_hal_gpio_pmx_set_mode(gpio_no, OS_HAL_MODE_6);
 	mtk_os_hal_gpio_set_direction(gpio_no, OS_HAL_GPIO_DIR_OUTPUT);
 	mtk_os_hal_gpio_set_output(gpio_no, level);
 	ret = mtk_os_hal_gpio_free(gpio_no);
@@ -108,7 +107,6 @@ static int gpio_input(u8 gpio_no, os_hal_gpio_data* pvalue)
 		printf("request gpio[%d] fail\r\n", gpio_no);
 		return ret;
 	}
-	mtk_os_hal_gpio_pmx_set_mode(gpio_no, OS_HAL_MODE_6);
 	mtk_os_hal_gpio_set_direction(gpio_no, OS_HAL_GPIO_DIR_INPUT);
 	vTaskDelay(pdMS_TO_TICKS(10));
 

@@ -163,123 +163,6 @@
  *	 return &g_gpioif_ctlr_rtos[group];
  *}
  *
- *static int _mtk_os_hal_gpioif_config_gpio(u8 group)
- *{
- *	 int ret;
- *	 u32 pin;
- *
- *	 if (group >= MTK_GPIOIF_MAX_GRP_NUM)
- *		 return -GPIOIF_EINVAL;
- *
- *	 switch (group) {
- *	 case 0:
- *		 for (pin = 0; pin <= 3; pin++) {
- *			 ret = mtk_os_hal_gpio_request(pin);
- *			 if (ret != 0)
- *				 printf("request gpio[%d] fail\n", pin);
- *			 mtk_os_hal_gpio_pmx_set_mode(pin, 0);
- *		 }
- *		 break;
- *	 case 1:
- *		 for (pin = 4; pin <= 7; pin++) {
- *			 ret = mtk_os_hal_gpio_request(pin);
- *			 if (ret != 0)
- *				 printf("request gpio[%d] fail\n", pin);
- *			 mtk_os_hal_gpio_pmx_set_mode(pin, 0);
- *		 }
- *		 break;
- *	 case 2:
- *		 for (pin = 8; pin <= 11; pin++) {
- *			 ret = mtk_os_hal_gpio_request(pin);
- *			 if (ret != 0)
- *				 printf("request gpio[%d] fail\n", pin);
- *			 mtk_os_hal_gpio_pmx_set_mode(pin, 0);
- *		 }
- *		 break;
- *	 case 3:
- *		 for (pin = 12; pin <= 15; pin++) {
- *			 ret = mtk_os_hal_gpio_request(pin);
- *			 if (ret != 0)
- *				 printf("request gpio[%d] fail\n", pin);
- *			 mtk_os_hal_gpio_pmx_set_mode(pin, 0);
- *		 }
- *		 break;
- *	 case 4:
- *		 for (pin = 16; pin <= 19; pin++) {
- *			 ret = mtk_os_hal_gpio_request(pin);
- *			 if (ret != 0)
- *				 printf("request gpio[%d] fail\n", pin);
- *			 mtk_os_hal_gpio_pmx_set_mode(pin, 0);
- *		 }
- *		 break;
- *	 case 5:
- *		 for (pin = 20; pin <= 23; pin++) {
- *			 ret = mtk_os_hal_gpio_request(pin);
- *			 if (ret != 0)
- *				 printf("request gpio[%d] fail\n", pin);
- *			 mtk_os_hal_gpio_pmx_set_mode(pin, 0);
- *		 }
- *		 break;
- *	 }
- *
- *	 return 0;
- *}
- *
- *static int _mtk_os_hal_gpioif_free_gpio(u8 group)
- *{
- *	 int ret;
- *	 u32 pin;
- *
- *	 if (group >= MTK_GPIOIF_MAX_GRP_NUM)
- *		 return -GPIOIF_EINVAL;
- *
- *	 switch (group) {
- *	 case 0:
- *		 for (pin = 0; pin <= 3; pin++) {
- *			 ret = mtk_os_hal_gpio_free(pin);
- *			 if (ret != 0)
- *				 printf("free gpio[%d] fail\n", pin);
- *		 }
- *		 break;
- *	 case 1:
- *		 for (pin = 4; pin <= 7; pin++) {
- *			 ret = mtk_os_hal_gpio_free(pin);
- *			 if (ret != 0)
- *				 printf("free gpio[%d] fail\n", pin);
- *		 }
- *		 break;
- *	 case 2:
- *		 for (pin = 8; pin <= 11; pin++) {
- *			 ret = mtk_os_hal_gpio_free(pin);
- *			 if (ret != 0)
- *				 printf("free gpio[%d] fail\n", pin);
- *		 }
- *		 break;
- *	 case 3:
- *		 for (pin = 12; pin <= 15; pin++) {
- *			 ret = mtk_os_hal_gpio_free(pin);
- *			 if (ret != 0)
- *				 printf("free gpio[%d] fail\n", pin);
- *		 }
- *		 break;
- *	 case 4:
- *		 for (pin = 16; pin <= 19; pin++) {
- *			 ret = mtk_os_hal_gpio_free(pin);
- *			 if (ret != 0)
- *				 printf("free gpio[%d] fail\n", pin);
- *		 }
- *		 break;
- *	 case 5:
- *		 for (pin = 20; pin <= 23; pin++) {
- *			 ret = mtk_os_hal_gpio_free(pin);
- *			 if (ret != 0)
- *				 printf("free gpio[%d] fail\n", pin);
- *		 }
- *		 break;
- *	 }
- *
- *	 return 0;
- *}
  *
  *int mtk_os_hal_gpioif_int_callback_register(u8 group,
  *	 gpioif_int_callback callback, void *user_data)
@@ -1260,14 +1143,12 @@
  *
  *	 _mtk_os_hal_gpioif_request_irq(group);
  *
- *	 _mtk_os_hal_gpioif_config_gpio(group);
  *
  *	 return 0;
  *}
  *
  *int mtk_os_hal_gpioif_ctlr_deinit(u8 group)
  *{
- *	 _mtk_os_hal_gpioif_free_gpio(group);
  *
  *	 _mtk_os_hal_gpioif_free_irq(group);
  *
@@ -1296,10 +1177,6 @@
  *		return 0;
  *	}
  *    - Set GPIOIF Event Counter Direction mode:
- *      -Call mtk_os_hal_gpio_request(pin) to get gpio request resource.
- *      -Call mtk_os_hal_gpio_pmx_set_mode(pin, OS_HAL_MODE_0)
- *        to set the pin as GPIOIF mode.
- *      -Call mtk_os_hal_gpio_free(pin) to free gpio request resource.
  *      -Call mtk_os_hal_gpioif_int_callback_register(3,
  *               mtk_os_hal_gpioif_int_callback, (void *)gpioif_test)
  *        to register callback function.
@@ -1320,10 +1197,6 @@
  *        when interrupt is asserted.
  *
  *    - Set GPIOIF Event Counter Up Down mode:
- *      -Call mtk_os_hal_gpio_request(pin) to get gpio request resource.
- *      -Call mtk_os_hal_gpio_pmx_set_mode(pin, OS_HAL_MODE_0)
- *        to set the pin as GPIOIF mode.
- *      -Call mtk_os_hal_gpio_free(pin) to free gpio request resource.
  *      -Call mtk_os_hal_gpioif_int_callback_register(3,
  *              mtk_os_hal_gpioif_int_callback, (void *)gpioif_test)
  *        to register callback function.
@@ -1344,10 +1217,6 @@
  *        when interrupt is asserted.
  *
  *    - Set GPIOIF Event Counter Quadrature mode:
- *      -Call mtk_os_hal_gpio_request(pin) to get gpio request resource.
- *      -Call mtk_os_hal_gpio_pmx_set_mode(pin, OS_HAL_MODE_0)
- *        to set the pin as GPIOIF mode.
- *      -Call mtk_os_hal_gpio_free(pin) to free gpio request resource.
  *      -Call mtk_os_hal_gpioif_int_callback_register(3,
  *              mtk_os_hal_gpioif_int_callback, (void *)gpioif_test)
  *        to register callback function.
@@ -1368,10 +1237,6 @@
  *        when interrupt is asserted.
  *
  *    - Set GPIOIF Capture Counter Mode:
- *      -Call mtk_os_hal_gpio_request(pin) to get gpio request resource.
- *      -Call mtk_os_hal_gpio_pmx_set_mode(pin, OS_HAL_MODE_0)
- *        to set the pin as GPIOIF mode.
- *      -Call mtk_os_hal_gpio_free(pin) to free gpio request resource.
  *      -Call mtk_os_hal_gpioif_int_callback_register(3,
  *              mtk_os_hal_gpioif_int_callback, (void *)gpioif_test)
  *        to register callback function.

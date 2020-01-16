@@ -65,7 +65,7 @@
 /** The pinmux register offset. */
 #define PINMUX_OFFSET	0x20
 
-static struct mtk_pinctrl_controller pctl = {
+struct mtk_pinctrl_controller pctl = {
 	.base[0] = (void __iomem *)CM4_GPIO_PWM_GRP0_BASE,
 	.base[1] = (void __iomem *)CM4_GPIO_PWM_GRP1_BASE,
 	.base[2] = (void __iomem *)CM4_GPIO_PWM_GRP2_BASE,
@@ -130,14 +130,4 @@ int mtk_os_hal_gpio_set_pullen_pullsel(
 	os_hal_gpio_pin pin, bool enable, bool isup)
 {
 	return mtk_mhal_gpio_set_pullen_pullsel(&pctl, pin, enable, isup);
-}
-
-int mtk_os_hal_gpio_pmx_set_mode(os_hal_gpio_pin pin, os_hal_gpio_mode mode)
-{
-	return mtk_mhal_gpio_pmx_set_mode(&pctl, pin, mode);
-}
-
-int mtk_os_hal_gpio_pmx_get_mode(os_hal_gpio_pin pin, os_hal_gpio_mode *pvalue)
-{
-	return mtk_mhal_gpio_pmx_get_mode(&pctl, pin, (u32 *)pvalue);
 }

@@ -90,6 +90,8 @@
 #define ADC_DITHERING_DISABLE		0
 #define ADC_INVERT_PMU_CLK_ENABLE		1
 #define ADC_INVERT_PMU_CLK_DISABLE		0
+#define ADC_VREF18_SUPPORT		1
+#define ADC_VREF25_SUPPORT		0
 #define ADC_CLK_SRC_CONTROLLER		1
 #define ADC_CLK_SRC_BUCK		0
 
@@ -174,6 +176,10 @@
 #define ADC_REG_AUXADC_ADC_CLK_SRC_ADDR             (ADC_CTRL_OFFSET + 0x000C)
 #define ADC_REG_AUXADC_ADC_CLK_SRC_MASK             BIT(17)
 #define ADC_REG_AUXADC_ADC_CLK_SRC_SHFT             17
+
+#define ADC_REG_AUXADC_ADC_VCM_VREF_ADDR             (ADC_CTRL_OFFSET + 0x000C)
+#define ADC_REG_AUXADC_ADC_VCM_VREF_MASK             BIT(31)
+#define ADC_REG_AUXADC_ADC_VCM_VREF_SHFT             31
 
 #define ADC_FIFO_OFFSET                             0x200
 #define ADC_RBR_ADDR                                (ADC_FIFO_OFFSET + 0x0000)
