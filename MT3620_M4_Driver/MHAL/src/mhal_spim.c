@@ -286,19 +286,12 @@ int mtk_mhal_spim_fifo_transfer_one(struct mtk_spi_controller *ctlr,
 	return 0;
 }
 
-static void _mtk_mhal_spim_dma_tx_callback(void *data)
-{
-	spim_debug("now in %s\n", __func__);
-}
-
 static void _mtk_mhal_spim_dma_rx_callback(void *data)
 {
 	int i = 0, cnt = 0, remainder = 0, max_len = 0;
 	struct mtk_spi_controller *ctlr = data;
 	struct mtk_spi_transfer *xfer = ctlr->current_xfer;
 	struct mtk_spi_private *mdata = ctlr->mdata;
-
-	spim_debug("now in %s\n", __func__);
 
 	if (!xfer->rx_buf)
 		return;
@@ -429,7 +422,7 @@ static int _mtk_mhal_spim_dma_config(struct mtk_spi_controller *ctlr,
 		chan_num = ctlr->dma_tx_chan;
 		config.src_addr = dma_addr;
 		config.dst_addr = (u32)SPI_REG_DATAPORT_CR(ctlr->base);
-		config.done_callback = _mtk_mhal_spim_dma_tx_callback;
+		config.done_callback = NULL;
 	} else {
 		/* spi rx */
 		chan_num = ctlr->dma_rx_chan;

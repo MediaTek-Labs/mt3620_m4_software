@@ -62,18 +62,21 @@ static const uint32_t gpt_timer_3_interval = 5000000;	// 5000ms
 // Hook for "stack over flow".
 void vApplicationStackOverflowHook(TaskHandle_t xTask, char* pcTaskName)
 {
-	printf("%s: %s\r\n", __func__, pcTaskName);
+	printf("%s: %s\n", __func__, pcTaskName);
 }
 
 // Hook for "memory allocation failed".
 void vApplicationMallocFailedHook(void)
 {
-	printf("%s\r\n", __func__);
+	printf("%s\n", __func__);
 }
+
 // Hook for "printf".
 void _putchar(char character)
 {
 	mtk_os_hal_uart_put_char(uart_port_num, character);
+	if (character == '\n')
+		mtk_os_hal_uart_put_char(uart_port_num, '\r');
 }
 
 /******************************************************************************/
@@ -82,13 +85,13 @@ void _putchar(char character)
 static void TimerHandlerGpt0(void* cb_data)
 {
 	extern volatile uint32_t sys_tick_in_ms;
-	printf("%s (SysTick=%ld)\r\n", __func__, sys_tick_in_ms);
+	printf("%s (SysTick=%ld)\n", __func__, sys_tick_in_ms);
 }
 
 static void TimerHandlerGpt3(void* cb_data)
 {
 	extern volatile uint32_t sys_tick_in_ms;
-	printf("%s (SysTick=%ld)\r\n", __func__, sys_tick_in_ms);
+	printf("%s (SysTick=%ld)\n", __func__, sys_tick_in_ms);
 	mtk_os_hal_gpt_restart(gpt_timer_3_id);
 }
 
@@ -103,13 +106,13 @@ static void gpt_task(void* pParameters)
 	gpt1_int.gpt_cb_data = NULL;
 
 	// Start GPT0
-	printf("    Set GPT0 AutoRepeat = true, Timeout = %dms\r\n", (int)gpt_timer_0_interval);
+	printf("    Set GPT0 AutoRepeat = true, Timeout = %dms\n", (int)gpt_timer_0_interval);
 	mtk_os_hal_gpt_config(gpt_timer_0_id, false, &gpt0_int);
 	mtk_os_hal_gpt_reset_timer(gpt_timer_0_id, gpt_timer_0_interval, true);
 	mtk_os_hal_gpt_start(gpt_timer_0_id);
 
 	// Start GPT3
-	printf("    Set GPT3 AutoRepeat = false, Timeout = %dms\r\n", (int)(gpt_timer_3_interval/1000));
+	printf("    Set GPT3 AutoRepeat = false, Timeout = %dms\n", (int)(gpt_timer_3_interval/1000));
 	mtk_os_hal_gpt_config(gpt_timer_3_id, false, &gpt1_int);
 	mtk_os_hal_gpt_reset_timer(gpt_timer_3_id, gpt_timer_3_interval, false);
 	mtk_os_hal_gpt_start(gpt_timer_3_id);
@@ -129,15 +132,15 @@ _Noreturn void RTCoreMain(void)
 
 	// Init UART
 	mtk_os_hal_uart_ctlr_init(uart_port_num);
-	printf("FreeRTOS GPT demo\r\n");
+	printf("\nFreeRTOS GPT demo\n");
 
 	// Init GPT
 	mtk_os_hal_gpt_init();
 
 	// Create GPT Task
 	xTaskCreate(gpt_task, "GPT Task", APP_STACK_SIZE_BYTES, NULL, 4, NULL);
-	vTaskStartScheduler();
 
+	vTaskStartScheduler();
 	for (;;) {
 		__asm__("wfi");
 	}

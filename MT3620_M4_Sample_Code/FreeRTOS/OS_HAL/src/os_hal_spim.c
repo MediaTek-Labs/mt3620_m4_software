@@ -96,11 +96,6 @@ static struct mtk_spi_controller_rtos g_spim_ctlr_rtos[OS_HAL_SPIM_ISU_MAX];
 static struct mtk_spi_controller g_spim_ctlr[OS_HAL_SPIM_ISU_MAX];
 static struct mtk_spi_private g_spim_mdata[OS_HAL_SPIM_ISU_MAX];
 
-static unsigned char
-	tmp_tx_buffer[OS_HAL_SPIM_ISU_MAX][MTK_SPIM_DMA_BUFFER_BYTES];
-static unsigned char
-	tmp_rx_buffer[OS_HAL_SPIM_ISU_MAX][MTK_SPIM_DMA_BUFFER_BYTES];
-
 static struct mtk_spi_controller_rtos *
 	_mtk_os_hal_spim_get_ctlr(spim_num bus_num)
 {
@@ -286,8 +281,9 @@ int mtk_os_hal_spim_ctlr_init(spim_num bus_num)
 	ctlr = ctlr_rtos->ctlr;
 	ctlr->mdata = &g_spim_mdata[bus_num];
 
-	ctlr->dma_tmp_tx_buf = tmp_tx_buffer[bus_num];
-	ctlr->dma_tmp_rx_buf = tmp_rx_buffer[bus_num];
+	/* Allocated by pvPortMalloc to guard memory is in sram */
+	ctlr->dma_tmp_tx_buf = pvPortMalloc(MTK_SPIM_DMA_BUFFER_BYTES);
+	ctlr->dma_tmp_rx_buf = pvPortMalloc(MTK_SPIM_DMA_BUFFER_BYTES);
 
 	ctlr->base = (void __iomem *)spim_base_addr[bus_num];
 	ctlr->cg_base = (void __iomem *)cg_base_addr[bus_num];
@@ -322,6 +318,9 @@ int mtk_os_hal_spim_ctlr_deinit(spim_num bus_num)
 
 	_mtk_os_hal_spim_free_irq(bus_num);
 	mtk_mhal_spim_release_dma_chan(ctlr);
+
+	vPortFree(ctlr->dma_tmp_tx_buf);
+	vPortFree(ctlr->dma_tmp_rx_buf);
 
 	ctlr_rtos->ctlr = NULL;
 

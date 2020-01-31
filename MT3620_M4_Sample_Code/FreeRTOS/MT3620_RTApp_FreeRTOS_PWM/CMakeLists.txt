@@ -13,34 +13,28 @@ PROJECT(Azure_Sphere_RTcore_FreeRTOS_PWM C)
 ADD_COMPILE_DEFINITIONS(OSAI_FREERTOS)
 ADD_LINK_OPTIONS(-specs=nano.specs -specs=nosys.specs)
 
-# Include Folders
-INCLUDE_DIRECTORIES(
-		../OS_HAL/inc
-		../../../MT3620_M4_BSP/printf
-		../../../MT3620_M4_BSP/freertos/portable
-		../../../MT3620_M4_BSP/freertos/include
-		../../../MT3620_M4_Driver/MHAL/inc
-		../../../MT3620_M4_BSP/mt3620/inc
-		../../../MT3620_M4_BSP/CMSIS/include
-		./)
-
 # Executable
-ADD_EXECUTABLE(${PROJECT_NAME} main.c
-                               ../../../MT3620_M4_BSP/printf/printf.c
-                               ../OS_HAL/src/os_hal_gpio.c
-                               ../OS_HAL/src/os_hal_uart.c
-                               ../OS_HAL/src/os_hal_pwm.c)
+ADD_EXECUTABLE(${PROJECT_NAME} 
+               main.c
+               ../../../MT3620_M4_BSP/printf/printf.c
+               ../OS_HAL/src/os_hal_gpio.c
+               ../OS_HAL/src/os_hal_uart.c
+               ../OS_HAL/src/os_hal_pwm.c)
+
+# Include Folders
+TARGET_INCLUDE_DIRECTORIES(${PROJECT_NAME} PUBLIC
+                           ../OS_HAL/inc
+                           ./)
 
 # Libraries
+set(OSAI_FREERTOS 1)
 ADD_SUBDIRECTORY(../../../MT3620_M4_Driver ./lib/MT3620_M4_Driver)
 ADD_SUBDIRECTORY(../../../MT3620_M4_BSP ./lib/MT3620_M4_BSP)
-ADD_SUBDIRECTORY(../../../MT3620_M4_BSP/FreeRTOS ./lib/FreeRTOS)
-TARGET_LINK_LIBRARIES(${PROJECT_NAME} MT3620_M4_Driver_GPIO
-                                      MT3620_M4_Driver_UART
-                                      MT3620_M4_Driver_OSAI
-                                      MT3620_M4_Driver_PWM
-                                      MT3620_M4_BSP
-                                      FreeRTOS)
+ADD_SUBDIRECTORY(../../../MT3620_M4_BSP/FreeRTOS ./lib/MT3620_M4_FreeRTOS)
+TARGET_LINK_LIBRARIES(${PROJECT_NAME}
+                      MT3620_M4_Driver
+                      MT3620_M4_FreeRTOS
+                      MT3620_M4_BSP)
 
 # Linker, Image
 SET_TARGET_PROPERTIES(${PROJECT_NAME} PROPERTIES LINK_DEPENDS ${CMAKE_SOURCE_DIR}/linker.ld)

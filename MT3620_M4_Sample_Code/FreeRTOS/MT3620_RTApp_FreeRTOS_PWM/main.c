@@ -104,6 +104,7 @@ void vApplicationMallocFailedHook(void)
 {
 	printf("%s\n", __func__);
 }
+
 // Hook for "printf".
 void _putchar(char character)
 {
@@ -207,8 +208,8 @@ _Noreturn void RTCoreMain(void)
 
 	// Create PWM Task
 	xTaskCreate(pwm_task, "PWM Task", APP_STACK_SIZE_BYTES, NULL, 5, NULL);
-	vTaskStartScheduler();
 
+	vTaskStartScheduler();
 	for (;;) {
 		__asm__("wfi");
 	}

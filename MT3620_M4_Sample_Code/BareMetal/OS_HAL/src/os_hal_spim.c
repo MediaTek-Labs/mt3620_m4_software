@@ -94,9 +94,9 @@ static struct mtk_spi_controller g_spim_ctlr[OS_HAL_SPIM_ISU_MAX];
 static struct mtk_spi_private g_spim_mdata[OS_HAL_SPIM_ISU_MAX];
 
 static unsigned char
-	tmp_tx_buffer[OS_HAL_SPIM_ISU_MAX][MTK_SPIM_DMA_BUFFER_BYTES];
+	tmp_tx_buffer[OS_HAL_SPIM_ISU_MAX][MTK_SPIM_DMA_BUFFER_BYTES] __attribute__((section(".sysram")));
 static unsigned char
-	tmp_rx_buffer[OS_HAL_SPIM_ISU_MAX][MTK_SPIM_DMA_BUFFER_BYTES];
+	tmp_rx_buffer[OS_HAL_SPIM_ISU_MAX][MTK_SPIM_DMA_BUFFER_BYTES] __attribute__((section(".sysram")));
 
 static struct mtk_spi_controller_rtos *
 	_mtk_os_hal_spim_get_ctlr(spim_num bus_num)
@@ -128,6 +128,7 @@ int mtk_os_hal_spim_dump_reg(spim_num bus_num)
 	return 0;
 }
 
+static int _mtk_os_hal_spim_irq_handler(spim_num bus_num)
 {
 	struct mtk_spi_controller_rtos *ctlr_rtos;
 	struct mtk_spi_controller *ctlr;

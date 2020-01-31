@@ -57,6 +57,8 @@ static const char *gpt_cb_data="Hello World";
 void _putchar(char character)
 {
 	mtk_os_hal_uart_put_char(uart_port_num, character);
+	if (character == '\n')
+		mtk_os_hal_uart_put_char(uart_port_num, '\r');
 }
 
 /******************************************************************************/
@@ -66,7 +68,7 @@ static void Gpt0Callback(void *cb_data)
 {
 	static uint8_t print_counter=0;
 
-	printf("%s %d\r\n", (char*)cb_data, print_counter);
+	printf("%s %d\n", (char*)cb_data, print_counter);
 	print_counter++;
 }
 
@@ -79,7 +81,7 @@ _Noreturn void RTCoreMain(void)
 
 	// Init UART
 	mtk_os_hal_uart_ctlr_init(uart_port_num);
-	printf("UART Inited (port_num=%d)\r\n", uart_port_num);
+	printf("UART Inited (port_num=%d)\n", uart_port_num);
 
 	// Init GPT
 	gpt0_int.gpt_cb_hdl = Gpt0Callback;
@@ -92,7 +94,7 @@ _Noreturn void RTCoreMain(void)
 	mtk_os_hal_gpt_reset_timer(gpt_timer_id, gpt_timer_val, true);
 	// start timer
 	mtk_os_hal_gpt_start(gpt_timer_id);
-	printf("GPT0 Started (timer_id=%d)(timer_val=%ldms)\r\n", gpt_timer_id, gpt_timer_val);
+	printf("GPT0 Started (timer_id=%d)(timer_val=%ldms)\n", gpt_timer_id, gpt_timer_val);
 
 	for (;;) {
 		__asm__("wfi");

@@ -111,7 +111,11 @@ int mtk_os_hal_wdt_set_timeout(unsigned int sec);
 void mtk_os_hal_wdt_restart(void);
 
 /**
- * @brief  This function is used to reset core immediately by WDT swrst.
+ * @brief  This function is used to reset the M4 core immediately by WDT
+ *	software reset. Once this API been invoked, the M4 core will reboot
+ *	immediately. mtk_os_hal_wdt_init() and mtk_os_hal_wdt_get_reset_status()
+ *	could be invoked later to get the reboot reason. This API is usually
+ *	used when M4 APP trigger reboot.
  *  @param
  *	None
  *  @return
@@ -120,8 +124,11 @@ void mtk_os_hal_wdt_restart(void);
 void mtk_os_hal_wdt_sw_reset(void);
 
 /**
- * @brief  This function is used to reset core immediately by WDT counter
- *	timeout.
+ * @brief  This function is used to reset the M4 core immediately by WDT
+ *	counter timeout. Once this API been invoked, the M4 core will reboot
+ *	immediately. mtk_os_hal_wdt_init() and mtk_os_hal_wdt_get_reset_status()
+ *	could be invoked later to get the reboot reason. This API is usually
+ *	been invoked in WDT irq handler.
  *  @param
  *	None
  *  @return
@@ -143,6 +150,9 @@ enum os_wdt_rst_sta mtk_os_hal_wdt_get_reset_status(void);
 
 /**
  * @brief  This function is used to config WDT irq mode.
+ *	OS_WDT_TRIGGER_IRQ means IRQ will be triggered when WDT timeout, while
+ *	OS_WDT_TRIGGER_RESET means the M4 core will be reset immediately when
+ *	WDT timeout.
  *  @param [in] irq: config WDT to trigger irq(input OS_WDT_TRIGGER_IRQ), or
  *		trigger reset(input OS_WDT_TRIGGER_RESET)
  *  @return

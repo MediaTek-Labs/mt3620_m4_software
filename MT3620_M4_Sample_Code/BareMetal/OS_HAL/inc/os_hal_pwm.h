@@ -128,9 +128,14 @@ int mtk_os_hal_pwm_config_freq_duty_normal(pwm_groups group_num,
  *
  *  @param group_num : PWM group number, 0 is group0 , 1 is group1, 2 is group2
  *  @param pwm_num : PWM number, 0 is pwm0 , 1 is pwm1, 2 is pwm2, 3 is pwm3
- *  @param global_kick_enable : PWM global kick feature enable
- *  @param io_ctrl_sel : PWM io ctrl select
- *  @param polarity_set : PWM plus level polarity select
+ *  @param global_kick_enable : PWM global kick feature enable, typical set
+ *	as 0: pwm channel is independent with other pwm channel, 1: all pwm
+ *	channel with global_kick_enable set will output waveform at the same
+ *	time.
+ *  @param io_ctrl_sel : PWM io ctrl select, typical set as 0: PIO as output,
+ *	when pwm channel is disable, waveform will keep low, 1:open drain.
+ *  @param polarity_set : PWM plus level polarity select, typical set as 0: pwm
+ *	waveform is high level active, 1:pwm waveform is low level active.
  *
  * @return
  *	If return value is 0, it means success.\n

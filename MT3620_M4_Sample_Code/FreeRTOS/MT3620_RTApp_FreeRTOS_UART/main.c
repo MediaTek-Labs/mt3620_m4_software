@@ -61,18 +61,21 @@ static const uint32_t uart_baudrate = 115200;
 // Hook for "stack over flow".
 void vApplicationStackOverflowHook(TaskHandle_t xTask, char* pcTaskName)
 {
-	printf("%s: %s\r\n", __func__, pcTaskName);
+	printf("%s: %s\n", __func__, pcTaskName);
 }
 
 // Hook for "memory allocation failed".
 void vApplicationMallocFailedHook(void)
 {
-	printf("%s\r\n", __func__);
+	printf("%s\n", __func__);
 }
+
 // Hook for "printf".
 void _putchar(char character)
 {
 	mtk_os_hal_uart_put_char(uart_port_num, character);
+	if (character == '\n')
+		mtk_os_hal_uart_put_char(uart_port_num, '\r');
 }
 
 /******************************************************************************/
@@ -81,7 +84,7 @@ void _putchar(char character)
 static void uart_rx_task(void* pParameters)
 {
 	uint8_t data;
-	printf("UART Rx task started, keep monitoring user input.\r\n");
+	printf("UART Rx task started, keep monitoring user input.\n");
 	while (1) {
 		// Delay 10ms
 		vTaskDelay(pdMS_TO_TICKS(10));
@@ -89,19 +92,19 @@ static void uart_rx_task(void* pParameters)
 		// Get UART input. (Non-blocking operation)
 		data = mtk_os_hal_uart_get_char(uart_port_num);
 
-		printf("UART Rx: %c\r\n", data);
+		printf("UART Rx: %c\n", data);
 	}
 }
 
 static void uart_tx_task(void* pParameters)
 {
 	uint8_t counter=0;
-	printf("UART Tx task started, print log for every second.\r\n");
+	printf("UART Tx task started, print log for every second.\n");
 	while (1) {
 		// Delay 1000ms
 		vTaskDelay(pdMS_TO_TICKS(1000));
 
-		printf("UART Tx Counter ... %d\r\n", counter++);
+		printf("UART Tx Counter ... %d\n", counter++);
 	}
 }
 
@@ -112,20 +115,17 @@ _Noreturn void RTCoreMain(void)
 
 	// Init UART
 	mtk_os_hal_uart_ctlr_init(uart_port_num);
-	mtk_os_hal_uart_set_format(uart_port_num, uart_dat_len, uart_parity,
-								uart_stop_bit);
+	mtk_os_hal_uart_set_format(uart_port_num, uart_dat_len, uart_parity, uart_stop_bit);
 	mtk_os_hal_uart_set_baudrate(uart_port_num, uart_baudrate);
-	printf("\r\nFreeRTOS UART Demo\r\n");
+	printf("\nFreeRTOS UART Demo\n");
 
 	// Create UART Tx Task
-	xTaskCreate(uart_tx_task, "UART Tx Task", APP_STACK_SIZE_BYTES, NULL, 5,
-				NULL);
+	xTaskCreate(uart_tx_task, "UART Tx Task", APP_STACK_SIZE_BYTES, NULL, 5, NULL);
 
 	// Create UART Rx Task
-	xTaskCreate(uart_rx_task, "UART Rx Task", APP_STACK_SIZE_BYTES, NULL, 4,
-				NULL);
-	vTaskStartScheduler();
+	xTaskCreate(uart_rx_task, "UART Rx Task", APP_STACK_SIZE_BYTES, NULL, 4, NULL);
 
+	vTaskStartScheduler();
 	for (;;) {
 		__asm__("wfi");
 	}

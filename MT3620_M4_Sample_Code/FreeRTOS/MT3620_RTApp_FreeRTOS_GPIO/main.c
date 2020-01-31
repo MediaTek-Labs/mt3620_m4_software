@@ -62,18 +62,21 @@ static const uint8_t gpio_button_b = OS_HAL_GPIO_13;
 // Hook for "stack over flow".
 void vApplicationStackOverflowHook(TaskHandle_t xTask, char* pcTaskName)
 {
-	printf("%s: %s\r\n", __func__, pcTaskName);
+	printf("%s: %s\n", __func__, pcTaskName);
 }
 
 // Hook for "memory allocation failed".
 void vApplicationMallocFailedHook(void)
 {
-	printf("%s\r\n", __func__);
+	printf("%s\n", __func__);
 }
+
 // Hook for "printf".
 void _putchar(char character)
 {
 	mtk_os_hal_uart_put_char(uart_port_num, character);
+	if (character == '\n')
+		mtk_os_hal_uart_put_char(uart_port_num, '\r');
 }
 
 /******************************************************************************/
@@ -85,14 +88,14 @@ static int gpio_output(u8 gpio_no, u8 level)
 
 	ret = mtk_os_hal_gpio_request(gpio_no);
 	if (ret != 0) {
-		printf("request gpio[%d] fail\r\n", gpio_no);
+		printf("request gpio[%d] fail\n", gpio_no);
 		return ret;
 	}
 	mtk_os_hal_gpio_set_direction(gpio_no, OS_HAL_GPIO_DIR_OUTPUT);
 	mtk_os_hal_gpio_set_output(gpio_no, level);
 	ret = mtk_os_hal_gpio_free(gpio_no);
 	if (ret != 0) {
-		printf("free gpio[%d] fail\r\n", gpio_no);
+		printf("free gpio[%d] fail\n", gpio_no);
 		return ret;
 	}
 	return 0;
@@ -104,7 +107,7 @@ static int gpio_input(u8 gpio_no, os_hal_gpio_data* pvalue)
 
 	ret = mtk_os_hal_gpio_request(gpio_no);
 	if (ret != 0) {
-		printf("request gpio[%d] fail\r\n", gpio_no);
+		printf("request gpio[%d] fail\n", gpio_no);
 		return ret;
 	}
 	mtk_os_hal_gpio_set_direction(gpio_no, OS_HAL_GPIO_DIR_INPUT);
@@ -114,7 +117,7 @@ static int gpio_input(u8 gpio_no, os_hal_gpio_data* pvalue)
 
 	ret = mtk_os_hal_gpio_free(gpio_no);
 	if (ret != 0) {
-		printf("free gpio[%d] fail\r\n", gpio_no);
+		printf("free gpio[%d] fail\n", gpio_no);
 		return ret;
 	}
 
@@ -125,7 +128,7 @@ static void gpio_task(void* pParameters)
 {
 	os_hal_gpio_data value = 0;
 
-	printf("GPIO Task Started\r\n");
+	printf("GPIO Task Started\n");
 	while (1) {
 		// Get Button_A status and set LED Red.
 		gpio_input(gpio_button_a, &value);
@@ -155,7 +158,7 @@ _Noreturn void RTCoreMain(void)
 
 	// Init UART
 	mtk_os_hal_uart_ctlr_init(uart_port_num);
-	printf("\r\nFreeRTOS GPIO Demo\r\n");
+	printf("\nFreeRTOS GPIO Demo\n");
 
 	// Create GPIO Task
 	xTaskCreate(gpio_task, "GPIO Task", APP_STACK_SIZE_BYTES, NULL, 4, NULL);

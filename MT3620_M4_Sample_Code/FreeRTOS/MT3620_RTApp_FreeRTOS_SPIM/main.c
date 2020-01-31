@@ -64,18 +64,21 @@ static uint32_t spi_master_speed = 100; 				// 100KHz
 // Hook for "stack over flow".
 void vApplicationStackOverflowHook(TaskHandle_t xTask, char* pcTaskName)
 {
-	printf("%s: %s\r\n", __func__, pcTaskName);
+	printf("%s: %s\n", __func__, pcTaskName);
 }
 
 // Hook for "memory allocation failed".
 void vApplicationMallocFailedHook(void)
 {
-	printf("%s\r\n", __func__);
+	printf("%s\n", __func__);
 }
+
 // Hook for "printf".
 void _putchar(char character)
 {
 	mtk_os_hal_uart_put_char(uart_port_num, character);
+	if (character == '\n')
+		mtk_os_hal_uart_put_char(uart_port_num, '\r');
 }
 
 /******************************************************************************/
@@ -175,7 +178,7 @@ static int spi_transfer_test(int bus_num, int use_dma, int length, int khz)
 	ret = mtk_os_hal_spim_transfer((spim_num) bus_num,
 				 &spi_default_config, &xfer);
 	if (ret) {
-		printf("mtk_os_hal_spim_transfer failed\r\n");
+		printf("mtk_os_hal_spim_transfer failed\n");
 		return ret;
 	}
 
@@ -189,29 +192,40 @@ static void spim_task(void* pParameters)
 	uint8_t i=0;
 	uint8_t err=0;
 
-	printf("SPI master sync/async transfer test with legth %d ~ %d. \r\n", 
+	printf("SPI master sync/async transfer test with legth %d ~ %d. \n", 
 			SPIM_FULL_DUPLEX_MIN_LEN, SPIM_FULL_DUPLEX_MAX_LEN);
 	while (1) {
 		err=0;
 		vTaskDelay(pdMS_TO_TICKS(1000));
 
 		for (i = SPIM_FULL_DUPLEX_MIN_LEN; i <= SPIM_FULL_DUPLEX_MAX_LEN; i++) {
-			// Synchronous loopback test.
+			//FIFO Mode: Synchronous loopback test.
 			if (spi_transfer_test(spi_master_port_num, 0, i, spi_master_speed)) {
-				printf("spi_transfer_test error! (length=%d)\r\n", i);
+				printf("FIFO: spi_transfer_test error! (length=%d)\n", i);
 				err++;
 			}
-			// Asynchronous loopback test.
+			// FIFO Mode: Asynchronous loopback test.
 			if (spi_async_transfer_test(spi_master_port_num, 0, i, spi_master_speed)) {
-				printf("spi_async_transfer_test error! (length=%d)\r\n", i);
+				printf("FIFO: spi_async_transfer_test error! (length=%d)\n", i);
+				err++;
+			}
+
+			// DMA Mode: Synchronous loopback test.
+			if (spi_transfer_test(spi_master_port_num, 1, i, spi_master_speed)) {
+				printf("DMA: spi_transfer_test error! (length=%d)\n", i);
+				err++;
+			}
+			// DMA Mode: Asynchronous loopback test.
+			if (spi_async_transfer_test(spi_master_port_num, 1, i, spi_master_speed)) {
+				printf("DMA: spi_async_transfer_test error! (length=%d)\n", i);
 				err++;
 			}
 		}
 
 		if (err) {
-			printf("Test iteration[%ld] result: FAILED\r\n", counter++);
+			printf("Test iteration[%ld] result: FAIL\n", counter++);
 		} else {
-			printf("Test iteration[%ld] result: PASSED\r\n", counter++);
+			printf("Test iteration[%ld] result: PASS\n", counter++);
 		}
 	}
 }
@@ -223,15 +237,15 @@ _Noreturn void RTCoreMain(void)
 
 	// Init UART
 	mtk_os_hal_uart_ctlr_init(uart_port_num);
-	printf("FreeRTOS SPIM demo\r\n");
+	printf("\nFreeRTOS SPIM demo\n");
 
 	// Init SPIM
 	mtk_os_hal_spim_ctlr_init(spi_master_port_num);
 
 	// Create SPIM Task
 	xTaskCreate(spim_task, "SPIM Task", APP_STACK_SIZE_BYTES, NULL, 4, NULL);
-	vTaskStartScheduler();
 
+	vTaskStartScheduler();
 	for (;;) {
 		__asm__("wfi");
 	}

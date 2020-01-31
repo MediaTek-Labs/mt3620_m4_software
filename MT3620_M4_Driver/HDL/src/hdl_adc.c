@@ -38,7 +38,7 @@
 
 void mtk_hdl_adc_start(void __iomem *base)
 {
-	adc_debug("\tmtk hdl_adc_start\n");
+	adc_debug("\tmtk hdl_adc_start.\n");
 
 	/* Enable ADC */
 	adc_mod_reg(base, ADC_FSM_EN, ADC_FSM_ENABLE);
@@ -46,7 +46,7 @@ void mtk_hdl_adc_start(void __iomem *base)
 
 void mtk_hdl_adc_start_ch(void __iomem *base, u16 ch_bit_map)
 {
-	adc_debug("\tmtk hdl_adc_start_ch! channel_bit_map == %d\n",
+	adc_debug("\tmtk hdl_adc_start_ch! channel_bit_map == %d.\n",
 			ch_bit_map);
 	adc_mod_reg(base, ADC_REG_CH_MAP, ch_bit_map);
 
@@ -134,7 +134,7 @@ void mtk_hdl_adc_reset(void __iomem *base)
 {
 	u32 value = 0;
 
-	adc_debug("hal_adc_reset\n");
+	adc_debug("hal_adc_reset.\n");
 	value = osai_readl(base);
 	value = value & (~ADC_CR_SW_RST_MASK);
 	osai_writel(value, base);

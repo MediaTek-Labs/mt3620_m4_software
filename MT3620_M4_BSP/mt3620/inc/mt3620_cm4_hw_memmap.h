@@ -651,10 +651,9 @@ typedef struct _IOT_CM4_RGU_MEM_CTRL_TypeDef
 #define CM4_WIC_SW_CLR_SHFT         0
 
 #define CM4_WIC_PEND_STA0           (CM4_CONFIG_AON_BASE + 0x364)
-#define CM4_WIC_PEND_STA1           (CM4_CONFIG_AON_BASE + 0x364)
-#define CM4_WIC_PEND_STA2           (CM4_CONFIG_AON_BASE + 0x364)
-#define CM4_WIC_PEND_STA3           (CM4_CONFIG_AON_BASE + 0x364)
-#define CM4_WIC_PEND_STA4           (CM4_CONFIG_AON_BASE + 0x364)
+#define CM4_WIC_PEND_STA1           (CM4_CONFIG_AON_BASE + 0x368)
+#define CM4_WIC_PEND_STA2           (CM4_CONFIG_AON_BASE + 0x36C)
+#define CM4_WIC_PEND_STA3           (CM4_CONFIG_AON_BASE + 0x370)
 
 #define CM4_WIC_SW_PEND_EN_ADDR     (CM4_CONFIG_AON_BASE + 0x340)
 #define CM4_WIC_SW_PEND_EN_MASK     BIT(0)

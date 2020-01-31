@@ -75,7 +75,7 @@ static int _mtk_mhal_adc_fifo_read_data(struct mtk_adc_controller *ctlr,
 		for (counter = 0; counter < length; counter++) {
 			samples_data[counter] =
 				mtk_hdl_adc_fifo_read_data(ctlr->base);
-			adc_debug("\t-length(%d),samples_data[counter]%x\n",
+			adc_debug("\t-length(%d),samples_data[counter]%x.\n",
 				length, samples_data[counter]);
 		}
 		break;
@@ -102,7 +102,7 @@ static int _mtk_mhal_adc_period_sample_data(struct mtk_adc_controller *ctlr)
 	/*Get fifo data*/
 	if (ctlr->adc_fsm_parameter->fifo_mode == ADC_FIFO_DMA)
 		valid_fifo_len = valid_fifo_len/4;
-	adc_debug("\tmtk mhal_adc_period_get_data valid fifo len(%d)-\n",
+	adc_debug("\tmtk mhal_adc_period_get_data valid fifo len(%d)-.\n",
 		valid_fifo_len);
 
 	for (count = 0; count < valid_fifo_len; count++) {
@@ -126,7 +126,7 @@ static int _mtk_mhal_adc_period_sample_data(struct mtk_adc_controller *ctlr)
 		ctlr->current_xfer[channel_num].ring_buf[write_point] =
 		((fifo_data[count] & ADC_DATA_MASK) >> ADC_DATA_BIT_OFFSET);
 
-		adc_debug("ctlr->current_xfer[%d].count = %d\n",
+		adc_debug("ctlr->current_xfer[%d].count = %d.\n",
 			channel_num, ctlr->current_xfer[channel_num].count);
 		ctlr->current_xfer[channel_num].count++;
 		if (ctlr->current_xfer[channel_num].count >= ADC_RING_BUF_SIZE)
@@ -176,15 +176,15 @@ static int _mtk_mhal_adc_dma_config(struct mtk_adc_controller *ctlr)
 
 	ctlr->rx_addr =
 		osai_get_phyaddr(ctlr->adc_fsm_parameter->dma_vfifo_addr);
-	adc_debug("\tmtk mhal_adc_dma_config  ctlr->rx_addr~%ld\n",
+	adc_debug("\tmtk mhal_adc_dma_config  ctlr->rx_addr~%ld.\n",
 		ctlr->rx_addr);
-	adc_debug("\tmtk mhal_adc_dma_config  dma_vfifo_addr %p\n",
+	adc_debug("\tmtk mhal_adc_dma_config  dma_vfifo_addr %p.\n",
 		ctlr->adc_fsm_parameter->dma_vfifo_addr);
 	/* ADC rx */
 	config.src_addr = ADC_DMA_RX_PORT;
 	config.dst_addr = ctlr->rx_addr;
 	config.done_callback = _mtk_mhal_adc_vdma_callback;
-	adc_debug("\tmtk mhal_adc_dma_config\n");
+	adc_debug("\tmtk mhal_adc_dma_config.\n");
 
 	return osai_dma_config(ctlr->dma_channel, &config);
 }
@@ -316,7 +316,7 @@ int mtk_mhal_adc_fsm_param_set(struct mtk_adc_controller *ctlr,
 
 	/* Parameter check */
 	if (adc_fsm_parameter->channel_map == 0) {
-		adc_err("\tillegal channel map\n");
+		adc_err("\tillegal channel map.\n");
 		return -ADC_EPARAMETER;
 	}
 
@@ -332,9 +332,9 @@ int mtk_mhal_adc_fsm_param_set(struct mtk_adc_controller *ctlr,
 	case ADC_FIFO_DMA:
 		/* Initialize ADC Virtual FIFO DMA*/
 		/*set alert*/
-		adc_debug("\t-DMA Alert Enable-\n");
-		adc_debug("\t-channel_num(%d)-\n", channel_num);
-		adc_debug("\t-dma_vfifo_addr(0x%p)/dma_vfifo_len(%d)-\n",
+		adc_debug("\t-DMA Alert Enable-.\n");
+		adc_debug("\t-channel_num(%d)-.\n", channel_num);
+		adc_debug("\t-dma_vfifo_addr(0x%p)/dma_vfifo_len(%d)-.\n",
 		adc_fsm_parameter->dma_vfifo_addr,
 			adc_fsm_parameter->dma_vfifo_len);
 
@@ -342,13 +342,13 @@ int mtk_mhal_adc_fsm_param_set(struct mtk_adc_controller *ctlr,
 		ret = _mtk_mhal_adc_dma_config(ctlr);
 		if (ret)
 			return ret;
-		adc_debug("\tmtk mhal_adc_fsm_param_set\n");
+		adc_debug("\tmtk mhal_adc_fsm_param_set.\n");
 		mtk_hdl_adc_dma_enable(ctlr->base);
 
 		break;
 	case ADC_FIFO_DIRECT:
 
-		adc_debug("\tFIFO mode\n");
+		adc_debug("\tFIFO mode.\n");
 
 		/* Direct mode */
 		if ((ctlr->adc_fsm_parameter->ier_mode ==
@@ -372,7 +372,7 @@ int mtk_mhal_adc_fsm_param_set(struct mtk_adc_controller *ctlr,
 			mtk_hdl_adc_periodic_mode_set(ctlr->base,
 			ADC_PMODE_PERIODIC);
 
-		adc_debug("channel_num %d\n", channel_num);
+		adc_debug("channel_num %d.\n", channel_num);
 		mtk_hdl_adc_trigger_level_set(ctlr->base, channel_num);
 		/*set trigger level equal to used channel number!!*/
 
@@ -433,7 +433,7 @@ int mtk_mhal_adc_start(struct mtk_adc_controller *ctlr)
 	if (!ctlr->adc_fsm_parameter)
 		return -ADC_EPTR;
 
-	adc_debug("ctlr->adc_fsm_parameter->fifo_mode == %d\n",
+	adc_debug("ctlr->adc_fsm_parameter->fifo_mode == %d.\n",
 		ctlr->adc_fsm_parameter->fifo_mode);
 	if ((ctlr->adc_fsm_parameter->fifo_mode != ADC_FIFO_DMA) &&
 		(ctlr->adc_fsm_parameter->fifo_mode != ADC_FIFO_DIRECT))
@@ -609,15 +609,15 @@ int mtk_mhal_adc_one_shot_get_data(struct mtk_adc_controller *ctlr,
 		read_point = ADC_RING_BUF_SIZE - 1;
 	else
 		read_point = --write_point;
-	adc_debug("data point:%p, write_point %d\n", data, read_point);
-	adc_debug("data point:%p, write_point %d\n", data, write_point);
+	adc_debug("data point:%p, write_point %d.\n", data, read_point);
+	adc_debug("data point:%p, write_point %d.\n", data, write_point);
 
 	*data = ctlr->current_xfer[channel].ring_buf[read_point];
 
-	adc_debug("mtk mhal_adc_one_shot_get_data : channel->%d,data %d\n",
+	adc_debug("mtk mhal_adc_one_shot_get_data : channel->%d,data %d.\n",
 	channel, ctlr->current_xfer[channel].ring_buf[read_point]);
 
-	adc_debug("data point:%d\n", *data);
+	adc_debug("data point:%d.\n", *data);
 
 	return 0;
 }
@@ -657,7 +657,7 @@ int mtk_mhal_adc_period_get_data(struct mtk_adc_controller *ctlr,
 		*(ctlr->rx_buf) =
 			ctlr->current_xfer[channel].ring_buf[read_point];
 		ctlr->rx_size = 1;
-		adc_debug("one shot mode ctlr->rx_buf:%d\n", *(ctlr->rx_buf));
+		adc_debug("one shot mode ctlr->rx_buf:%d.\n", *(ctlr->rx_buf));
 
 		return 0;
 	}
@@ -675,10 +675,10 @@ int mtk_mhal_adc_period_get_data(struct mtk_adc_controller *ctlr,
 		ctlr->rx_buf[ctlr->rx_size] =
 			ctlr->current_xfer[channel].ring_buf[read_point];
 
-		adc_debug("channel->%d,data:%d\n",
+		adc_debug("channel->%d,data:%d.\n",
 		channel,
 		ctlr->rx_buf[ctlr->rx_size]);
-		adc_debug("channel->%d,size:%d\n",
+		adc_debug("channel->%d,size:%d.\n",
 		channel,
 		ctlr->rx_size);
 		ctlr->current_xfer[channel].count--;
@@ -717,7 +717,7 @@ int mtk_mhal_adc_fifo_handle_rx(struct mtk_adc_controller *ctlr)
 	_mtk_mhal_adc_period_sample_data(ctlr);
 
 	if (ctlr->adc_fsm_parameter->pmode == ADC_PMODE_ONE_TIME) {
-		adc_debug("mtk_hdl_adc_stop one shot.");
+		adc_debug("mtk_hdl_adc_stop one shot.\n");
 		mtk_hdl_adc_stop(ctlr->base);
 	}
 	ctlr->adc_processing = false;

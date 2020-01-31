@@ -237,7 +237,7 @@ int mtk_os_hal_gpt_config(enum gpt_num timer_id, unsigned char speed_32us,
 
 /* device initialization */
 
-static void _mtk_os_gpt_register_irq(void)
+void mtk_os_hal_gpt_register_irq(void)
 {
 	/* the common int pin for gpt0 & gpt1 is always on */
 	CM4_Install_NVIC(gpt_dev.irq_id[0], CM4_GPT_PRI, IRQ_LEVEL_TRIGGER,
@@ -260,7 +260,7 @@ void mtk_os_hal_gpt_init(void)
 	gpt_dev.holden_bitmap = ~OS_GPT_AVAILABLE_MASK;
 
 	/* request irq from system */
-	_mtk_os_gpt_register_irq();
+	mtk_os_hal_gpt_register_irq();
 
 	gpt_dev.inited = true;
 }

@@ -390,6 +390,11 @@
  *		printf("sample_channel->%d data point:%p\n",
  *			sample_channel, data);
  *
+ *		ret = _mtk_os_hal_adc_wait_for_completion_timeout(ctlr_rtos,
+ *			1000);
+ *		if (ret)
+ *			printf("Take adc master Semaphore timeout!\n");
+ *
  *		ret = mtk_mhal_adc_one_shot_get_data(ctlr_rtos->ctlr,
  *		sample_channel, data);
  *		if (ret)

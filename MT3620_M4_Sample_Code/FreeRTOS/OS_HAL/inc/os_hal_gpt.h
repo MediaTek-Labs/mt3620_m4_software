@@ -131,6 +131,16 @@ int mtk_os_hal_gpt_config(enum gpt_num timer_id,
 			  struct os_gpt_int *gpt_int);
 
 /**
+ * @brief  Register GPT irq.
+ *	Called only in mtk_os_hal_gpt_init() and low power scenario.
+ *  @param
+ *	None
+ *  @return
+ *	None
+ */
+void mtk_os_hal_gpt_register_irq(void);
+
+/**
  * @brief  Init GPT device.\n
  *	Internal assurance that it will only be executed only one time
  * effectively.

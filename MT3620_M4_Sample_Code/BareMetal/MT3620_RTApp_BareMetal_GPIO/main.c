@@ -70,6 +70,8 @@ static const uint8_t gpio_button_b = OS_HAL_GPIO_13;			// GPIO_13 for Button_B S
 void _putchar(char character)
 {
 	mtk_os_hal_uart_put_char(uart_port_num, character);
+	if (character == '\n')
+		mtk_os_hal_uart_put_char(uart_port_num, '\r');
 }
 
 /******************************************************************************/
@@ -81,14 +83,14 @@ static int gpio_output(u8 gpio_no, u8 level)
 
 	ret = mtk_os_hal_gpio_request(gpio_no);
 	if (ret != 0) {
-		printf("request gpio[%d] fail\r\n", gpio_no);
+		printf("request gpio[%d] fail\n", gpio_no);
 		return ret;
 	}
 	mtk_os_hal_gpio_set_direction(gpio_no, OS_HAL_GPIO_DIR_OUTPUT);
 	mtk_os_hal_gpio_set_output(gpio_no, level);
 	ret = mtk_os_hal_gpio_free(gpio_no);
 	if (ret != 0) {
-		printf("free gpio[%d] fail\r\n", gpio_no);
+		printf("free gpio[%d] fail\n", gpio_no);
 		return 0;
 	}
 	return 0;
@@ -100,14 +102,14 @@ static int gpio_input(u8 gpio_no, os_hal_gpio_data* pvalue)
 
 	ret = mtk_os_hal_gpio_request(gpio_no);
 	if (ret != 0) {
-		printf("request gpio[%d] fail\r\n", gpio_no);
+		printf("request gpio[%d] fail\n", gpio_no);
 		return ret;
 	}
 	mtk_os_hal_gpio_set_direction(gpio_no, OS_HAL_GPIO_DIR_INPUT);
 	mtk_os_hal_gpio_get_input(gpio_no, pvalue);
 	ret = mtk_os_hal_gpio_free(gpio_no);
 	if (ret != 0) {
-		printf("free gpio[%d] fail\r\n", gpio_no);
+		printf("free gpio[%d] fail\n", gpio_no);
 		return ret;
 	}
 	return 0;
@@ -164,7 +166,7 @@ _Noreturn void RTCoreMain(void)
 
 	// Init UART
 	mtk_os_hal_uart_ctlr_init(uart_port_num);
-	printf("UART Inited (port_num=%d)\r\n", uart_port_num);
+	printf("\nUART Inited (port_num=%d)\n", uart_port_num);
 
 	// Init GPT
 	mtk_os_hal_gpt_init();
@@ -182,7 +184,6 @@ _Noreturn void RTCoreMain(void)
 	mtk_os_hal_gpt_config(gpt_timer_button, false, &gpt3_int);
 	mtk_os_hal_gpt_reset_timer(gpt_timer_button, gpt_timer_button_scan_perios_ms, false);
 	mtk_os_hal_gpt_start(gpt_timer_button);
-
 
 	for (;;) {
 		__asm__("wfi");

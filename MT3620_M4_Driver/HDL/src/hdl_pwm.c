@@ -268,7 +268,7 @@ void mtk_hdl_pwm_group_config(void __iomem *base, u8 pwm_num,
 	reg_val &= (PWM_GLO_CTRL_PWM_TICK_CLOCK_SEL_MASK);
 
 	clock_source = reg_val >> PWM_GLO_CTRL_PWM_TICK_CLOCK_SEL_OFFSET;
-	pwm_debug("mtk hdl_pwm_group_config clock_source ==%x\n",
+	pwm_debug("mtk hdl_pwm_group_config clock_source ==%x.\n",
 		clock_source);
 	switch (clock_source) {
 	case PWM_CLK_32K:
@@ -284,7 +284,7 @@ void mtk_hdl_pwm_group_config(void __iomem *base, u8 pwm_num,
 	default:
 		break;
 	}
-	pwm_debug("mtk hdl_pwm_group_config clock_source ==%d\n",
+	pwm_debug("mtk hdl_pwm_group_config clock_source ==%d.\n",
 		clk_freq);
 	/*
 	* T(second)	PWM period
@@ -310,17 +310,17 @@ void mtk_hdl_pwm_group_config(void __iomem *base, u8 pwm_num,
 
 	on_time = (duty_cycle * pwm_step) / PWM_DUTY_CYCLE_BASE;
 	off_time = pwm_step - on_time;
-	pwm_debug("mtk hdl_pwm_group_config pwm_freq ==%d,duty_cycle =%d\n",
+	pwm_debug("mtk hdl_pwm_group_config pwm_freq ==%d,duty_cycle =%d.\n",
 		pwm_freq, duty_cycle);
 
-	pwm_debug("on_time == %x,off_time ==%x\n", on_time, off_time);
+	pwm_debug("on_time == %x,off_time ==%x.\n", on_time, off_time);
 	if (off_time == 1) {
 		off_time = 0;
 		on_time += 1;
 	}
 
 	if (stage == PWM_S0) {
-		pwm_debug("on_time == %x,off_time ==%x\n", on_time, off_time);
+		pwm_debug("on_time == %x,off_time ==%x.\n", on_time, off_time);
 		reg_val = _mtk_hdl_pwm_readl(base, pwm_num, PWM_PARAM_S0);
 		reg_val &= (~PWM_PARAM_S0_PWM_OFF_TIME_MASK);
 		reg_val |= (off_time << PWM_PARAM_S0_PWM_OFF_TIME_OFFSET);
@@ -409,7 +409,7 @@ void mtk_hdl_pwm_group_query(void __iomem *base, u8 pwm_num,
 	reg_val &= (PWM_GLO_CTRL_PWM_TICK_CLOCK_SEL_MASK);
 
 	clock_source =  reg_val >> PWM_GLO_CTRL_PWM_TICK_CLOCK_SEL_OFFSET;
-	pwm_debug("mtk hdl_pwm_group_query clock_source ==%d\n",
+	pwm_debug("mtk hdl_pwm_group_query clock_source ==%d.\n",
 		clock_source);
 	switch (clock_source) {
 	case PWM_CLK_32K:
@@ -462,6 +462,6 @@ void mtk_hdl_pwm_group_query(void __iomem *base, u8 pwm_num,
 		(*pwm_freq) = (clk_freq / pwm_step);
 
 	(*duty_cycle) = on_time;
-	pwm_debug("mtk hdl_pwm_group_query *pwm_freq == %x\n", *pwm_freq);
+	pwm_debug("mtk hdl_pwm_group_query *pwm_freq == %x.\n", *pwm_freq);
 }
 

@@ -8,8 +8,9 @@
 CMAKE_MINIMUM_REQUIRED(VERSION 3.11)
 
 # Configurations
-PROJECT(Azure_Sphere_RTcore_FreeRTOS_GPT C)
+PROJECT(Azure_Sphere_RTcore_FreeRTOS_I2C C)
 ADD_COMPILE_DEFINITIONS(OSAI_FREERTOS)
+ADD_COMPILE_DEFINITIONS(OSAI_ENABLE_DMA)
 ADD_LINK_OPTIONS(-specs=nano.specs -specs=nosys.specs)
 
 # Executable
@@ -18,7 +19,8 @@ ADD_EXECUTABLE(${PROJECT_NAME}
                ../../../MT3620_M4_BSP/printf/printf.c
                ../OS_HAL/src/os_hal_gpio.c
                ../OS_HAL/src/os_hal_uart.c
-               ../OS_HAL/src/os_hal_gpt.c)
+               ../OS_HAL/src/os_hal_dma.c
+               ../OS_HAL/src/os_hal_i2c.c)
 
 # Include Folders
 TARGET_INCLUDE_DIRECTORIES(${PROJECT_NAME} PUBLIC
