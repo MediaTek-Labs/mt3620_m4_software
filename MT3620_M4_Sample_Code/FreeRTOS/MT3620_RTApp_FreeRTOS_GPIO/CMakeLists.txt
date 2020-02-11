@@ -15,7 +15,6 @@ ADD_LINK_OPTIONS(-specs=nano.specs -specs=nosys.specs)
 # Executable
 ADD_EXECUTABLE(${PROJECT_NAME}
                main.c
-               ../../../MT3620_M4_BSP/printf/printf.c
                ../OS_HAL/src/os_hal_gpio.c
                ../OS_HAL/src/os_hal_uart.c)
 
@@ -27,12 +26,7 @@ TARGET_INCLUDE_DIRECTORIES(${PROJECT_NAME} PUBLIC
 # Libraries
 set(OSAI_FREERTOS 1)
 ADD_SUBDIRECTORY(../../../MT3620_M4_Driver ./lib/MT3620_M4_Driver)
-ADD_SUBDIRECTORY(../../../MT3620_M4_BSP ./lib/MT3620_M4_BSP)
-ADD_SUBDIRECTORY(../../../MT3620_M4_BSP/FreeRTOS ./lib/MT3620_M4_FreeRTOS)
-TARGET_LINK_LIBRARIES(${PROJECT_NAME}
-                      MT3620_M4_Driver
-                      MT3620_M4_FreeRTOS
-                      MT3620_M4_BSP)
+TARGET_LINK_LIBRARIES(${PROJECT_NAME} MT3620_M4_Driver)
 
 # Linker, Image
 SET_TARGET_PROPERTIES(${PROJECT_NAME} PROPERTIES LINK_DEPENDS ${CMAKE_SOURCE_DIR}/linker.ld)

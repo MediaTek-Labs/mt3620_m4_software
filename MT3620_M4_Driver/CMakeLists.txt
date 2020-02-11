@@ -19,17 +19,20 @@ ADD_LIBRARY(MT3620_M4_Driver
             ./MHAL/src/mhal_wdt.c ./HDL/src/hdl_wdt.c)
 
 TARGET_INCLUDE_DIRECTORIES(MT3620_M4_Driver PUBLIC
+                           ../MT3620_M4_BSP/printf
                            ./MHAL/inc
-                           ./HDL/inc
-                           ../MT3620_M4_BSP/CMSIS/include
-                           ../MT3620_M4_BSP/mt3620/inc
-                           ../MT3620_M4_BSP/printf)
+                           ./HDL/inc)
+
+ADD_SUBDIRECTORY(../MT3620_M4_BSP ./lib/MT3620_M4_BSP)
+TARGET_LINK_LIBRARIES(MT3620_M4_Driver PUBLIC MT3620_M4_BSP)
+if(DEFINED OSAI_FREERTOS)
+  ADD_SUBDIRECTORY(../MT3620_M4_BSP/FreeRTOS ./MT3620_M4_BSP/FreeRTOS)
+  TARGET_LINK_LIBRARIES(MT3620_M4_Driver PUBLIC MT3620_M4_FreeRTOS)
+endif()
 
 if(DEFINED OSAI_FREERTOS)
 TARGET_INCLUDE_DIRECTORIES(MT3620_M4_Driver PUBLIC
-                           ../MT3620_M4_Sample_Code/FreeRTOS/OS_HAL/inc
-                           ../MT3620_M4_BSP/FreeRTOS/include
-                           ../MT3620_M4_BSP/FreeRTOS/portable)
+                           ../MT3620_M4_Sample_Code/FreeRTOS/OS_HAL/inc)
 else()
 TARGET_INCLUDE_DIRECTORIES(MT3620_M4_Driver PUBLIC
                            ../MT3620_M4_Sample_Code/BareMetal/OS_HAL/inc)
