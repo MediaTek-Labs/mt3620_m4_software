@@ -13,7 +13,7 @@
 
 ### To clone this repository:
 ```
-git clone https://github.com/LawranceLiu/Azure-Sphere-MT3620-M4-Samples.git
+git clone https://github.com/MediaTek-Labs/mt3620_m4_software.git
 ```
 
 ### Description
