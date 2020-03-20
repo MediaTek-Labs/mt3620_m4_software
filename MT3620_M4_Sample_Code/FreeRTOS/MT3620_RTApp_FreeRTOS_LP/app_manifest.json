@@ -1,0 +1,11 @@
+{
+  "SchemaVersion": 1,
+  "Name": "MT3620_RTApp_FreeRTOS_LP",
+  "ComponentId": "2DD0FA70-A426-4F57-AC28-ABA38EE5C5A2",
+  "EntryPoint": "/bin/app",
+  "CmdArgs": [],
+  "Capabilities": {
+    "Uart": [ "ISU0" ]
+  },
+  "ApplicationType": "RealTimeCapable"
+}

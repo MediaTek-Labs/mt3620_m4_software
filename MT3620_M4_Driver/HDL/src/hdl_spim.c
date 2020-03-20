@@ -119,13 +119,15 @@ void mtk_hdl_spim_enable_fifo_transfer(void __iomem *base,
 				       int tx_enable,
 				       int rx_enable)
 {
-	u32 fifo_fill_data[SPIM_BYTE_LENGTH];
+	u32 fifo_fill_data[16];
 	int i;
 
 	spim_debug("[%s]opcode(0x%x), opcode_len(%d)\n", __func__,
 		   opcode, opcode_len);
 
-	mtk_hdl_spim_print_packet("spi_data", spi_data, data_len);
+	/* tx only: HW can send opcode only, then data_len = 0 */
+	if (data_len > 0)
+		mtk_hdl_spim_print_packet("spi_data", spi_data, data_len);
 
 	for (i = 0; i < 15; i++)
 		fifo_fill_data[i] = 0;
@@ -137,6 +139,8 @@ void mtk_hdl_spim_enable_fifo_transfer(void __iomem *base,
 	i = 0;
 	if (tx_enable) {
 		for (i = 0; i < (data_len / 4 + 1); i++) {
+			if (data_len == 0)
+				break;
 			u32 t = spi_data[i * 4] |
 			    spi_data[i * 4 + 1] << 8 |
 			    spi_data[i * 4 + 2] << 16 |
@@ -196,30 +200,30 @@ void mtk_hdl_spim_fifo_handle_rx(void __iomem *base,
 	int i, reg_val, q, r, val_tmp;
 
 	if ((!tx_buf) && rx_buf) {	/* half duplex */
-		for (i = 0; i < len - 1; i++) {
+		for (i = 0; i < len; i++) {
 			q = i / 4;
 			r = i % 4;
 			reg_val = osai_readl(SPI_REG_SDIR(base, q));
 			val_tmp = (u8) (reg_val >> (r * 8));
 
-			spim_debug("i:%d,rx_data:0x%x, val_tmp:0x%x\n",
+			spim_debug("i:%d,rx_data:0x%x,val_tmp:0x%x\n",
 				   i, reg_val, val_tmp);
 
-			memcpy(rx_buf + i + 1, &val_tmp, 1);
+			memcpy(rx_buf + i, &val_tmp, 1);
 		}
 	}
 
 	if (tx_buf && rx_buf) {	/* full duplex */
-		for (i = 0; i < len - 1; i++) {
+		for (i = 0; i < len; i++) {
 			q = i / 4;
 			r = i % 4;
 			reg_val = osai_readl(SPI_REG_SDIR(base, 4 + q));
 			val_tmp = (u8) (reg_val >> (r * 8));
 
-			spim_debug("i:%d,rx_data:0x%x, val_tmp:0x%x\n",
+			spim_debug("i:%d,rx_data:0x%x,val_tmp:0x%x\n",
 				   i, reg_val, val_tmp);
 
-			memcpy(rx_buf + i + 1, &val_tmp, 1);
+			memcpy(rx_buf + i, &val_tmp, 1);
 		}
 	}
 }

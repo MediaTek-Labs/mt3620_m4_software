@@ -33,10 +33,6 @@
  * MEDIATEK SOFTWARE AT ISSUE.
  */
 
-#include <stddef.h>
-#include <stdbool.h>
-#include <stdint.h>
-
 #include "FreeRTOS.h"
 #include "task.h"
 #include "printf.h"
@@ -45,33 +41,37 @@
 #include "os_hal_uart.h"
 #include "os_hal_gpt.h"
 
-/******************************************************************************/
+/****************************************************************************/
 /* Configurations */
-/******************************************************************************/
+/****************************************************************************/
 static const uint8_t uart_port_num = OS_HAL_UART_ISU0;
-static const uint8_t gpt_timer_0_id = OS_HAL_GPT0;		// OS_HAL_GPT0 clock speed: 1KHz or 32KHz
-static const uint32_t gpt_timer_0_interval = 1000;		// 1000ms
-static const uint8_t gpt_timer_3_id = OS_HAL_GPT3;		// OS_HAL_GPT3 clock speed: 1MHz
-static const uint32_t gpt_timer_3_interval = 5000000;	// 5000ms
+/* OS_HAL_GPT0 clock speed: 1KHz or 32KHz */
+static const uint8_t gpt_timer_0_id = OS_HAL_GPT0;
+/* 1000ms */
+static const uint32_t gpt_timer_0_interval = 1000;
+/* OS_HAL_GPT3 clock speed: 1MHz */
+static const uint8_t gpt_timer_3_id = OS_HAL_GPT3;
+/* 5000ms */
+static const uint32_t gpt_timer_3_interval = 5000000;
 
-#define APP_STACK_SIZE_BYTES (1024 / 4)
+#define APP_STACK_SIZE_BYTES		(1024 / 4)
 
-/******************************************************************************/
+/****************************************************************************/
 /* Applicaiton Hooks */
-/******************************************************************************/
-// Hook for "stack over flow".
-void vApplicationStackOverflowHook(TaskHandle_t xTask, char* pcTaskName)
+/****************************************************************************/
+/* Hook for "stack over flow". */
+void vApplicationStackOverflowHook(TaskHandle_t xTask, char *pcTaskName)
 {
 	printf("%s: %s\n", __func__, pcTaskName);
 }
 
-// Hook for "memory allocation failed".
+/* Hook for "memory allocation failed". */
 void vApplicationMallocFailedHook(void)
 {
 	printf("%s\n", __func__);
 }
 
-// Hook for "printf".
+/* Hook for "printf". */
 void _putchar(char character)
 {
 	mtk_os_hal_uart_put_char(uart_port_num, character);
@@ -79,23 +79,25 @@ void _putchar(char character)
 		mtk_os_hal_uart_put_char(uart_port_num, '\r');
 }
 
-/******************************************************************************/
+/****************************************************************************/
 /* Functions */
-/******************************************************************************/
-static void TimerHandlerGpt0(void* cb_data)
+/****************************************************************************/
+static void TimerHandlerGpt0(void *cb_data)
 {
 	extern volatile uint32_t sys_tick_in_ms;
+
 	printf("%s (SysTick=%ld)\n", __func__, sys_tick_in_ms);
 }
 
-static void TimerHandlerGpt3(void* cb_data)
+static void TimerHandlerGpt3(void *cb_data)
 {
 	extern volatile uint32_t sys_tick_in_ms;
+
 	printf("%s (SysTick=%ld)\n", __func__, sys_tick_in_ms);
 	mtk_os_hal_gpt_restart(gpt_timer_3_id);
 }
 
-static void gpt_task(void* pParameters)
+static void gpt_task(void *pParameters)
 {
 	struct os_gpt_int gpt0_int;
 	struct os_gpt_int gpt1_int;
@@ -105,44 +107,47 @@ static void gpt_task(void* pParameters)
 	gpt1_int.gpt_cb_hdl = TimerHandlerGpt3;
 	gpt1_int.gpt_cb_data = NULL;
 
-	// Start GPT0
-	printf("    Set GPT0 AutoRepeat = true, Timeout = %dms\n", (int)gpt_timer_0_interval);
+	/* Start GPT0 */
+	printf("    Set GPT0 AutoRepeat = true, Timeout = %dms\n",
+	       (int)gpt_timer_0_interval);
 	mtk_os_hal_gpt_config(gpt_timer_0_id, false, &gpt0_int);
 	mtk_os_hal_gpt_reset_timer(gpt_timer_0_id, gpt_timer_0_interval, true);
 	mtk_os_hal_gpt_start(gpt_timer_0_id);
 
-	// Start GPT3
-	printf("    Set GPT3 AutoRepeat = false, Timeout = %dms\n", (int)(gpt_timer_3_interval/1000));
+	/* Start GPT3 */
+	printf("    Set GPT3 AutoRepeat = false, Timeout = %dms\n",
+	       (int)(gpt_timer_3_interval/1000));
 	mtk_os_hal_gpt_config(gpt_timer_3_id, false, &gpt1_int);
 	mtk_os_hal_gpt_reset_timer(gpt_timer_3_id, gpt_timer_3_interval, false);
 	mtk_os_hal_gpt_start(gpt_timer_3_id);
 
-	// Note, only GPT0 and GPT1 supports repeat mode.
-	// For more information, please refer to https://support.mediatek.com/AzureSphere/mt3620/M4_API_Reference_Manual/group___g_p_t.html
+	/* Note, only GPT0 and GPT1 supports repeat mode.
+	 * For more information, please refer to
+	 * https://support.mediatek.com/AzureSphere/mt3620/
+	 * M4_API_Reference_Manual/group___g_p_t.html
+	*/
 
-	while(1) {
+	while (1)
 		vTaskDelay(pdMS_TO_TICKS(10));
-	}
 }
 
 _Noreturn void RTCoreMain(void)
 {
-	// Setup Vector Table
+	/* Setup Vector Table */
 	NVIC_SetupVectorTable();
 
-	// Init UART
+	/* Init UART */
 	mtk_os_hal_uart_ctlr_init(uart_port_num);
 	printf("\nFreeRTOS GPT demo\n");
 
-	// Init GPT
+	/* Init GPT */
 	mtk_os_hal_gpt_init();
 
-	// Create GPT Task
+	/* Create GPT Task */
 	xTaskCreate(gpt_task, "GPT Task", APP_STACK_SIZE_BYTES, NULL, 4, NULL);
 
 	vTaskStartScheduler();
-	for (;;) {
+	for (;;)
 		__asm__("wfi");
-	}
 }
 

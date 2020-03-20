@@ -46,27 +46,36 @@
 /******************************************************************************/
 /* Configurations */
 /******************************************************************************/
-// UART
+/* UART */
 static const uint8_t uart_port_num = OS_HAL_UART_ISU0;
 
-// GPT
-static const uint8_t gpt_timer_led = OS_HAL_GPT0;				// GPT0 for LED blinking.
-static const uint8_t gpt_timer_button = OS_HAL_GPT3;			// GPE3 for Button status scan
-static const uint32_t gpt_timer_led_blinking_perios_ms = 500;	// 500ms, GPT0 clock speed: 1KHz or 32KHz
-static const uint32_t gpt_timer_button_scan_perios_ms = 100000;	// 100ms, GPT3 clock speed: 1MHz
+/* GPT */
+/* GPT0 for LED blinking */
+static const uint8_t gpt_timer_led = OS_HAL_GPT0;
+/* GPE3 for Button status scan */
+static const uint8_t gpt_timer_button = OS_HAL_GPT3;
+/* 500ms, GPT0 clock speed: 1KHz or 32KHz */
+static const uint32_t gpt_timer_led_blinking_perios_ms = 500;
+/* 100ms, GPT3 clock speed: 1MHz */
+static const uint32_t gpt_timer_button_scan_perios_ms = 100000;
 
-// GPIO
-static const uint8_t gpio_led_red = OS_HAL_GPIO_8;				// GPIO_8 for LED_Red Control
-static const uint8_t gpio_led_green = OS_HAL_GPIO_9;			// GPIO_9 for LED_Green Control
-static const uint8_t gpio_led_blue = OS_HAL_GPIO_10;			// GPIO_10 for LED_Blue Control
-static const uint8_t gpio_button_a = OS_HAL_GPIO_12;			// GPIO_12 for Button_A Status Sensing
-static const uint8_t gpio_button_b = OS_HAL_GPIO_13;			// GPIO_13 for Button_B Status Sensing
+/* GPIO */
+/* GPIO_8 for LED_Red Control */
+static const uint8_t gpio_led_red = OS_HAL_GPIO_8;
+/* GPIO_9 for LED_Green Control */
+static const uint8_t gpio_led_green = OS_HAL_GPIO_9;
+/* GPIO_10 for LED_Blue Control */
+static const uint8_t gpio_led_blue = OS_HAL_GPIO_10;
+/* GPIO_12 for Button_A Status Sensing */
+static const uint8_t gpio_button_a = OS_HAL_GPIO_12;
+/* GPIO_13 for Button_B Status Sensing */
+static const uint8_t gpio_button_b = OS_HAL_GPIO_13;
 
 
 /******************************************************************************/
 /* Applicaiton Hooks */
 /******************************************************************************/
-// Hook for "printf".
+/* Hook for "printf". */
 void _putchar(char character)
 {
 	mtk_os_hal_uart_put_char(uart_port_num, character);
@@ -86,6 +95,7 @@ static int gpio_output(u8 gpio_no, u8 level)
 		printf("request gpio[%d] fail\n", gpio_no);
 		return ret;
 	}
+
 	mtk_os_hal_gpio_set_direction(gpio_no, OS_HAL_GPIO_DIR_OUTPUT);
 	mtk_os_hal_gpio_set_output(gpio_no, level);
 	ret = mtk_os_hal_gpio_free(gpio_no);
@@ -96,7 +106,7 @@ static int gpio_output(u8 gpio_no, u8 level)
 	return 0;
 }
 
-static int gpio_input(u8 gpio_no, os_hal_gpio_data* pvalue)
+static int gpio_input(u8 gpio_no, os_hal_gpio_data *pvalue)
 {
 	u8 ret;
 
@@ -115,44 +125,41 @@ static int gpio_input(u8 gpio_no, os_hal_gpio_data* pvalue)
 	return 0;
 }
 
-static void TimerHandlerGpt0(void* cb_data)
+static void TimerHandlerGpt0(void *cb_data)
 {
 	static bool ledOn = true;
 	uint8_t i;
 
-	// Toggle LED Status
+	/* Toggle LED Status */
 	ledOn = !ledOn;
 	gpio_output(gpio_led_green, ledOn);
 
-	// Toggle ISU1~ISU2 GPIO(31~40), just a demo to show ISU could be used as GPIO.
-	// ISU1: GPIO31~35
-	// ISU2: GPIO36~40
-	for (i=OS_HAL_GPIO_31 ; i<=OS_HAL_GPIO_40 ; i++) {
+	/* Toggle ISU1~ISU2 GPIO(31~40) */
+	/*     ISU1: GPIO31~35 */
+	/*     ISU2: GPIO36~40 */
+	for (i = OS_HAL_GPIO_31 ; i <= OS_HAL_GPIO_40 ; i++)
 		gpio_output(i, ledOn);
-	}
 }
 
-static void TimerHandlerGpt3(void* cb_data)
+static void TimerHandlerGpt3(void *cb_data)
 {
 	os_hal_gpio_data button_status;
 
-	// Set LED_Blue according to Button_A
+	/* Set LED_Blue according to Button_A */
 	gpio_input(gpio_button_a, &button_status);
-	if (button_status) {
+	if (button_status)
 		gpio_output(gpio_led_blue, OS_HAL_GPIO_DATA_HIGH);
-	} else {
+	else
 		gpio_output(gpio_led_blue, OS_HAL_GPIO_DATA_LOW);
-	}
 
-	// Set LED_Red according to Button_B
+	/* Set LED_Red according to Button_B */
 	gpio_input(gpio_button_b, &button_status);
-	if (button_status) {
+	if (button_status)
 		gpio_output(gpio_led_red, OS_HAL_GPIO_DATA_HIGH);
-	} else {
+	else
 		gpio_output(gpio_led_red, OS_HAL_GPIO_DATA_LOW);
-	}
 
-	// Restart GPT3 since it's one-shot mode.
+	/* Restart GPT3 since it's one-shot mode. */
 	mtk_os_hal_gpt_restart(gpt_timer_button);
 }
 
@@ -160,33 +167,34 @@ _Noreturn void RTCoreMain(void)
 {
 	struct os_gpt_int gpt0_int;
 	struct os_gpt_int gpt3_int;
-	
-	// Init Vector Table
+
+	/* Init Vector Table */
 	NVIC_SetupVectorTable();
 
-	// Init UART
+	/* Init UART */
 	mtk_os_hal_uart_ctlr_init(uart_port_num);
 	printf("\nUART Inited (port_num=%d)\n", uart_port_num);
 
-	// Init GPT
+	/* Init GPT */
 	mtk_os_hal_gpt_init();
 
-	// Init GPT0 for LED blinking, repeat mode.
+	/* Init GPT0 for LED blinking, repeat mode. */
 	gpt0_int.gpt_cb_hdl = TimerHandlerGpt0;
 	gpt0_int.gpt_cb_data = NULL;
 	mtk_os_hal_gpt_config(gpt_timer_led, false, &gpt0_int);
-	mtk_os_hal_gpt_reset_timer(gpt_timer_led, gpt_timer_led_blinking_perios_ms, true);
+	mtk_os_hal_gpt_reset_timer(gpt_timer_led,
+					gpt_timer_led_blinking_perios_ms, true);
 	mtk_os_hal_gpt_start(gpt_timer_led);
 
-	// Init GPT3 for button status monitor, one-shot mode.
+	/* Init GPT3 for button status monitor, one-shot mode. */
 	gpt3_int.gpt_cb_hdl = TimerHandlerGpt3;
 	gpt3_int.gpt_cb_data = NULL;
 	mtk_os_hal_gpt_config(gpt_timer_button, false, &gpt3_int);
-	mtk_os_hal_gpt_reset_timer(gpt_timer_button, gpt_timer_button_scan_perios_ms, false);
+	mtk_os_hal_gpt_reset_timer(gpt_timer_button,
+					gpt_timer_button_scan_perios_ms, false);
 	mtk_os_hal_gpt_start(gpt_timer_button);
 
-	for (;;) {
+	for (;;)
 		__asm__("wfi");
-	}
 }
 

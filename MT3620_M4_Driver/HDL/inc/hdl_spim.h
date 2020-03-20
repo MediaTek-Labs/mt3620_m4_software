@@ -141,14 +141,15 @@
 #define SPI_CTL_CLK_SEL_MASK	0x03000000
 #define SPI_OPCODE_MASK	0x000000ff
 
-#define SPIM_BYTE_LENGTH	128
+#define MTK_SPIM_MIN_TX_OPCODE_LEN_HALF		1
+#define MTK_SPIM_MIN_RX_OPCODE_LEN_HALF		0
+#define MTK_SPIM_MIN_OPCODE_LEN_FULL		1
+#define MTK_SPIM_MAX_OPCODE_LEN			4
 
-#define MTK_SPIM_MAX_LEN	33
-
-/* opcode + data_bytes */
-#define MTK_SPIM_MAX_LENGTH_ONE_TRANS_FULL	(1 + 16)
-/* opcode + data_bytes */
-#define MTK_SPIM_MAX_LENGTH_ONE_TRANS_HALF	(1 + 32)
+/* data_bytes */
+#define MTK_SPIM_MAX_LENGTH_ONE_TRANS_FULL	(16)
+/* data_bytes */
+#define MTK_SPIM_MAX_LENGTH_ONE_TRANS_HALF	(32)
 
 void mtk_hdl_spim_dump_reg(void __iomem *base);
 void mtk_hdl_spim_print_packet(char *name, u8 *ptr, int len);

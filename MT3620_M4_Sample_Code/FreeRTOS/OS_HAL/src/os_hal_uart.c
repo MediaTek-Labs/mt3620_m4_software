@@ -301,8 +301,6 @@ static int _mtk_os_hal_uart_dma_tx_callback(void *data)
 	struct mtk_uart_controller_rtos *ctlr_rtos = data;
 	BaseType_t x_higher_priority_task_woken = pdFALSE;
 
-	printf("_mtk_os_hal_uart_dma_tx_callback\n");
-
 	/* while using DMA mode, release semaphore in this callback */
 	xSemaphoreGiveFromISR(ctlr_rtos->xTX_Queue,
 				&x_higher_priority_task_woken);
@@ -315,8 +313,6 @@ static int _mtk_os_hal_uart_dma_rx_callback(void *data)
 {
 	struct mtk_uart_controller_rtos *ctlr_rtos = data;
 	BaseType_t x_higher_priority_task_woken = pdFALSE;
-
-	printf("_mtk_os_hal_uart_dma_rx_callback\n");
 
 	/* while using DMA mode, release semaphore in this callback */
 	xSemaphoreGiveFromISR(ctlr_rtos->xRX_Queue,
@@ -392,7 +388,6 @@ int mtk_os_hal_uart_dma_send_data(UART_PORT port_num,
 	mtk_mhal_uart_start_dma_tx(ctlr);
 
 	cnt = len / (ctlr->baudrate / 10) + 1000;
-	printf("UART TX DMA Len:%d, timeout:%dms\n", len, cnt);
 
 	ret = _mtk_os_hal_uart_wait_for_tx_done(ctlr_rtos, cnt);
 	if (ret) {
@@ -401,13 +396,12 @@ int mtk_os_hal_uart_dma_send_data(UART_PORT port_num,
 	}
 
 	vSemaphoreDelete(ctlr_rtos->xTX_Queue);
+	ctlr_rtos->xTX_Queue = NULL;
 
 	mtk_mhal_uart_update_dma_tx_info(ctlr);
 	mtk_mhal_uart_release_dma_tx_ch(ctlr);
 
 	mtk_mhal_uart_set_dma(ctlr, false);
-
-	printf("tx_size: %d\n", ctlr->mdata->tx_size);
 
 	return ctlr->mdata->tx_size;
 }
@@ -465,6 +459,7 @@ int mtk_os_hal_uart_dma_get_data(UART_PORT port_num,
 	}
 
 	vSemaphoreDelete(ctlr_rtos->xRX_Queue);
+	ctlr_rtos->xRX_Queue = NULL;
 
 	mtk_mhal_uart_update_dma_rx_info(ctlr);
 	mtk_mhal_uart_release_dma_rx_ch(ctlr);
@@ -475,4 +470,3 @@ int mtk_os_hal_uart_dma_get_data(UART_PORT port_num,
 
 	return ctlr->mdata->rx_size;
 }
-

@@ -33,10 +33,6 @@
  * MEDIATEK SOFTWARE AT ISSUE.
  */
 
-#include <stddef.h>
-#include <stdbool.h>
-#include <stdint.h>
-
 #include "printf.h"
 #include "mt3620.h"
 #include "os_hal_uart.h"
@@ -47,13 +43,13 @@
 /******************************************************************************/
 static const uint8_t uart_port_num = OS_HAL_UART_ISU0;
 static const uint8_t gpt_timer_id = OS_HAL_GPT0;
-static const uint32_t gpt_timer_val = 500;			// 500ms
-static const char *gpt_cb_data="Hello World";
+static const uint32_t gpt_timer_val = 500; /* 500ms */
+static const char *gpt_cb_data = "Hello World";
 
 /******************************************************************************/
 /* Applicaiton Hooks */
 /******************************************************************************/
-// Hook for "printf".
+/* Hook for "printf". */
 void _putchar(char character)
 {
 	mtk_os_hal_uart_put_char(uart_port_num, character);
@@ -66,9 +62,9 @@ void _putchar(char character)
 /******************************************************************************/
 static void Gpt0Callback(void *cb_data)
 {
-	static uint8_t print_counter=0;
+	static uint8_t print_counter;
 
-	printf("%s %d\n", (char*)cb_data, print_counter);
+	printf("%s %d\n", (char *)cb_data, print_counter);
 	print_counter++;
 }
 
@@ -76,27 +72,28 @@ _Noreturn void RTCoreMain(void)
 {
 	struct os_gpt_int gpt0_int;
 
-	// Init Vector Table
+	/* Init Vector Table */
 	NVIC_SetupVectorTable();
 
-	// Init UART
+	/* Init UART */
 	mtk_os_hal_uart_ctlr_init(uart_port_num);
 	printf("UART Inited (port_num=%d)\n", uart_port_num);
 
-	// Init GPT
+	/* Init GPT */
 	gpt0_int.gpt_cb_hdl = Gpt0Callback;
-	gpt0_int.gpt_cb_data = (void*)gpt_cb_data;
+	gpt0_int.gpt_cb_data = (void *)gpt_cb_data;
 	mtk_os_hal_gpt_init();
 
-	// configure GPT0 clock speed (as 1KHz) and register GPT0 user interrupt callback handle and user data.
+	/* configure GPT0 clock speed (as 1KHz) */
+	/* and register GPT0 user interrupt callback handle and user data. */
 	mtk_os_hal_gpt_config(gpt_timer_id, false, &gpt0_int);
-	// configure GPT0 timeout value (as 500ms) and configure it as repeat mode.
+	/* configure GPT0 timeout as 500ms and repeat mode. */
 	mtk_os_hal_gpt_reset_timer(gpt_timer_id, gpt_timer_val, true);
-	// start timer
+	/* start timer */
 	mtk_os_hal_gpt_start(gpt_timer_id);
-	printf("GPT0 Started (timer_id=%d)(timer_val=%ldms)\n", gpt_timer_id, gpt_timer_val);
+	printf("GPT0 Started (timer_id=%d)(timer_val=%ldms)\n",
+		gpt_timer_id, gpt_timer_val);
 
-	for (;;) {
+	for (;;)
 		__asm__("wfi");
-	}
 }

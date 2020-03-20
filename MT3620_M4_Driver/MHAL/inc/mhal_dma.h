@@ -1129,7 +1129,7 @@ int mtk_mhal_dma_update_swptr(struct dma_controller *controller,
  * @brief Usage:Used for OS-HAL to read data from FIFO of VFF DMA channel.
  * This api will also update swptr after reading data.
  * @param [in] controller : DMA controller used with the device.
- * @param [in] buffer : buffer for saving read data.
+ * @param [out] buffer : buffer for saving read data.
  * @param [in] length : byte number which users want to read. It cannot be
  * larger than vfifo size.
  *

@@ -67,50 +67,40 @@
  */
 
 /**
-* @addtogroup M-HAL
-* @{
-* @addtogroup SPIM
-* @{
-* - \b Support \b transaction \b format. \n
-*    SPIM driver's user can use struct mtk_spi_transfer to
-*    judge either the transfer is half-duplex or full-duplex.
-*
-*  - Half-duplex transaction:
-*    There is only one valid transaction at a time on a single direction:
-*    either Send or Receive.
-*    - Send: Device driver should provide mtk_spi_transfer->tx_buf,
-*	mtk_spi_transfer->len and set mtk_spi_transfer->rx_buf = NULL.
-*    - Receive: Device driver should provide mtk_spi_transfer->rx_buf,
-*	mtk_spi_transfer->len and set mtk_spi_transfer->tx_buf = NULL.
-*
-*  - Full-duplex transaction:
-*    There are two valid mutually inclusive transactions: Send and Receive.
-*    - Device driver should provide mtk_spi_transfer->len,
-*      mtk_spi_transfer->tx_buf and set mtk_spi_transfer->rx_buf
-*      at the same time.
-*
-* @}
-* @}
-*/
-
-/**
-* @addtogroup M-HAL
-* @{
-* @addtogroup SPIM
-* @{
-* - \b Note \n
-* SPIM HW has some requirements that the device driver needs to satisfy them.
-* The transfer data format should be as belows:
-*  - \b Half-duplex \n
-*   tx: tx_buf should be opcode[1byte] + data [1~32bytes].\n
-*   rx: rx_buf should be opcode[1byte] + data [1~32bytes].
-*  - \b Full-duplex \n
-*   tx_buf should be opcode[1byte] + data [1~16bytes].\n
-*   rx_buf should be dummy[1byte] + data [1~16bytes].
-*
-* @}
-* @}
-*/
+ * @addtogroup M-HAL
+ * @{
+ * @addtogroup SPIM
+ * @{
+ * - \b Support \b transaction \b format. \n
+ *    SPIM driver's user can use struct mtk_spi_transfer to
+ *    judge either the transfer is half-duplex or full-duplex.
+ *
+ *  - Half-duplex transaction:
+ *    There is only one valid transaction at a time on a single direction:
+ *    either Send or Receive.
+ *    - Send: Device driver should provide mtk_spi_transfer->opcode,
+ *       mtk_spi_transfer->opcode_len, mtk_spi_transfer->tx_buf,
+ *	mtk_spi_transfer->len and set mtk_spi_transfer->rx_buf = NULL.\n
+ *       mtk_spi_transfer->opcode_len should be 1~4bytes,
+ *       mtk_spi_transfer->len should be 0~32bytes.
+ *    - Receive: Device driver should provide mtk_spi_transfer->opcode,
+ *       mtk_spi_transfer->opcode_len, mtk_spi_transfer->rx_buf,
+ *	mtk_spi_transfer->len and set mtk_spi_transfer->tx_buf = NULL.\n
+ *       mtk_spi_transfer->opcode_len should be 0~4bytes,
+ *       mtk_spi_transfer->len should be 1~32bytes.
+ *
+ *  - Full-duplex transaction:
+ *    There are two valid mutually inclusive transactions: Send and Receive.
+ *    - Device driver should provide mtk_spi_transfer->len,
+ *      mtk_spi_transfer->opcode, mtk_spi_transfer->opcode_len,
+ *      mtk_spi_transfer->tx_buf and set mtk_spi_transfer->rx_buf
+ *      at the same time.
+ *    - mtk_spi_transfer->opcode_len should be 1~4bytes,
+ *      mtk_spi_transfer->len should be 1~16bytes.
+ *
+ * @}
+ * @}
+ */
 
 /**
  * @addtogroup M-HAL
@@ -634,6 +624,18 @@ struct mtk_spi_transfer {
 	/** size of rx and tx buffers (in bytes) */
 	u32 len;
 
+	/** opcode data to be written (on MOSI pin) */
+	u32 opcode;
+
+	/** size of opcode length (in bytes)\n
+	 * Note on MT3620:\n
+	 * half duplex:\n
+	 * TX only: it should be 1~4.
+	 * RX only: it should be 0~4.\n
+	 * full duplex: it should be 1~4.
+	 */
+	u32 opcode_len;
+
 	/** spi support FIFO & DMA mode, 0:FIFO, 1: DMA */
 	u32 use_dma;
 
@@ -831,7 +833,7 @@ int mtk_mhal_spim_prepare_transfer(struct mtk_spi_controller *ctlr,
  *@return
  * Return "0" if the transfer is in progress.\n
  * Return -#SPIM_EPTR if ctlr or xfer is NULL.\n
- * Return -#SPIM_ELENGTH if xfer len is not supported,
+ * Return -#SPIM_ELENGTH if xfer opcode_len/len is not supported.
  * see Note in @ref MHAL_SPIM_Features_Chapter for details.
  */
 int mtk_mhal_spim_fifo_transfer_one(struct mtk_spi_controller *ctlr,
@@ -872,6 +874,7 @@ int mtk_mhal_spim_dma_done_callback_register(struct mtk_spi_controller *ctlr,
  *@return
  * Return "0" if the transfer is in progress.\n
  * Return -#SPIM_EPTR if ctlr or xfer is NULL.\n
+ * Return -#SPIM_ELENGTH if xfer opcode_len/len is not supported.
  * Return -#SPIM_ENOMEM if allocate temp buffer fail.
  */
 int mtk_mhal_spim_dma_transfer_one(struct mtk_spi_controller *ctlr,

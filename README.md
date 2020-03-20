@@ -1,15 +1,13 @@
-# MediaTek MT3620 M4 Driver & Real-Time Application Sample Code (Beta)
+# MediaTek MT3620 M4 Driver & Real-Time Application Sample Code
 ### Current Status
 * Avaiable sample code
-    * **FreeRTOS**: GPIO / GPT / UART / SPIM / PWM / I2C
+    * **FreeRTOS**: GPIO / GPT / UART / SPIM / PWM / I2C / I2S / DMA / ADC / MBOX / LP(Low Power)
     * **Bare Metal**: GPIO / Hello World
 * Known Issue
-    * DMA is not working.
-        * Caused by Azure Sphere OS firewall setting problem, issue reported to Microsoft.
     * External interrupt is not working.
-        * Caused by Azure Sphere OS firewall setting problem, issue reported to Microsoft.
+        * Caused by Azure Sphere OS firewall setting problem, still under discussion/clarification.
     * SPI slave is not working.
-        * App Manifest file does not support SPI slave, issue reported to Microsoft.
+        * App Manifest file does not support SPI slave, still under discussion/clarification.
 
 ### To clone this repository:
 ```
@@ -31,7 +29,6 @@ This repository maintains the MT3620 M4 driver and real-time application sample 
     * Both **Bare Metal** and **FreeRTOS** sample code are included.  
 
 Please refer to the **[MT3620 M4 API Reference Manual](https://support.mediatek.com/AzureSphere/mt3620/M4_API_Reference_Manual)** for the detailed API description.  
-Use of the real-time cores is currently a **Beta** feature.
 
 ### Prerequisites
 * **Hardware**

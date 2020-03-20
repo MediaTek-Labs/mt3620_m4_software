@@ -406,11 +406,15 @@
  *		return 0;
  *	}
  *
- *	int mtk_os_hal_adc_period_get_data(adc_channel sample_channel)
+ *	int mtk_os_hal_adc_period_get_data(adc_channel sample_channel,
+ *		u32 (*rx_buf)[32], u32 *length)
  *	{
  *		struct mtk_adc_controller_rtos *	ctlr_rtos;
  *		struct mtk_adc_controller *	ctlr;
  *		int ret = 0;
+ *		int count = 0;
+ *		int channel_count = 0;
+ *		u32 size = 0;
  *
  *		ctlr_rtos = _mtk_os_hal_adc_get_ctlr();
  *		if (!ctlr_rtos)
@@ -429,9 +433,17 @@
  *		if (ret)
  *			printf("Take adc master Semaphore timeout!\n");
  *
- *		ret = mtk_mhal_adc_period_get_data(ctlr, sample_channel);
- *		if (ret)
- *			return ret;
+ *		for (channel_count = 0; channel_count < ADC_CHANNEL_MAX;
+ *				channel_count++) {
+ *			if (ctlr->adc_fsm_parameter->channel_map &
+ *				BIT(channel_count)) {
+ *				ret = mtk_mhal_adc_period_get_data(ctlr,
+ *				channel_count, rx_buf[channel_count], &size);
+ *			if (ret)
+ *				return ret;
+  *		}
+ *			length[channel_count] = size;
+  *		}
  *
  *		ret = mtk_mhal_adc_stop(ctlr);
  *		if (ret)
@@ -467,11 +479,8 @@
  *      -Call mtk_os_hal_adc_ctlr_init() to initialize the ADC module.
  *      -Call mtk_os_hal_adc_fsm_param_set() to set fifo state
  *        machine parameters.
- *      -Call mtk_os_hal_adc_start() or mtk_os_hal_adc_start_ch() to start
- *        the ADC module.
  *      -Call mtk_os_hal_adc_period_get_data() to retrieve
  *        sample data for a channel.
- *      -Call mtk_os_hal_adc_stop() to stop ADC HW.
  *      -ADC hw is no longer in use, call mtk_os_hal_adc_ctlr_deinit() to return
  *        the ADC module back to its original state.
  *
@@ -688,7 +697,7 @@ struct adc_fsm_param {
 	/**< ADC clock cycle count period, unit as clock cycle*/
 	adc_fifo_mode fifo_mode;
 	/**< ADC operation mode: FIFO or DMA mode*/
-	u32 dma_vfifo_addr[ADC_DMA_BUF_WORD_SIZE];
+	u32 *dma_vfifo_addr;
 	/**< ADC DMA Virtual FIFO address*/
 	u32 dma_vfifo_len;
 	/**< ADC DMA Virtual FIFO length*/
@@ -818,8 +827,9 @@ int mtk_mhal_adc_fsm_param_get(struct mtk_adc_controller *ctlr,
 		struct adc_fsm_param *adc_fsm_parameter);
 
 /**
-  * @brief  This function is used to start all channels of ADC controller
-  *  in one group.
+  * @brief This function is used to start the predefined channels by ADC
+  *  parameter configre API, please refer to the structure
+  *  channel_map for detail info.
   * @brief Usage: OS-HAL calls this API to start ADC hardware,
   *  and this function should be called after setting ADC parameters.
   * @param [in] ctlr : Abstract an ADC controller.
@@ -882,7 +892,7 @@ int mtk_mhal_adc_one_shot_get_data(struct mtk_adc_controller *ctlr,
   */
 
 int mtk_mhal_adc_period_get_data(struct mtk_adc_controller *ctlr,
-		adc_channel channel);
+		adc_channel channel, u32 *data, u32 *length);
 
 /**
  *@brief	 This function is used to register user's callback to M-HAL.

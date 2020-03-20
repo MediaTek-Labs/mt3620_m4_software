@@ -40,7 +40,7 @@
 
 /**
  * @brief  GPT timer ID enum definition.\n
- *  It can be used to specify the timer ID of the current GPT device unit.\n
+ *	It can be used to specify the timer ID of the current GPT device unit.\n
  *  Follow mhal_gpt.h.
  */
 typedef enum {
@@ -54,8 +54,8 @@ typedef enum {
 
 /**
  * @brief  The definition of GPT user interrupt handle structure.\n
- *  	It can be used to register GPT user interrupt handle by
- *	mtk_os_hal_gpt_config().
+ *	It can be used to register GPT user interrupt handle by
+ *  mtk_os_hal_gpt_config().
  */
 struct os_gpt_int {
 	/** The user interrupt handle of GPT. */
@@ -143,7 +143,7 @@ void mtk_os_hal_gpt_register_irq(void);
 /**
  * @brief  Init GPT device.\n
  *	Internal assurance that it will only be executed only one time
- * effectively.
+ *  effectively.
  *  @param
  *	None
  *  @return

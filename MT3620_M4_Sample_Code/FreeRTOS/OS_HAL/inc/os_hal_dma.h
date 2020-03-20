@@ -491,7 +491,7 @@ int mtk_os_hal_dma_update_swptr(enum dma_channel chn, u32 length_byte);
  * @brief Usage: Used to read data from FIFO of VFF DMA channel. This api
  * will also update swptr after reading data. This API is only for VFF DMA.
  * @param [in] chn : The DMA channel number, please refer to #dma_channel.
- * @param [in] buffer : buffer for saving read data.
+ * @param [out] buffer : buffer for saving read data.
  * @param [in] length : byte number which users want to read. It cannot be
  * larger than vfifo size.
  * @return

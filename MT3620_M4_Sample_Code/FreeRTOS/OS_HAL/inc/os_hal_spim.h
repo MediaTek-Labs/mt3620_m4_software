@@ -110,27 +110,30 @@ int mtk_os_hal_spim_ctlr_deinit(spim_num bus_num);
  *  @param [in] xfer: the data should be read/writen.
  *
  * Note:
- * SPIM driver's user can use struct mtk_spi_transfer to judge
- * either the transfer is half-duplex or full-duplex.
- * Half-duplex transaction: There is only one valid transaction
- * at a time on a single direction: either Send or Receive.
- * Send: Device driver should provide mtk_spi_transfer->tx_buf,
- * mtk_spi_transfer->len and set mtk_spi_transfer->rx_buf = NULL.
- * Receive: Device driver should provide mtk_spi_transfer->rx_buf,
- * mtk_spi_transfer->len and set mtk_spi_transfer->tx_buf = NULL.
- * Full-duplex transaction: There are two valid mutually
- * inclusive transactions: Send and Receive.
- * Device driver should provide mtk_spi_transfer->len, mtk_spi_transfer->tx_buf
- * and set mtk_spi_transfer->rx_buf at the same time.
  *
- * SPIM HW has some requirements that the device driver needs to satisfy them.
  * The transfer data format should be as belows:
- * Half-duplex
- * tx: tx_buf should be opcode[1byte] + data [1~32bytes].
- * rx: rx_buf should be opcode[1byte] + data [1~32bytes].
- * Full-duplex
- * tx_buf should be opcode[1byte] + data [1~16bytes].
- * rx_buf should be dummy[1byte] + data [1~16bytes].
+ *	- Half-duplex transaction:
+ *	  There is only one valid transaction at a time on a single direction:
+ *	  either Send or Receive.
+ *	  - Send: Device driver should provide mtk_spi_transfer->opcode,
+ *		 mtk_spi_transfer->opcode_len, mtk_spi_transfer->tx_buf,
+ *	 mtk_spi_transfer->len and set mtk_spi_transfer->rx_buf = NULL.
+ *		 mtk_spi_transfer->opcode_len should be 1~4bytes,
+ *		 mtk_spi_transfer->len should be 0~32bytes.
+ *	  - Receive: Device driver should provide mtk_spi_transfer->opcode,
+ *		 mtk_spi_transfer->opcode_len, mtk_spi_transfer->rx_buf,
+ *	 mtk_spi_transfer->len and set mtk_spi_transfer->tx_buf = NULL.
+ *		 mtk_spi_transfer->opcode_len should be 0~4bytes,
+ *		 mtk_spi_transfer->len should be 1~32bytes.
+ *
+ *	- Full-duplex transaction:
+ *	  There are two valid mutually inclusive transactions: Send and Receive.
+ *	  - Device driver should provide mtk_spi_transfer->len,
+ *		mtk_spi_transfer->opcode, mtk_spi_transfer->opcode_len,
+ *		mtk_spi_transfer->tx_buf and set mtk_spi_transfer->rx_buf
+ *		at the same time.
+ *	  - mtk_spi_transfer->opcode_len should be 1~4bytes,
+ *		mtk_spi_transfer->len should be 1~16bytes.
  *
  *  @return -1 means fail.
  *  @return 0 means success.

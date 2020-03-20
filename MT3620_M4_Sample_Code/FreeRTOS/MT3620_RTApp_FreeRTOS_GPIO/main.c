@@ -33,10 +33,6 @@
  * MEDIATEK SOFTWARE AT ISSUE.
  */
 
-#include <stddef.h>
-#include <stdbool.h>
-#include <stdint.h>
-
 #include "FreeRTOS.h"
 #include "task.h"
 #include "printf.h"
@@ -56,22 +52,21 @@ static const uint8_t gpio_button_b = OS_HAL_GPIO_13;
 
 #define APP_STACK_SIZE_BYTES (1024 / 4)
 
-/******************************************************************************/
+/****************************************************************************/
 /* Applicaiton Hooks */
-/******************************************************************************/
-// Hook for "stack over flow".
-void vApplicationStackOverflowHook(TaskHandle_t xTask, char* pcTaskName)
+/****************************************************************************/
+/* Hook for "stack over flow". */
+void vApplicationStackOverflowHook(TaskHandle_t xTask, char *pcTaskName)
 {
 	printf("%s: %s\n", __func__, pcTaskName);
 }
 
-// Hook for "memory allocation failed".
+/* Hook for "memory allocation failed". */
 void vApplicationMallocFailedHook(void)
 {
 	printf("%s\n", __func__);
 }
-
-// Hook for "printf".
+/* Hook for "printf". */
 void _putchar(char character)
 {
 	mtk_os_hal_uart_put_char(uart_port_num, character);
@@ -79,9 +74,9 @@ void _putchar(char character)
 		mtk_os_hal_uart_put_char(uart_port_num, '\r');
 }
 
-/******************************************************************************/
+/****************************************************************************/
 /* Functions */
-/******************************************************************************/
+/****************************************************************************/
 static int gpio_output(u8 gpio_no, u8 level)
 {
 	int ret;
@@ -101,7 +96,7 @@ static int gpio_output(u8 gpio_no, u8 level)
 	return 0;
 }
 
-static int gpio_input(u8 gpio_no, os_hal_gpio_data* pvalue)
+static int gpio_input(u8 gpio_no, os_hal_gpio_data *pvalue)
 {
 	u8 ret;
 
@@ -124,48 +119,46 @@ static int gpio_input(u8 gpio_no, os_hal_gpio_data* pvalue)
 	return 0;
 }
 
-static void gpio_task(void* pParameters)
+static void gpio_task(void *pParameters)
 {
 	os_hal_gpio_data value = 0;
 
 	printf("GPIO Task Started\n");
 	while (1) {
-		// Get Button_A status and set LED Red.
+		/* Get Button_A status and set LED Red. */
 		gpio_input(gpio_button_a, &value);
-		if (value == OS_HAL_GPIO_DATA_HIGH) {
+		if (value == OS_HAL_GPIO_DATA_HIGH)
 			gpio_output(gpio_led_red, OS_HAL_GPIO_DATA_HIGH);
-		} else {
+		else
 			gpio_output(gpio_led_red, OS_HAL_GPIO_DATA_LOW);
-		}
 
-		// Get Button_B status and set LED Green.
+		/* Get Button_B status and set LED Green. */
 		gpio_input(gpio_button_b, &value);
-		if (value == OS_HAL_GPIO_DATA_HIGH) {
+		if (value == OS_HAL_GPIO_DATA_HIGH)
 			gpio_output(gpio_led_green, OS_HAL_GPIO_DATA_LOW);
-		} else {
+		else
 			gpio_output(gpio_led_green, OS_HAL_GPIO_DATA_HIGH);
-		}
 
-		// Delay for 100ms
+		/* Delay for 100ms */
 		vTaskDelay(pdMS_TO_TICKS(100));
 	}
 }
 
 _Noreturn void RTCoreMain(void)
 {
-	// Setup Vector Table
+	/* Setup Vector Table */
 	NVIC_SetupVectorTable();
 
-	// Init UART
+	/* Init UART */
 	mtk_os_hal_uart_ctlr_init(uart_port_num);
 	printf("\nFreeRTOS GPIO Demo\n");
 
-	// Create GPIO Task
-	xTaskCreate(gpio_task, "GPIO Task", APP_STACK_SIZE_BYTES, NULL, 4, NULL);
-	vTaskStartScheduler();
+	/* Create GPIO Task */
+	xTaskCreate(gpio_task, "GPIO Task",
+		    APP_STACK_SIZE_BYTES, NULL, 4, NULL);
 
-	for (;;) {
+	vTaskStartScheduler();
+	for (;;)
 		__asm__("wfi");
-	}
 }
 

@@ -71,7 +71,7 @@ int mtk_os_hal_adc_ctlr_init(adc_pmode pmode, adc_fifo_mode fifo_mode,
 int mtk_os_hal_adc_ctlr_deinit(void);
 
 /**
- * @brief  start ADC controller.
+ * @brief  start predefined channels by ADC init API.
  *
  *  @param none.
  *
@@ -122,11 +122,12 @@ int mtk_os_hal_adc_one_shot_get_data(adc_channel sample_channel, u32 *data);
 /**
   * @brief  This function is used to sample ADC channel voltage
   *  using period FIFO mode.
-  * @param [in] sample_channel : ADC channel number(0~7).
+  * @param [out] data : ADC sample data.
+  * @param [out] length : ADC channel sample data length.
   * @return
   *  If return value is 0, it means success.\n
   *  If return value is -#EPTR , it means ctlr is NULL.\n
   *  If return value is -#EPARAMETER , it means parameter invalid.
   */
-int mtk_os_hal_adc_period_get_data(adc_channel sample_channel);
+int mtk_os_hal_adc_period_get_data(u32 (*rx_buf)[32], u32 *length);
 #endif

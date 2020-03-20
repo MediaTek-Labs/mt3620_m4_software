@@ -96,9 +96,8 @@ static void _mtk_os_hal_dma_irq_handler(void)
 		if (ctrl_rtos == NULL || ctrl_rtos->ctlr == NULL)
 			continue;
 		status = mtk_mhal_dma_get_status(ctrl_rtos->ctlr);
-		if (status & DMA_STATUS_INTERRUPT) {
+		if (status & DMA_STATUS_INTERRUPT)
 			mtk_mhal_dma_clear_irq_status(ctrl_rtos->ctlr);
-		}
 	}
 
 	NVIC_EnableIRQ((IRQn_Type)CM4_IRQ_M4DMA);

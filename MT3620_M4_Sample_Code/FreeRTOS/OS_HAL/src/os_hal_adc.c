@@ -55,7 +55,7 @@ static struct mtk_adc_controller adc_controller;
 
 static struct mtk_adc_controller_rtos g_adc_ctlr_rtos;
 
-static struct mtk_adc_controller_rtos *_mtk_os_hal_adc_get_ctlr(void)
+struct mtk_adc_controller_rtos *_mtk_os_hal_adc_get_ctlr(void)
 {
 	return &g_adc_ctlr_rtos;
 }
@@ -139,7 +139,6 @@ int mtk_os_hal_adc_ctlr_init(adc_pmode pmode, adc_fifo_mode fifo_mode,
 	if ((fifo_mode != ADC_FIFO_DIRECT) && (fifo_mode != ADC_FIFO_DMA))
 		return -ADC_EPARAMETER;
 
-
 	ctlr_rtos->ctlr = &adc_controller;
 
 	if (!ctlr_rtos->ctlr)
@@ -163,8 +162,9 @@ int mtk_os_hal_adc_ctlr_init(adc_pmode pmode, adc_fifo_mode fifo_mode,
 	ctlr->adc_fsm_parameter->fifo_mode = fifo_mode;
 	ctlr->adc_fsm_parameter->ier_mode = ADC_FIFO_IER_RXFULL;
 	if (ctlr->adc_fsm_parameter->fifo_mode == ADC_FIFO_DMA) {
+		ctlr->adc_fsm_parameter->dma_vfifo_addr =
+			pvPortMalloc(ADC_DMA_BUF_WORD_SIZE);
 		ctlr->adc_fsm_parameter->dma_vfifo_len = ADC_DMA_BUF_WORD_SIZE;
-
 		ctlr->dma_channel = VDMA_ADC_RX_CH29;
 		ctlr->use_dma = 1;
 	}
@@ -328,11 +328,13 @@ int mtk_os_hal_adc_one_shot_get_data(adc_channel sample_channel, u32 *data)
 	return 0;
 }
 
-int mtk_os_hal_adc_period_get_data(adc_channel sample_channel)
+int mtk_os_hal_adc_period_get_data(u32 (*rx_buf)[32], u32 *length)
 {
 	struct mtk_adc_controller_rtos *ctlr_rtos;
 	struct mtk_adc_controller *ctlr;
 	int ret = 0;
+	int channel_count = 0;
+	u32 size = 0;
 
 	ctlr_rtos =	_mtk_os_hal_adc_get_ctlr();
 	if (!ctlr_rtos)
@@ -349,11 +351,17 @@ int mtk_os_hal_adc_period_get_data(adc_channel sample_channel)
 	ret = _mtk_os_hal_adc_wait_for_completion_timeout(ctlr_rtos, 1000);
 	if (ret)
 		printf("Take adc master Semaphore timeout!\n");
+	for (channel_count = 0; channel_count < ADC_CHANNEL_MAX;
+			channel_count++) {
+		if (ctlr->adc_fsm_parameter->channel_map & BIT(channel_count)) {
+			ret = mtk_mhal_adc_period_get_data(ctlr, channel_count,
+				rx_buf[channel_count], &size);
+		if (ret)
+			return ret;
+	}
+		length[channel_count] = size;
 
-	ret = mtk_mhal_adc_period_get_data(ctlr, sample_channel);
-	if (ret)
-		return ret;
-
+	}
 	ret = mtk_mhal_adc_stop(ctlr);
 	if (ret)
 		return ret;
@@ -366,5 +374,3 @@ int mtk_os_hal_adc_period_get_data(adc_channel sample_channel)
 
 	return 0;
 }
-
-

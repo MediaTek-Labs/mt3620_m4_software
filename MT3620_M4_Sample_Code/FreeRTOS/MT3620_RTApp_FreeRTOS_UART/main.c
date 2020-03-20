@@ -33,10 +33,6 @@
  * MEDIATEK SOFTWARE AT ISSUE.
  */
 
-#include <stddef.h>
-#include <stdbool.h>
-#include <stdint.h>
-
 #include "FreeRTOS.h"
 #include "task.h"
 #include "printf.h"
@@ -44,33 +40,32 @@
 
 #include "os_hal_uart.h"
 
-/******************************************************************************/
+/****************************************************************************/
 /* Configurations */
-/******************************************************************************/
+/****************************************************************************/
 static const uint8_t uart_port_num = OS_HAL_UART_ISU0;
 static const uint8_t uart_dat_len = UART_DATA_8_BITS;
 static const uint8_t uart_parity = UART_NONE_PARITY;
 static const uint8_t uart_stop_bit = UART_STOP_1_BIT;
 static const uint32_t uart_baudrate = 115200;
 
-#define APP_STACK_SIZE_BYTES (1024 / 4)
+#define APP_STACK_SIZE_BYTES		(1024 / 4)
 
-/******************************************************************************/
+/****************************************************************************/
 /* Applicaiton Hooks */
-/******************************************************************************/
-// Hook for "stack over flow".
-void vApplicationStackOverflowHook(TaskHandle_t xTask, char* pcTaskName)
+/****************************************************************************/
+/* Hook for "stack over flow". */
+void vApplicationStackOverflowHook(TaskHandle_t xTask, char *pcTaskName)
 {
 	printf("%s: %s\n", __func__, pcTaskName);
 }
 
-// Hook for "memory allocation failed".
+/* Hook for "memory allocation failed". */
 void vApplicationMallocFailedHook(void)
 {
 	printf("%s\n", __func__);
 }
-
-// Hook for "printf".
+/* Hook for "printf". */
 void _putchar(char character)
 {
 	mtk_os_hal_uart_put_char(uart_port_num, character);
@@ -78,56 +73,71 @@ void _putchar(char character)
 		mtk_os_hal_uart_put_char(uart_port_num, '\r');
 }
 
-/******************************************************************************/
+/****************************************************************************/
 /* Functions */
-/******************************************************************************/
-static void uart_rx_task(void* pParameters)
+/****************************************************************************/
+static void uart_rx_task(void *pParameters)
 {
 	uint8_t data;
+
 	printf("UART Rx task started, keep monitoring user input.\n");
 	while (1) {
-		// Delay 10ms
+		/* Delay 10ms */
 		vTaskDelay(pdMS_TO_TICKS(10));
 
-		// Get UART input. (Non-blocking operation)
+		/* Get UART input */
 		data = mtk_os_hal_uart_get_char(uart_port_num);
 
 		printf("UART Rx: %c\n", data);
 	}
 }
 
-static void uart_tx_task(void* pParameters)
+static void uart_tx_task(void *pParameters)
 {
-	uint8_t counter=0;
+	#define UART_TX_DMA_BUF_SIZE 64
+	uint8_t counter = 0;
+	char *dma_buf = NULL;
+
+	dma_buf = pvPortMalloc(UART_TX_DMA_BUF_SIZE);
 	printf("UART Tx task started, print log for every second.\n");
 	while (1) {
-		// Delay 1000ms
+		/* Delay 1000ms */
 		vTaskDelay(pdMS_TO_TICKS(1000));
 
-		printf("UART Tx Counter ... %d\n", counter++);
+		/* print log to UART by printf, _putchar() will be invoked. */
+		printf("UART Tx(printf) Counter ... %d\n", counter++);
+
+		/* print log to UART by DMA, _putchar will not be invoked. */
+		memset(dma_buf, 0, UART_TX_DMA_BUF_SIZE);
+		snprintf(dma_buf, UART_TX_DMA_BUF_SIZE,
+			"\rUART Tx(DMA)    Counter ... %d\r\n", counter++);
+		mtk_os_hal_uart_dma_send_data(uart_port_num, (u8 *)dma_buf,
+			UART_TX_DMA_BUF_SIZE, 0);
 	}
 }
 
 _Noreturn void RTCoreMain(void)
 {
-	// Setup Vector Table
+	/* Setup Vector Table */
 	NVIC_SetupVectorTable();
 
-	// Init UART
+	/* Init UART */
 	mtk_os_hal_uart_ctlr_init(uart_port_num);
-	mtk_os_hal_uart_set_format(uart_port_num, uart_dat_len, uart_parity, uart_stop_bit);
+	mtk_os_hal_uart_set_format(uart_port_num, uart_dat_len, uart_parity,
+								uart_stop_bit);
 	mtk_os_hal_uart_set_baudrate(uart_port_num, uart_baudrate);
 	printf("\nFreeRTOS UART Demo\n");
 
-	// Create UART Tx Task
-	xTaskCreate(uart_tx_task, "UART Tx Task", APP_STACK_SIZE_BYTES, NULL, 5, NULL);
+	/* Create UART Tx Task */
+	xTaskCreate(uart_tx_task, "UART Tx Task", APP_STACK_SIZE_BYTES, NULL, 5,
+				NULL);
 
-	// Create UART Rx Task
-	xTaskCreate(uart_rx_task, "UART Rx Task", APP_STACK_SIZE_BYTES, NULL, 4, NULL);
+	/* Create UART Rx Task */
+	xTaskCreate(uart_rx_task, "UART Rx Task", APP_STACK_SIZE_BYTES, NULL, 4,
+				NULL);
 
 	vTaskStartScheduler();
-	for (;;) {
+	for (;;)
 		__asm__("wfi");
-	}
 }
 
