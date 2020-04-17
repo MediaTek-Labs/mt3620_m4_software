@@ -1,5 +1,5 @@
 /*
- * (C) 2005-2019 MediaTek Inc. All rights reserved.
+ * (C) 2005-2020 MediaTek Inc. All rights reserved.
  *
  * Copyright Statement:
  *
@@ -265,6 +265,10 @@ struct osai_dma_config {
 	void *excep_callback_data;
 };
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 /**
  * @brief This function is used to allocate one DMA channel.
  * @brief Usage: user should call it to allocate DMA channel
@@ -399,4 +403,9 @@ int osai_dma_reset(u8 chn);
  * Return negative value if errors occur.
  */
 int osai_dma_clr_dreq(u8 chn);
+
+#ifdef __cplusplus
+}
+#endif
+
 #endif

@@ -1,5 +1,5 @@
 /*
- * (C) 2005-2019 MediaTek Inc. All rights reserved.
+ * (C) 2005-2020 MediaTek Inc. All rights reserved.
  *
  * Copyright Statement:
  *
@@ -61,6 +61,10 @@ static const uint8_t i2c_master_port_num = OS_HAL_I2C_ISU1;
 static const uint8_t i2c_slave_port_num = OS_HAL_I2C_ISU2;
 static const uint8_t i2c_slave_addr = 0x20;
 
+static uint8_t *i2c_master_write_buf;
+static uint8_t *i2c_master_read_buf;
+static uint8_t *i2c_slave_read_buf;
+
 #define I2C_MIN_LEN 1
 #define I2C_MAX_LEN 64 /* For AVNET development board, please change to 8. */
 #define I2C_SLAVE_TIMEOUT 10000 /* 10000ms */
@@ -95,9 +99,14 @@ void _putchar(char character)
 /******************************************************************************/
 void i2c_master_task(void *pParameters)
 {
-	uint8_t write_buf[I2C_MAX_LEN] = {0};
-	uint8_t read_buf[I2C_MAX_LEN] = {0};
 	int i, length, ret = 0;
+
+	i2c_master_write_buf = pvPortMalloc(I2C_MAX_LEN);
+	i2c_master_read_buf = pvPortMalloc(I2C_MAX_LEN);
+	if (i2c_master_write_buf == NULL || i2c_master_read_buf == NULL) {
+		printf("I2C master failed to allocate memory!\n");
+		return;
+	}
 
 	printf("[I2C Demo]I2C Master Task Started. (ISU%d)\n",
 		i2c_master_port_num);
@@ -132,13 +141,13 @@ i2c_master_restart:
 			vTaskDelay(pdMS_TO_TICKS(1));
 
 			/* Reset buffer */
-			memset(read_buf, 0, sizeof(read_buf));
-			memset(write_buf, 0, sizeof(write_buf));
+			memset(i2c_master_read_buf, 0, I2C_MAX_LEN);
+			memset(i2c_master_write_buf, 0, I2C_MAX_LEN);
 
 			/* Write length(1Byte) to slave */
-			write_buf[0] = length;
+			i2c_master_write_buf[0] = length;
 			ret = mtk_os_hal_i2c_write(i2c_master_port_num,
-						i2c_slave_addr, write_buf, 1);
+						i2c_slave_addr, i2c_master_write_buf, 1);
 			if (ret) {
 				printf("[I2C Demo]I2C_Master write %dB to I2C_Slave fail, ret:%d.\n\n",
 					length, ret);
@@ -148,9 +157,9 @@ i2c_master_restart:
 			/* Write data to slave */
 			vTaskDelay(pdMS_TO_TICKS(1));
 			for (i = 0 ; i < length ; i++)
-				write_buf[i] = i;
+				i2c_master_write_buf[i] = i;
 			ret = mtk_os_hal_i2c_write(i2c_master_port_num,
-					i2c_slave_addr, write_buf, length);
+					i2c_slave_addr, i2c_master_write_buf, length);
 			if (ret) {
 				printf("[I2C Demo]I2C_Master write %dB to I2C_Slave fail, ret:%d.\n\n",
 					length, ret);
@@ -160,7 +169,7 @@ i2c_master_restart:
 			/* Read data from slave */
 			vTaskDelay(pdMS_TO_TICKS(1));
 			ret = mtk_os_hal_i2c_read(i2c_master_port_num,
-				i2c_slave_addr, read_buf, length);
+				i2c_slave_addr, i2c_master_read_buf, length);
 			if (ret) {
 				printf("[I2C Demo]I2C_Master read %dB from I2C_Slave fail, ret:%d.\n\n",
 					length, ret);
@@ -169,19 +178,19 @@ i2c_master_restart:
 
 			/* Compare the R/W buffer */
 			for (i = 0 ; i < length ; i++) {
-				if (write_buf[i] != read_buf[i]) {
+				if (i2c_master_write_buf[i] != i2c_master_read_buf[i]) {
 					printf("[I2C Demo]I2C_Master received data incorrect! (len=%dB)\n",
 						length);
 					printf("[I2C Demo]    Sent: 0x%02x 0x%02x 0x%02x 0x%02x 0x%02x 0x%02x 0x%02x 0x%02x\n",
-						write_buf[0], write_buf[1],
-						write_buf[2], write_buf[3],
-						write_buf[4], write_buf[5],
-						write_buf[6], write_buf[7]);
+						i2c_master_write_buf[0], i2c_master_write_buf[1],
+						i2c_master_write_buf[2], i2c_master_write_buf[3],
+						i2c_master_write_buf[4], i2c_master_write_buf[5],
+						i2c_master_write_buf[6], i2c_master_write_buf[7]);
 					printf("[I2C Demo]    Recv: 0x%02x 0x%02x 0x%02x 0x%02x 0x%02x 0x%02x 0x%02x 0x%02x\n\n",
-						read_buf[0], read_buf[1],
-						read_buf[2], read_buf[3],
-						read_buf[4], read_buf[5],
-						read_buf[6], read_buf[7]);
+						i2c_master_read_buf[0], i2c_master_read_buf[1],
+						i2c_master_read_buf[2], i2c_master_read_buf[3],
+						i2c_master_read_buf[4], i2c_master_read_buf[5],
+						i2c_master_read_buf[6], i2c_master_read_buf[7]);
 					goto i2c_master_restart;
 				}
 			}
@@ -197,8 +206,13 @@ i2c_master_restart:
 
 void i2c_slave_task(void *pParameters)
 {
-	uint8_t read_buf[I2C_MAX_LEN] = {0};
 	int length, ret = 0;
+
+	i2c_slave_read_buf = pvPortMalloc(I2C_MAX_LEN);
+	if (i2c_slave_read_buf == NULL) {
+		printf("I2C slave failed to allocate memory!\n");
+		return;
+	}
 
 	printf("[I2C Demo]I2C Slave Task Started. (ISU%d)(Addr:0x%x)\n",
 		i2c_slave_port_num, i2c_slave_addr);
@@ -216,11 +230,11 @@ void i2c_slave_task(void *pParameters)
 
 i2c_slave_restart:
 		/* reset buffer */
-		memset(read_buf, 0, sizeof(read_buf));
+		memset(i2c_slave_read_buf, 0, I2C_MAX_LEN);
 
 		/* Read length(1B) from master */
 		vTaskDelay(pdMS_TO_TICKS(1));
-		ret = mtk_os_hal_i2c_slave_rx(i2c_slave_port_num, read_buf,
+		ret = mtk_os_hal_i2c_slave_rx(i2c_slave_port_num, i2c_slave_read_buf,
 						1, I2C_SLAVE_TIMEOUT);
 		if (ret < 0) {
 			printf("[I2C Demo]I2C_Slave RX 1B fail, ret:%d.\n",
@@ -229,8 +243,8 @@ i2c_slave_restart:
 		}
 
 		/* Read data from master */
-		length = read_buf[0];
-		ret = mtk_os_hal_i2c_slave_rx(i2c_slave_port_num, read_buf,
+		length = i2c_slave_read_buf[0];
+		ret = mtk_os_hal_i2c_slave_rx(i2c_slave_port_num, i2c_slave_read_buf,
 						length, I2C_SLAVE_TIMEOUT);
 		if (ret < 0) {
 			printf("[I2C Demo]I2C_Slave RX %dB fail, ret:%d.\n",
@@ -239,7 +253,7 @@ i2c_slave_restart:
 		}
 
 		/* Write data to master */
-		ret = mtk_os_hal_i2c_slave_tx(i2c_slave_port_num, read_buf,
+		ret = mtk_os_hal_i2c_slave_tx(i2c_slave_port_num, i2c_slave_read_buf,
 						length, I2C_SLAVE_TIMEOUT);
 		if (ret < 0) {
 			printf("[I2C Demo]I2C_Slave TX %dB fail, ret:%d.\n",

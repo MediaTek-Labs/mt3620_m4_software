@@ -1,5 +1,5 @@
 /*
- * (C) 2005-2019 MediaTek Inc. All rights reserved.
+ * (C) 2005-2020 MediaTek Inc. All rights reserved.
  *
  * Copyright Statement:
  *
@@ -39,7 +39,7 @@
 /**
  * @addtogroup OS-HAL
  * @{
- * @addtogroup LP
+ * @addtogroup lp
  * @{
  * This section introduces the Low Power (LP) APIs
  * including terms and acronyms, supported features, software architecture,
@@ -67,7 +67,7 @@
 /**
  * @addtogroup OS-HAL
  * @{
- * @addtogroup LP
+ * @addtogroup lp
  * @{
  * @section OSHAL_LP_Driver_Usage_Chapter How to use this driver
  *
@@ -108,7 +108,7 @@
 /**
 * @addtogroup OS-HAL
 * @{
-* @addtogroup LP
+* @addtogroup lp
 * @{
 */
 
@@ -120,9 +120,9 @@
 
 /** @brief DSLP enter/exit stage definition
 * Before entering DSLP, user should use
-* the \b PRE_DEEP_SLEEP parameter to call #mtk_os_hal_lp_dslp_check() to
+* the \b #PRE_DEEP_SLEEP parameter to call #mtk_os_hal_lp_dslp_check() to
 * clear deep sleep bit.\n
-* When the system has resumed, users can use the \b POST_DEEP_SLEEP parameter
+* When the system has resumed, users can use the \b #POST_DEEP_SLEEP parameter
 * to check whether the system resumes from DSLP scenario.
 */
 typedef enum {
@@ -215,43 +215,51 @@ typedef enum {
   * I/O subsystems.
   */
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 /**
- *@brief This function is used to configure timeout value of GPT3.
- *@brief Usage: It's called before selecting GPT3 as wakeup source.
- *@param [in] time_val : GPT3 timeout value and unit is second.
+ * @brief This function is used to configure timeout value of GPT3.
+ * @brief Usage: It's called before selecting GPT3 as wakeup source.
+ * @param [in] time_val : GPT3 timeout value and unit is second.
  *
- *@return
+ * @return
  * None.
  */
 void mtk_os_hal_lp_config_gpt3_timeout(uint32_t time_val);
 
 /**
- *@brief This function is used to check whether ARM Cortex-M4F I/O
- *subsystems have entered DSLP.
- *@brief Usage: It's called before entering DSLP and after exiting DSLP.
- *@param [in] stage : Different DSLP stages.
+ * @brief This function is used to check whether ARM Cortex-M4F I/O
+ * subsystems have entered DSLP.
+ * @brief Usage: It's called before entering DSLP and after exiting DSLP.
+ * @param [in] stage : Different DSLP stages.
  *
- *@return
+ * @return
  * Return "0" if DSLP status bit is operated successfully.\n
  * Return "-1" if the parameter \b stage is invalid.
  */
 int mtk_os_hal_lp_dslp_check(dslp_check stage);
 
 /**
- *@brief This function is used to enter different low power scenarios.
- *@brief Usage: It's called when ARM Cortex-M4F I/O subsystems
- *need to enter low power scenario.
- *@param [in] wakeup_src : Wakeup source used to wake up system. The
- *supported wakeup sources are defined in \b lp_wakeup_src enumeration and
- *more than one wakeup sources can be selected by bitwise OR operation at the
- *same time.
- *@param [in] lp : Low power scenario that the system will enter.
+ * @brief This function is used to enter different low power scenarios.
+ * @brief Usage: It's called when ARM Cortex-M4F I/O subsystems
+ * need to enter low power scenario.
+ * @param [in] wakeup_src : Wakeup source used to wake up system. The
+ * supported wakeup sources are defined in \b #lp_wakeup_src enumeration and
+ * more than one wakeup sources can be selected by bitwise OR operation at the
+ * same time.
+ * @param [in] lp : Low power scenario that the system will enter.
  *
- *@return
+ * @return
  * Return "0" if the system enters low power scenario successfully.\n
  * Return "-1" if the parameter \b wakeup_src or \b lp is invalid.
  */
 int mtk_os_hal_lp_enter(uint32_t wakeup_src, lp_scenario lp);
+
+#ifdef __cplusplus
+}
+#endif
 
 /**
   * @}

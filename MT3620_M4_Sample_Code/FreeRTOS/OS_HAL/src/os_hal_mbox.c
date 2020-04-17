@@ -1,5 +1,5 @@
 /*
- * (C) 2005-2019 MediaTek Inc. All rights reserved.
+ * (C) 2005-2020 MediaTek Inc. All rights reserved.
  *
  * Copyright Statement:
  *
@@ -79,16 +79,21 @@ static unsigned long mbox_base_addr[OS_HAL_MBOX_CH_MAX] = {
 	CH1_MBOX_BASE,
 };
 
-static u32 wr_vectors[OS_HAL_MBOX_CH_MAX] = {MBOX_M4_VECTOR_CH0_WR,
-						MBOX_M4_VECTOR_CH1_WR};
-static u32 rd_vectors[OS_HAL_MBOX_CH_MAX] = {MBOX_M4_VECTOR_CH0_RD,
-						MBOX_M4_VECTOR_CH1_RD};
-static u32 ne_vectors[OS_HAL_MBOX_CH_MAX] = {MBOX_M4_VECTOR_CH0_NE,
-						MBOX_M4_VECTOR_CH1_NE};
-static u32 nf_vectors[OS_HAL_MBOX_CH_MAX] = {MBOX_M4_VECTOR_CH0_NF,
-						MBOX_M4_VECTOR_CH1_NF};
-static u32 sw_vectors[OS_HAL_MBOX_CH_MAX] = {MBOX_M4_VECTOR_CH0_SW,
-						MBOX_M4_VECTOR_CH1_SW};
+static IRQn_Type wr_vectors[OS_HAL_MBOX_CH_MAX] = {
+					(IRQn_Type)MBOX_M4_VECTOR_CH0_WR,
+					(IRQn_Type)MBOX_M4_VECTOR_CH1_WR};
+static IRQn_Type rd_vectors[OS_HAL_MBOX_CH_MAX] = {
+					(IRQn_Type)MBOX_M4_VECTOR_CH0_RD,
+					(IRQn_Type)MBOX_M4_VECTOR_CH1_RD};
+static IRQn_Type ne_vectors[OS_HAL_MBOX_CH_MAX] = {
+					(IRQn_Type)MBOX_M4_VECTOR_CH0_NE,
+					(IRQn_Type)MBOX_M4_VECTOR_CH1_NE};
+static IRQn_Type nf_vectors[OS_HAL_MBOX_CH_MAX] = {
+					(IRQn_Type)MBOX_M4_VECTOR_CH0_NF,
+					(IRQn_Type)MBOX_M4_VECTOR_CH1_NF};
+static IRQn_Type sw_vectors[OS_HAL_MBOX_CH_MAX] = {
+					(IRQn_Type)MBOX_M4_VECTOR_CH0_SW,
+					(IRQn_Type)MBOX_M4_VECTOR_CH1_SW};
 
 struct os_hal_mbox_channel {
 	SemaphoreHandle_t sem_fifo_read;
@@ -119,7 +124,7 @@ static struct os_hal_mbox_device *mbox_dev = &mbox;
 static struct os_hal_mbox_channel *_mtk_os_hal_mbox_get_channel(
 				mbox_channel_t channel)
 {
-	if (channel >= OS_HAL_MBOX_CH_MAX || channel < OS_HAL_MBOX_CH0) {
+	if (channel >= OS_HAL_MBOX_CH_MAX) {
 		OS_MBOX_ERROR("channel:%d out of range, should be:0~%d\n",
 			channel, OS_HAL_MBOX_CH_MAX-1);
 		return NULL;
@@ -137,7 +142,7 @@ static void _mtk_os_hal_mbox_sw_int_irq_handler(mbox_channel_t channel)
 	struct os_hal_mbox_channel *ch;
 	struct mtk_os_hal_mbox_cb_data cb_data;
 	void __iomem *base;
-	u32 status;
+	u32 status = 0;
 
 	ch = _mtk_os_hal_mbox_get_channel(channel);
 	if (ch == NULL) {
@@ -433,7 +438,7 @@ int mtk_os_hal_mbox_open_channel(mbox_channel_t channel)
 	struct os_hal_mbox_channel *ch;
 	void __iomem *base;
 
-	if (channel >= OS_HAL_MBOX_CH_MAX || channel < OS_HAL_MBOX_CH0) {
+	if (channel >= OS_HAL_MBOX_CH_MAX) {
 		OS_MBOX_ERROR("channel:%d out of range, should be:0~%d\n",
 			channel, OS_HAL_MBOX_CH_MAX-1);
 		return -MBOX_EDEFAULT;
@@ -464,7 +469,7 @@ int mtk_os_hal_mbox_close_channel(mbox_channel_t channel)
 {
 	struct os_hal_mbox_channel *ch;
 
-	if (channel >= OS_HAL_MBOX_CH_MAX || channel < OS_HAL_MBOX_CH0) {
+	if (channel >= OS_HAL_MBOX_CH_MAX) {
 		OS_MBOX_ERROR("channel:%d out of range, should be:0~%d\n",
 			channel, OS_HAL_MBOX_CH_MAX-1);
 		return -MBOX_EDEFAULT;

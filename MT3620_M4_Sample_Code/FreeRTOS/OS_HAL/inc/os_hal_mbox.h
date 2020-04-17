@@ -1,5 +1,5 @@
 /*
- * (C) 2005-2019 MediaTek Inc. All rights reserved.
+ * (C) 2005-2020 MediaTek Inc. All rights reserved.
  *
  * Copyright Statement:
  *
@@ -38,24 +38,142 @@
 
 #include "mhal_mbox.h"
 
-/** This section describes the programming interfaces of the mbox os-hal */
+/**
+ * @addtogroup OS-HAL
+ * @{
+ * @addtogroup mbox
+ * @{
+ * This section introduces the Mailbox (MBOX) APIs
+ * including terms and acronyms, supported features,
+ * details on how to use this driver, enums, structures and functions.
+ *
+ * @section OS_HAL_MBOX_Terms_Chapter Terms and Acronyms
+ *
+ * |Terms                   |Details                             |
+ * |------------------------------|--|
+ * |\b FIFO                       | First In, First Out.|
+ * |\b MBOX                       | Mailbox.|
+ *
+ * @section OS_HAL_MBOX_Features_Chapter Supported Features
+ * See @ref MHAL_MBOX_Features_Chapter for the details of Supported Features.
+ *
+ * @}
+ * @}
+ */
 
-/** mbox channel */
+/**
+ * @addtogroup OS-HAL
+ * @{
+ * @addtogroup mbox
+ * @{
+ * @section OS_HAL_MBOX_Driver_Usage_Chapter How to use this driver
+ *
+ * - \b Device \b driver \b sample \b code \b is \b as \b follows: \n
+ *  - sample code (this is the user application sample code on FreeRTOS):
+ *    @code
+ *	- Open MBOX channel
+ *	 -Call mtk_os_hal_mbox_open_channel(mbox_channel_t channel)
+ *	   to open MBOX channel.
+ *
+ *	- Register sw interrupt callback
+ *	  -Call mtk_os_hal_mbox_sw_int_register_cb(mbox_channel_t channel,
+ *			mtk_os_hal_mbox_cb cb, u32 irq_status)
+ *
+ *	- Register FIFO interrupt callback
+ *	  -Call mtk_os_hal_mbox_fifo_register_cb(mbox_channel_t channel,
+ *			mtk_os_hal_mbox_cb cb, struct mbox_fifo_event *mask)
+ *
+ *	- Getting/setting MBOX hardware settings
+ *	  -Call mtk_os_hal_mbox_ioctl(mbox_channel_t channel, mbox_ioctl_t ctrl,
+ *			void *arg)
+ *
+ *	- Write FIFO
+ *	 -Call  mtk_os_hal_mbox_fifo_write(mbox_channel_t channel,
+ *		const struct mbox_fifo_item *buf, mbox_tr_type_t type)
+ *
+ *	- Read FIFO
+ *	 -Call  mtk_os_hal_mbox_fifo_read(mbox_channel_t channel,
+ *		const struct mbox_fifo_item *buf, mbox_tr_type_t type)
+ *
+ *	- Unregister sw interrupt callback
+ *	  -Call mtk_os_hal_mbox_sw_int_unregister_cb(mbox_channel_t channel)
+ *
+ *	- Unregister FIFO interrupt callback
+ *	  -Call mtk_os_hal_mbox_fifo_unregister_cb(mbox_channel_t channel)
+ *
+ *	- Close MBOX channel
+ *	 -Call mtk_os_hal_mbox_close_channel(mbox_channel_t channel)
+ *	   to close MBOX channel.
+ *
+ *    @endcode
+ *
+ *
+ * @}
+ * @}
+ */
+
+/**
+ * @addtogroup OS-HAL
+ * @{
+ * @addtogroup mbox
+ * @{
+ */
+
+/** @defgroup os_hal_mbox_enum Enum
+  * @{
+  * This section introduces the enumerations that are used by MBOX OS-HAL
+  * and user application.
+  */
+
+/** @brief MBOX channel */
 typedef enum {
-	OS_HAL_MBOX_CH0 = 0,	/* For A7 <-> M4 */
-	OS_HAL_MBOX_CH1 = 1,	/* For M4 <-> M4 */
+	/** For A7 <-> M4 */
+	OS_HAL_MBOX_CH0 = 0,
+	/** For M4 <-> M4 */
+	OS_HAL_MBOX_CH1 = 1,
+	/** Invalid channel */
 	OS_HAL_MBOX_CH_MAX
 } mbox_channel_t;
 
-/** software interrupt number */
+/**
+  * @}
+  */
+
+/** @defgroup os_hal_mbox_define Define
+  * @{
+  * This section introduces the Macro definition
+  * which indicates the software interrupt amount of MBOX.
+  */
+
+/** Software interrupt amount */
 #define MBOX_NUM_SW_INT				(8)
 
+/**
+  * @}
+  */
 
-/** the argument of user callback */
+/** @defgroup os_hal_mbox_struct Struct
+  * @{
+  * This section introduces the structures that are used by MBOX OS-HAL
+  * and user application.
+  */
+
+/** @brief The argument of user callback */
 struct mtk_os_hal_mbox_cb_data {
+	/** FIFO interrupt information */
 	struct mbox_fifo_event event;
+	/** Software interrupt information */
 	struct mbox_swint_info swint;
 };
+
+/**
+  * @}
+  */
+
+/** @defgroup os_hal_mbox_typedef Typedef
+  * @{
+  * This section introduces the typedef that MBOX OS-HAL used.
+  */
 
 /** @brief This defines the callback function prototype.
  *  @brief Usage: It's called when FIFO or software interrupt come.\n
@@ -64,12 +182,25 @@ struct mtk_os_hal_mbox_cb_data {
  *   mtk_os_hal_mbox_fifo_register_cb API.\n
  *   Please do NOT operate MBOX in callback function.
  *
- * @param [in] data: the argument of user callback.
+ * @param [in] data : the argument of user callback.
  */
 typedef void (*mtk_os_hal_mbox_cb)(struct mtk_os_hal_mbox_cb_data *data);
 
+/**
+  * @}
+  */
+
+/** @defgroup os_hal_mbox_function Function
+  * @{
+  * This section provides high level APIs to upper layer.
+  */
+
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 /** @brief Open MBOX channel.
- *  @param [in] channel: MBOX channel,
+ *  @param [in] channel : MBOX channel,
  *   it can be OS_HAL_MBOX_CH0~OS_HAL_MBOX_CH1.
  *
  *  @return #MBOX_OK means success.
@@ -78,7 +209,7 @@ typedef void (*mtk_os_hal_mbox_cb)(struct mtk_os_hal_mbox_cb_data *data);
 int mtk_os_hal_mbox_open_channel(mbox_channel_t channel);
 
 /** @brief Close MBOX channel.
- *  @param [in] channel: MBOX channel,
+ *  @param [in] channel : MBOX channel,
  *   it can be OS_HAL_MBOX_CH0~OS_HAL_MBOX_CH1.
  *
  *  @return #MBOX_OK means success.
@@ -88,29 +219,29 @@ int mtk_os_hal_mbox_close_channel(mbox_channel_t channel);
 
 /**
  *@brief This function is used to read MBOX channel FIFO data.
- *@brief Usage: Used to read data and/or cmd from FIFO when received
- * write interrupt.
+ *@brief Usage: Reading data and/or cmd from FIFO when receiving
+ * write interrupt or non-empty interrupt.
  *@param [in] channel : MBOX channel.
- *@param [out] buf : pointer to the buffer to load data and/or cmd.
- *@param [in] type : transfer type, see @ref mbox_tr_type_t for details.
+ *@param [out] buf : Buffer to load data and/or cmd.
+ *@param [in] type : Transfer type; see @ref mbox_tr_type_t for details.
  *
  *@return
- * Return #MBOX_OK if read successfully.\n
- * Return others if read fail.
+ * Return #MBOX_OK if reading succeeds.\n
+ * Return others if reading fails.
  */
 int mtk_os_hal_mbox_fifo_read(mbox_channel_t channel,
 			struct mbox_fifo_item *buf, mbox_tr_type_t type);
 
 /**
  *@brief This function is used to write data to MBOX channel FIFO.
- *@brief Usage: Used to write data and/or cmd to FIFO.
+ *@brief Usage: Writing data and/or cmd to FIFO.
  *@param [in] channel : MBOX channel.
- *@param [in] buf : pointer to the data and/or cmd to be transfered.
- *@param [in] type : transfer type, see @ref mbox_tr_type_t for details.
+ *@param [in] buf : The data and/or cmd to be transferred.
+ *@param [in] type : Transfer type; see @ref mbox_tr_type_t for details.
  *
  *@return
- * Return #MBOX_OK if write successfully.\n
- * Return others if write fail.
+ * Return #MBOX_OK if writing succeeds.\n
+ * Return others if writing fails.
  */
 int mtk_os_hal_mbox_fifo_write(mbox_channel_t channel,
 		const struct mbox_fifo_item *buf, mbox_tr_type_t type);
@@ -196,8 +327,8 @@ int mtk_os_hal_mbox_ioctl(mbox_channel_t channel, mbox_ioctl_t ctrl,
  *	Set irq_status bit[i] = 1 to enable software interrupt #i, i = 0~7.
  *
  *@return
- * Return #MBOX_OK if register successfully.\n
- * Return others if register fail.
+ * Return #MBOX_OK if registration succeeds.\n
+ * Return others if registration fails.
  */
 int mtk_os_hal_mbox_sw_int_register_cb(mbox_channel_t channel,
 			mtk_os_hal_mbox_cb cb, u32 irq_status);
@@ -207,8 +338,8 @@ int mtk_os_hal_mbox_sw_int_register_cb(mbox_channel_t channel,
  *@param [in] channel : MBOX channel.
  *
  *@return
- * Return #MBOX_OK if unregister successfully.\n
- * Return -#MBOX_EDEFAULT if unregister fail.
+ * Return #MBOX_OK if unregistration succeeds.\n
+ * Return -#MBOX_EDEFAULT if unregistration fails.
  */
 int mtk_os_hal_mbox_sw_int_unregister_cb(mbox_channel_t channel);
 
@@ -219,20 +350,33 @@ int mtk_os_hal_mbox_sw_int_unregister_cb(mbox_channel_t channel);
  *@param [in] mask : Fifo interrupt enable mask.
  *
  *@return
- * Return #MBOX_OK if register successfully.\n
- * Return others if register fail.
+ * Return #MBOX_OK if registration succeeds.\n
+ * Return others if registration fails.
  */
 int mtk_os_hal_mbox_fifo_register_cb(mbox_channel_t channel,
-			mtk_os_hal_mbox_cb cb,  struct mbox_fifo_event *mask);
+			mtk_os_hal_mbox_cb cb, struct mbox_fifo_event *mask);
 
 /**
  *@brief This function is used to unregister user FIFO interrupt callback.
  *@param [in] channel : MBOX channel.
  *
  *@return
- * Return #MBOX_OK if unregister successfully.\n
- * Return -#MBOX_EDEFAULT if unregister fail.
+ * Return #MBOX_OK if unregistration succeeds.\n
+ * Return -#MBOX_EDEFAULT if unregistration fails.
  */
 int mtk_os_hal_mbox_fifo_unregister_cb(mbox_channel_t channel);
+
+#ifdef __cplusplus
+}
+#endif
+
+/**
+  * @}
+  */
+
+/**
+* @}
+* @}
+*/
 
 #endif /* __OS_HAL_MBOX_H__ */

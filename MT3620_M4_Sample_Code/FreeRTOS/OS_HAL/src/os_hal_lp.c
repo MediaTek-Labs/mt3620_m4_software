@@ -1,5 +1,5 @@
 /*
- * (C) 2005-2019 MediaTek Inc. All rights reserved.
+ * (C) 2005-2020 MediaTek Inc. All rights reserved.
  *
  * Copyright Statement:
  *
@@ -82,30 +82,30 @@ static void _mtk_os_hal_lp_enable_cm4_systick(void)
 static void _mtk_os_hal_lp_disable_irq_wic_src(void)
 {
 	/*disable all IRQ source*/
-	HAL_REG_32(CM4_CFG_IRQ_DIS0) |= CM4_CFG_IRQ_MASK(0, 31);
-	HAL_REG_32(CM4_CFG_IRQ_DIS1) |= CM4_CFG_IRQ_MASK(0, 31);
-	HAL_REG_32(CM4_CFG_IRQ_DIS2) |= CM4_CFG_IRQ_MASK(0, 31);
+	HAL_REG_32(CM4_CFG_IRQ_DIS0) = CM4_CFG_IRQ_MASK(0, 31);
+	HAL_REG_32(CM4_CFG_IRQ_DIS1) = CM4_CFG_IRQ_MASK(0, 31);
+	HAL_REG_32(CM4_CFG_IRQ_DIS2) = CM4_CFG_IRQ_MASK(0, 31);
 	HAL_REG_32(CM4_CFG_IRQ_DIS3) |= CM4_CFG_IRQ_MASK(0, 3);
 
 	/*disable all WIC source*/
-	HAL_REG_32(CM4_CFG_WIC_DIS0) |= CM4_CFG_WIC_MASK(0, 31);
-	HAL_REG_32(CM4_CFG_WIC_DIS1) |= CM4_CFG_WIC_MASK(0, 31);
-	HAL_REG_32(CM4_CFG_WIC_DIS2) |= CM4_CFG_WIC_MASK(0, 31);
+	HAL_REG_32(CM4_CFG_WIC_DIS0) = CM4_CFG_WIC_MASK(0, 31);
+	HAL_REG_32(CM4_CFG_WIC_DIS1) = CM4_CFG_WIC_MASK(0, 31);
+	HAL_REG_32(CM4_CFG_WIC_DIS2) = CM4_CFG_WIC_MASK(0, 31);
 	HAL_REG_32(CM4_CFG_WIC_DIS3) |= CM4_CFG_WIC_MASK(0, 3);
 }
 
 static void _mtk_os_hal_lp_enable_irq_wic_src(void)
 {
 	/*enable all IRQ source*/
-	HAL_REG_32(CM4_CFG_IRQ_DIS0) &= (~(CM4_CFG_IRQ_MASK(0, 31)));
-	HAL_REG_32(CM4_CFG_IRQ_DIS1) &= (~(CM4_CFG_IRQ_MASK(0, 31)));
-	HAL_REG_32(CM4_CFG_IRQ_DIS2) &= (~(CM4_CFG_IRQ_MASK(0, 31)));
+	HAL_REG_32(CM4_CFG_IRQ_DIS0) = (~(CM4_CFG_IRQ_MASK(0, 31)));
+	HAL_REG_32(CM4_CFG_IRQ_DIS1) = (~(CM4_CFG_IRQ_MASK(0, 31)));
+	HAL_REG_32(CM4_CFG_IRQ_DIS2) = (~(CM4_CFG_IRQ_MASK(0, 31)));
 	HAL_REG_32(CM4_CFG_IRQ_DIS3) &= (~(CM4_CFG_IRQ_MASK(0, 3)));
 
 	/*enable all WIC source*/
-	HAL_REG_32(CM4_CFG_WIC_DIS0) &= (~(CM4_CFG_WIC_MASK(0, 31)));
-	HAL_REG_32(CM4_CFG_WIC_DIS1) &= (~(CM4_CFG_WIC_MASK(0, 31)));
-	HAL_REG_32(CM4_CFG_WIC_DIS2) &= (~(CM4_CFG_WIC_MASK(0, 31)));
+	HAL_REG_32(CM4_CFG_WIC_DIS0) = (~(CM4_CFG_WIC_MASK(0, 31)));
+	HAL_REG_32(CM4_CFG_WIC_DIS1) = (~(CM4_CFG_WIC_MASK(0, 31)));
+	HAL_REG_32(CM4_CFG_WIC_DIS2) = (~(CM4_CFG_WIC_MASK(0, 31)));
 	HAL_REG_32(CM4_CFG_WIC_DIS3) &= (~(CM4_CFG_WIC_MASK(0, 3)));
 }
 
@@ -344,8 +344,6 @@ int mtk_os_hal_lp_dslp_check(dslp_check stage)
 			printf("Have entered deep sleep and recovered successfully!\n");
 		else
 			printf("Enter deep sleep failed!!!\n");
-		break;
-	default:
 		break;
 	}
 

@@ -1,5 +1,5 @@
 /*
- * (C) 2005-2019 MediaTek Inc. All rights reserved.
+ * (C) 2005-2020 MediaTek Inc. All rights reserved.
  *
  * Copyright Statement:
  *
@@ -151,6 +151,10 @@
 /* data_bytes */
 #define MTK_SPIM_MAX_LENGTH_ONE_TRANS_HALF	(32)
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 void mtk_hdl_spim_dump_reg(void __iomem *base);
 void mtk_hdl_spim_print_packet(char *name, u8 *ptr, int len);
 void mtk_hdl_spim_clear_irq_status(void __iomem *base);
@@ -176,4 +180,9 @@ void mtk_hdl_spim_disable_clk(void __iomem *cg_base);
 void mtk_hdl_spim_sw_reset(void __iomem *cg_base);
 void mtk_hdl_spim_enable_dma(void __iomem *base);
 void mtk_hdl_spim_disable_dma(void __iomem *base);
+
+#ifdef __cplusplus
+}
+#endif
+
 #endif

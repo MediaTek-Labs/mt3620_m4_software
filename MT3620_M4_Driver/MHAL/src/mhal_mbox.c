@@ -1,5 +1,5 @@
 /*
- * (C) 2005-2019 MediaTek Inc. All rights reserved.
+ * (C) 2005-2020 MediaTek Inc. All rights reserved.
  *
  * Copyright Statement:
  *
@@ -73,7 +73,7 @@ int mtk_mhal_mbox_fifo_read(void __iomem *base, struct mbox_fifo_item *buf,
 		mbox_err("buf is null\n");
 		return -MBOX_EPTR;
 	}
-	if (type >= MBOX_TR_MAX || type < MBOX_TR_CMD_ONLY) {
+	if (type >= MBOX_TR_MAX) {
 		mbox_err("type is out of range, type:%d\n", type);
 		return -MBOX_EDEFAULT;
 	}
@@ -104,7 +104,7 @@ int mtk_mhal_mbox_fifo_write(void __iomem *base,
 		mbox_err("buf is null\n");
 		return -MBOX_EPTR;
 	}
-	if (type >= MBOX_TR_MAX || type < MBOX_TR_CMD_ONLY) {
+	if (type >= MBOX_TR_MAX) {
 		mbox_err("type is out of range, type:%d\n", type);
 		return -MBOX_EDEFAULT;
 	}
@@ -167,7 +167,7 @@ int mtk_mhal_mbox_ioctl(void __iomem *base,
 		mbox_err("base is null\n");
 		return -MBOX_EPTR;
 	}
-	if (ctrl != MBOX_IOSET_SEM_POST && ctrl >= MBOX_IOSET_NE_THRS
+	if (ctrl != MBOX_IOSET_SEM_POST
 		&& ctrl <= MBOX_IOGET_ACPT_FIFO_CNT && !arg) {
 		mbox_err("arg is null\n");
 		return -MBOX_EPTR;

@@ -1,5 +1,5 @@
 /*
- * (C) 2005-2019 MediaTek Inc. All rights reserved.
+ * (C) 2005-2020 MediaTek Inc. All rights reserved.
  *
  * Copyright Statement:
  *
@@ -243,6 +243,7 @@ int mtk_os_hal_adc_ctlr_deinit(void)
 		/* Disable ADC IRQ */
 		NVIC_DisableIRQ((IRQn_Type)CM4_IRQ_ADC);
 	}
+
 	ret = mtk_mhal_adc_stop(ctlr_rtos->ctlr);
 	if (ret)
 		return ret;
@@ -254,6 +255,9 @@ int mtk_os_hal_adc_ctlr_deinit(void)
 	ret = mtk_mhal_adc_disable_clk(ctlr_rtos->ctlr);
 	if (ret)
 		return ret;
+
+	if (ctlr_rtos->ctlr->adc_fsm_parameter->fifo_mode == ADC_FIFO_DMA)
+		vPortFree(ctlr_rtos->ctlr->adc_fsm_parameter->dma_vfifo_addr);
 
 	return 0;
 }
@@ -354,7 +358,8 @@ int mtk_os_hal_adc_period_get_data(u32 (*rx_buf)[32], u32 *length)
 	for (channel_count = 0; channel_count < ADC_CHANNEL_MAX;
 			channel_count++) {
 		if (ctlr->adc_fsm_parameter->channel_map & BIT(channel_count)) {
-			ret = mtk_mhal_adc_period_get_data(ctlr, channel_count,
+			ret = mtk_mhal_adc_period_get_data(ctlr,
+				(adc_channel)channel_count,
 				rx_buf[channel_count], &size);
 		if (ret)
 			return ret;

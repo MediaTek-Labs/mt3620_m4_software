@@ -1,5 +1,5 @@
 /*
- * (C) 2005-2019 MediaTek Inc. All rights reserved.
+ * (C) 2005-2020 MediaTek Inc. All rights reserved.
  *
  * Copyright Statement:
  *
@@ -99,6 +99,10 @@ struct mtk_uart_controller_rtos {
 	/* the type based on OS */
 	QueueHandle_t xTX_Queue;
 	QueueHandle_t xRX_Queue;
+
+	/* flag for DMA TX/RX */
+	bool bTX_Running;
+	bool bRX_Running;
 };
 
 static struct mtk_uart_private
@@ -345,12 +349,12 @@ static int _mtk_os_hal_uart_wait_for_rx_done(
 }
 
 int mtk_os_hal_uart_dma_send_data(UART_PORT port_num,
-	u8 *data, u32 len, bool vff_mode)
+	u8 *data, u32 len, bool vff_mode, u32 timeout)
 {
 	struct mtk_uart_controller_rtos *ctlr_rtos =
 		_mtk_os_hal_uart_get_ctlr(port_num);
 	struct mtk_uart_controller *ctlr;
-	int ret, cnt;
+	int ret;
 
 	if (!ctlr_rtos)
 		return -UART_EPTR;
@@ -360,12 +364,24 @@ int mtk_os_hal_uart_dma_send_data(UART_PORT port_num,
 		return -UART_EPTR;
 
 	if (len >= 0x4000) {
-		printf("DMA max transfter size is 0x4000\n");
+		printf("DMA max transfter size is 0x4000!\r\n");
 		return -UART_EINVAL;
+	}
+
+	if (timeout == 0) {
+		printf("timeout parameter fail!\r\n");
+		return -UART_EINVAL;
+	}
+
+	if (ctlr_rtos->bRX_Running == true) {
+		printf("Error! RX DMA is ongoing.\r\n");
+		return -UART_ENXIO;
 	}
 
 	if (!ctlr_rtos->xTX_Queue)
 		ctlr_rtos->xTX_Queue = xSemaphoreCreateBinary();
+
+	ctlr_rtos->bTX_Running = true;
 
 	mtk_mhal_uart_dma_tx_callback_register(ctlr,
 				_mtk_os_hal_uart_dma_tx_callback,
@@ -387,11 +403,9 @@ int mtk_os_hal_uart_dma_send_data(UART_PORT port_num,
 	mtk_mhal_uart_dma_tx_config(ctlr);
 	mtk_mhal_uart_start_dma_tx(ctlr);
 
-	cnt = len / (ctlr->baudrate / 10) + 1000;
-
-	ret = _mtk_os_hal_uart_wait_for_tx_done(ctlr_rtos, cnt);
+	ret = _mtk_os_hal_uart_wait_for_tx_done(ctlr_rtos, timeout);
 	if (ret) {
-		printf("Take UART TX Semaphore timeout!\n");
+		/* printf("Take UART TX Semaphore timeout!\n"); */
 		mtk_mhal_uart_stop_dma_tx(ctlr);
 	}
 
@@ -402,17 +416,18 @@ int mtk_os_hal_uart_dma_send_data(UART_PORT port_num,
 	mtk_mhal_uart_release_dma_tx_ch(ctlr);
 
 	mtk_mhal_uart_set_dma(ctlr, false);
+	ctlr_rtos->bTX_Running = false;
 
 	return ctlr->mdata->tx_size;
 }
 
 int mtk_os_hal_uart_dma_get_data(UART_PORT port_num,
-	u8 *data, u32 len, bool vff_mode)
+	u8 *data, u32 len, bool vff_mode, u32 timeout)
 {
 	struct mtk_uart_controller_rtos *ctlr_rtos =
 		_mtk_os_hal_uart_get_ctlr(port_num);
 	struct mtk_uart_controller *ctlr;
-	int ret, cnt;
+	int ret;
 
 	if (!ctlr_rtos)
 		return -UART_EPTR;
@@ -422,12 +437,24 @@ int mtk_os_hal_uart_dma_get_data(UART_PORT port_num,
 		return -UART_EPTR;
 
 	if (len >= 0x4000) {
-		printf("DMA max transfter size is 0x4000\n");
+		printf("DMA max transfter size is 0x4000!\r\n");
 		return -UART_EINVAL;
+	}
+
+	if (timeout == 0) {
+		printf("timeout parameter fail!\r\n");
+		return -UART_EINVAL;
+	}
+
+	if (ctlr_rtos->bTX_Running == true) {
+		printf("Error! TX DMA is ongoing.\r\n");
+		return -UART_ENXIO;
 	}
 
 	if (!ctlr_rtos->xRX_Queue)
 		ctlr_rtos->xRX_Queue = xSemaphoreCreateBinary();
+
+	ctlr_rtos->bRX_Running = true;
 
 	mtk_mhal_uart_dma_rx_callback_register(ctlr,
 				_mtk_os_hal_uart_dma_rx_callback,
@@ -449,12 +476,9 @@ int mtk_os_hal_uart_dma_get_data(UART_PORT port_num,
 	mtk_mhal_uart_dma_rx_config(ctlr);
 	mtk_mhal_uart_start_dma_rx(ctlr);
 
-	cnt = len / (ctlr->baudrate / 10) + 5000;
-	printf("UART RX DMA Len:%d, timeout:%dms\n", len, cnt);
-
-	ret = _mtk_os_hal_uart_wait_for_rx_done(ctlr_rtos, cnt);
+	ret = _mtk_os_hal_uart_wait_for_rx_done(ctlr_rtos, timeout);
 	if (ret) {
-		printf("Take UART RX Semaphore timeout!\n");
+		/* printf("Take UART RX Semaphore timeout!\r\n"); */
 		mtk_mhal_uart_stop_dma_rx(ctlr);
 	}
 
@@ -465,8 +489,8 @@ int mtk_os_hal_uart_dma_get_data(UART_PORT port_num,
 	mtk_mhal_uart_release_dma_rx_ch(ctlr);
 
 	mtk_mhal_uart_set_dma(ctlr, false);
-
-	printf("rx_size: %d!\n", ctlr->mdata->rx_size);
+	ctlr_rtos->bRX_Running = false;
 
 	return ctlr->mdata->rx_size;
 }
+

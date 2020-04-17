@@ -1,5 +1,5 @@
 /*
- * (C) 2005-2019 MediaTek Inc. All rights reserved.
+ * (C) 2005-2020 MediaTek Inc. All rights reserved.
  *
  * Copyright Statement:
  *
@@ -90,8 +90,8 @@ static struct mtk_spi_config spi_default_config = {
 	.tx_mlsb = SPIM_TX_MSLB,
 	.slave_sel = SPI_SELECT_DEVICE_0,
 };
-static uint8_t spim_tx_buf[SPIM_FULL_DUPLEX_MAX_LEN];
-static uint8_t spim_rx_buf[SPIM_FULL_DUPLEX_MAX_LEN];
+static uint8_t *spim_tx_buf;
+static uint8_t *spim_rx_buf;
 static volatile int g_async_done_flag;
 
 /****************************************************************************/
@@ -197,6 +197,13 @@ static void spim_task(void *pParameters)
 
 	printf("SPI master sync/async transfer test with legth %d ~ %d.\n",
 			SPIM_FULL_DUPLEX_MIN_LEN, SPIM_FULL_DUPLEX_MAX_LEN);
+
+	spim_tx_buf = pvPortMalloc(SPIM_FULL_DUPLEX_MAX_LEN);
+	spim_rx_buf = pvPortMalloc(SPIM_FULL_DUPLEX_MAX_LEN);
+	if (!spim_tx_buf || !spim_rx_buf) {
+		printf("spim buf malloc fail.\n");
+		return;
+	}
 	while (1) {
 		err = 0;
 		vTaskDelay(pdMS_TO_TICKS(1000));

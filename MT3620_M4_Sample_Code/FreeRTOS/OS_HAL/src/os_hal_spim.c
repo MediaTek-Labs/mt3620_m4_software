@@ -1,5 +1,5 @@
 /*
- * (C) 2005-2019 MediaTek Inc. All rights reserved.
+ * (C) 2005-2020 MediaTek Inc. All rights reserved.
  *
  * Copyright Statement:
  *
@@ -284,7 +284,6 @@ int mtk_os_hal_spim_ctlr_init(spim_num bus_num)
 
 	/* Allocated by pvPortMalloc to guard memory is in sram */
 	ctlr->dma_tmp_tx_buf = pvPortMalloc(MTK_SPIM_DMA_BUFFER_BYTES);
-	ctlr->dma_tmp_rx_buf = pvPortMalloc(MTK_SPIM_DMA_BUFFER_BYTES);
 
 	ctlr->base = (void __iomem *)spim_base_addr[bus_num];
 	ctlr->cg_base = (void __iomem *)cg_base_addr[bus_num];
@@ -321,7 +320,6 @@ int mtk_os_hal_spim_ctlr_deinit(spim_num bus_num)
 	mtk_mhal_spim_release_dma_chan(ctlr);
 
 	vPortFree(ctlr->dma_tmp_tx_buf);
-	vPortFree(ctlr->dma_tmp_rx_buf);
 
 	ctlr_rtos->ctlr = NULL;
 

@@ -20,6 +20,7 @@ static void ReceiveMessage(u32 *command, u32 *data)
 {
 	struct mbox_fifo_item buf;
 	u32 count;
+	int ret;
 
 	/* FIFO_POP_CNT */
 	mtk_os_hal_mbox_ioctl(OS_HAL_MBOX_CH0, MBOX_IOGET_ACPT_FIFO_CNT,
@@ -30,7 +31,10 @@ static void ReceiveMessage(u32 *command, u32 *data)
 			MBOX_IOGET_ACPT_FIFO_CNT, &count);
 	}
 
-	mtk_os_hal_mbox_fifo_read(OS_HAL_MBOX_CH0, &buf, MBOX_TR_DATA_CMD);
+	ret = mtk_os_hal_mbox_fifo_read(OS_HAL_MBOX_CH0, &buf,
+					MBOX_TR_DATA_CMD);
+	if (ret != MBOX_OK)
+		printf("ReceiveMessage: read fifo failed\n");
 
 	/* DATA_POP0 */
 	*data = buf.data;

@@ -1,5 +1,5 @@
 /*
- * (C) 2005-2019 MediaTek Inc. All rights reserved.
+ * (C) 2005-2020 MediaTek Inc. All rights reserved.
  *
  * Copyright Statement:
  *
@@ -65,6 +65,10 @@
 
 #define MBOX_THRS_MASK				(0x0F)
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 void mtk_hdl_mbox_reset(void __iomem *base);
 
 void mtk_hdl_mbox_set_ne_thrs(void __iomem *base, u32 value);
@@ -110,5 +114,9 @@ void mtk_hdl_mbox_cmd_fifo_post(void __iomem *base, u32 cmd);
 void mtk_hdl_mbox_data_fifo_acpt(void __iomem *base, u32 *data);
 
 void mtk_hdl_mbox_cmd_fifo_acpt(void __iomem *base, u32 *cmd);
+
+#ifdef __cplusplus
+}
+#endif
 
 #endif /* __HDL_MBOX_H__ */

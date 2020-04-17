@@ -34,6 +34,10 @@ typedef struct {
 /* <summary>Blocks inside the shared buffer have this alignment.</summary> */
 #define RINGBUFFER_ALIGNMENT 16
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 /* <summary>
  * <para>Gets the inbound and outbound buffers used to communicate with the
  * high-level application.  This function blocks until that data is available
@@ -95,5 +99,9 @@ int EnqueueData(BufferHeader *inbound, BufferHeader *outbound,
  */
 int DequeueData(BufferHeader *outbound, BufferHeader *inbound,
 		u32 bufSize, void *dest, u32 *dataSize);
+
+#ifdef __cplusplus
+}
+#endif
 
 #endif /* #ifndef __OS_HAL_MBOX_SHARED_MEM_H__ */

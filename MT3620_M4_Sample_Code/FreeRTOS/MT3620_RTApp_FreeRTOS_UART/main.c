@@ -1,5 +1,5 @@
 /*
- * (C) 2005-2019 MediaTek Inc. All rights reserved.
+ * (C) 2005-2020 MediaTek Inc. All rights reserved.
  *
  * Copyright Statement:
  *
@@ -43,11 +43,12 @@
 /****************************************************************************/
 /* Configurations */
 /****************************************************************************/
-static const uint8_t uart_port_num = OS_HAL_UART_ISU0;
-static const uint8_t uart_dat_len = UART_DATA_8_BITS;
-static const uint8_t uart_parity = UART_NONE_PARITY;
-static const uint8_t uart_stop_bit = UART_STOP_1_BIT;
+static const UART_PORT uart_port_num = OS_HAL_UART_ISU0;
+static const mhal_uart_data_len uart_dat_len = UART_DATA_8_BITS;
+static const mhal_uart_parity uart_parity = UART_NONE_PARITY;
+static const mhal_uart_stop_bit uart_stop_bit = UART_STOP_1_BIT;
 static const uint32_t uart_baudrate = 115200;
+static const uint32_t uart_dma_timeout = 100; /* 100 ms */
 
 #define APP_STACK_SIZE_BYTES		(1024 / 4)
 
@@ -65,6 +66,7 @@ void vApplicationMallocFailedHook(void)
 {
 	printf("%s\n", __func__);
 }
+
 /* Hook for "printf". */
 void _putchar(char character)
 {
@@ -87,18 +89,18 @@ static void uart_rx_task(void *pParameters)
 
 		/* Get UART input */
 		data = mtk_os_hal_uart_get_char(uart_port_num);
-
 		printf("UART Rx: %c\n", data);
 	}
 }
 
 static void uart_tx_task(void *pParameters)
 {
-	#define UART_TX_DMA_BUF_SIZE 64
+	#define DMA_BUF_SIZE 64
 	uint8_t counter = 0;
+	int32_t ret = 0;
 	char *dma_buf = NULL;
 
-	dma_buf = pvPortMalloc(UART_TX_DMA_BUF_SIZE);
+	dma_buf = pvPortMalloc(DMA_BUF_SIZE);
 	printf("UART Tx task started, print log for every second.\n");
 	while (1) {
 		/* Delay 1000ms */
@@ -107,12 +109,17 @@ static void uart_tx_task(void *pParameters)
 		/* print log to UART by printf, _putchar() will be invoked. */
 		printf("UART Tx(printf) Counter ... %d\n", counter++);
 
+		/* Delay 1000ms */
+		vTaskDelay(pdMS_TO_TICKS(1000));
+
 		/* print log to UART by DMA, _putchar will not be invoked. */
-		memset(dma_buf, 0, UART_TX_DMA_BUF_SIZE);
-		snprintf(dma_buf, UART_TX_DMA_BUF_SIZE,
-			"\rUART Tx(DMA)    Counter ... %d\r\n", counter++);
-		mtk_os_hal_uart_dma_send_data(uart_port_num, (u8 *)dma_buf,
-			UART_TX_DMA_BUF_SIZE, 0);
+		memset(dma_buf, 0, DMA_BUF_SIZE);
+		snprintf(dma_buf, DMA_BUF_SIZE, "\rUART Tx(DMA)    Counter ... %d\r\n", counter++);
+		ret = mtk_os_hal_uart_dma_send_data(uart_port_num, (u8 *)dma_buf, DMA_BUF_SIZE, 0, uart_dma_timeout);
+		if (ret < 0)
+			printf("UART Tx(DMA) Error! (%ld)\n", ret);
+		else if (ret != DMA_BUF_SIZE)
+			printf("UART Tx(DMA) not completed! Byte transferred:%ld)\n", ret);
 	}
 }
 
@@ -123,18 +130,15 @@ _Noreturn void RTCoreMain(void)
 
 	/* Init UART */
 	mtk_os_hal_uart_ctlr_init(uart_port_num);
-	mtk_os_hal_uart_set_format(uart_port_num, uart_dat_len, uart_parity,
-								uart_stop_bit);
+	mtk_os_hal_uart_set_format(uart_port_num, uart_dat_len, uart_parity, uart_stop_bit);
 	mtk_os_hal_uart_set_baudrate(uart_port_num, uart_baudrate);
 	printf("\nFreeRTOS UART Demo\n");
 
 	/* Create UART Tx Task */
-	xTaskCreate(uart_tx_task, "UART Tx Task", APP_STACK_SIZE_BYTES, NULL, 5,
-				NULL);
+	xTaskCreate(uart_tx_task, "UART Tx Task", APP_STACK_SIZE_BYTES, NULL, 5, NULL);
 
 	/* Create UART Rx Task */
-	xTaskCreate(uart_rx_task, "UART Rx Task", APP_STACK_SIZE_BYTES, NULL, 4,
-				NULL);
+	xTaskCreate(uart_rx_task, "UART Rx Task", APP_STACK_SIZE_BYTES, NULL, 4, NULL);
 
 	vTaskStartScheduler();
 	for (;;)

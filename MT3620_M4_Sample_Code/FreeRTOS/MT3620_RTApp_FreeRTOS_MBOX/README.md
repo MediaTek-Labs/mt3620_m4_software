@@ -3,6 +3,8 @@
 This sample demonstrates how to use MBOX on an MT3620 real-time core.
 - There are 1 HLApp and 2 RTApp (RTAppA & RTAppB) included in this sample code.
 - Both RTAppA and RTAppB listens for incoming mailbox message from HLApp, once RTAppA or RTAppB receives mailbox message from HLApp, message content is printed to UART and then send back to HLApp.
+- The RTAppA also sends mailbox message to RTAppB, once RTAppB receives mailbox message from RTAppA, message content is printed to UART and then send back to RTAppA.
+- Once RTAppA receives mailbox message from RTAppB, message content is printed to UART.
 - ISU0 UART interface is used by RTAppA to print the output log.
 - ISU1 UART interface is used by RTAppB to print the output log.  
 (Note, UART port number in main.c could be changed from **OS_HAL_UART_ISU0** to **OS_HAL_UART_PORT0** to use M4 dedicate UART port.)  
@@ -25,13 +27,16 @@ Please refer to the [MT3620 M4 API Rerference Manual](https://support.mediatek.c
     4. Select **CMakeList.txt** and then click **Open**.
     5. Wait few seconds until Visual Studio finish create the project files.
     6. From **Build** menu, select **Build ALL (Ctrl+Shift+B)**.
+    7. Repeat the above for RTAppA and RTAppB and HLApp.
 
 * **Download RTApp**  
     Enter the following commands in the "Azure Sphere Developer Command Prompt":
-    1. azsphere dev sideload delete
-    2. azsphere dev sideload deploy --imagepackage .\MT3620_RTApp_FreeRTOS_MBOX\RTAppA\out\ARM-Debug-4+Beta2001\Azure_Sphere_RTcore_FreeRTOS_MBOX_A.imagepackage
-    3. azsphere dev sideload deploy --imagepackage .\MT3620_RTApp_FreeRTOS_MBOX\RTAppB\out\ARM-Debug-4+Beta2001\Azure_Sphere_RTcore_FreeRTOS_MBOX_B.imagepackage
-    4. azsphere dev app show-status
+```
+azsphere dev sideload delete
+azsphere dev sideload deploy --imagepackage .\MT3620_RTApp_FreeRTOS_MBOX\RTAppA\out\ARM-Debug-4+Beta2001\Azure_Sphere_RTcore_FreeRTOS_MBOX_A.imagepackage
+azsphere dev sideload deploy --imagepackage .\MT3620_RTApp_FreeRTOS_MBOX\RTAppB\out\ARM-Debug-4+Beta2001\Azure_Sphere_RTcore_FreeRTOS_MBOX_B.imagepackage
+azsphere dev app show-status
+```
 
 * **Run the sample**  
     1. From the Visual Studio instance of the HLApp, click **Select Start Item** and then select **GDB Debugger (HLCore)**.  

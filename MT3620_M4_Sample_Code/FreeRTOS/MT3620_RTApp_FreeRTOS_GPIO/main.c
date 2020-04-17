@@ -1,5 +1,5 @@
 /*
- * (C) 2005-2019 MediaTek Inc. All rights reserved.
+ * (C) 2005-2020 MediaTek Inc. All rights reserved.
  *
  * Copyright Statement:
  *
@@ -44,11 +44,11 @@
 /******************************************************************************/
 /* Configurations */
 /******************************************************************************/
-static const uint8_t uart_port_num = OS_HAL_UART_ISU0;
-static const uint8_t gpio_led_red = OS_HAL_GPIO_8;
-static const uint8_t gpio_led_green = OS_HAL_GPIO_9;
-static const uint8_t gpio_button_a = OS_HAL_GPIO_12;
-static const uint8_t gpio_button_b = OS_HAL_GPIO_13;
+static const UART_PORT uart_port_num = OS_HAL_UART_ISU0;
+static const os_hal_gpio_pin gpio_led_red = OS_HAL_GPIO_8;
+static const os_hal_gpio_pin gpio_led_green = OS_HAL_GPIO_9;
+static const os_hal_gpio_pin gpio_button_a = OS_HAL_GPIO_12;
+static const os_hal_gpio_pin gpio_button_b = OS_HAL_GPIO_13;
 
 #define APP_STACK_SIZE_BYTES (1024 / 4)
 
@@ -77,67 +77,36 @@ void _putchar(char character)
 /****************************************************************************/
 /* Functions */
 /****************************************************************************/
-static int gpio_output(u8 gpio_no, u8 level)
-{
-	int ret;
-
-	ret = mtk_os_hal_gpio_request(gpio_no);
-	if (ret != 0) {
-		printf("request gpio[%d] fail\n", gpio_no);
-		return ret;
-	}
-	mtk_os_hal_gpio_set_direction(gpio_no, OS_HAL_GPIO_DIR_OUTPUT);
-	mtk_os_hal_gpio_set_output(gpio_no, level);
-	ret = mtk_os_hal_gpio_free(gpio_no);
-	if (ret != 0) {
-		printf("free gpio[%d] fail\n", gpio_no);
-		return ret;
-	}
-	return 0;
-}
-
-static int gpio_input(u8 gpio_no, os_hal_gpio_data *pvalue)
-{
-	u8 ret;
-
-	ret = mtk_os_hal_gpio_request(gpio_no);
-	if (ret != 0) {
-		printf("request gpio[%d] fail\n", gpio_no);
-		return ret;
-	}
-	mtk_os_hal_gpio_set_direction(gpio_no, OS_HAL_GPIO_DIR_INPUT);
-	vTaskDelay(pdMS_TO_TICKS(10));
-
-	mtk_os_hal_gpio_get_input(gpio_no, pvalue);
-
-	ret = mtk_os_hal_gpio_free(gpio_no);
-	if (ret != 0) {
-		printf("free gpio[%d] fail\n", gpio_no);
-		return ret;
-	}
-
-	return 0;
-}
-
 static void gpio_task(void *pParameters)
 {
 	os_hal_gpio_data value = 0;
 
 	printf("GPIO Task Started\n");
+
+	/* Init GPIO */
+	mtk_os_hal_gpio_request(gpio_led_red);
+	mtk_os_hal_gpio_request(gpio_led_green);
+	mtk_os_hal_gpio_request(gpio_button_a);
+	mtk_os_hal_gpio_request(gpio_button_b);
+	mtk_os_hal_gpio_set_direction(gpio_led_red, OS_HAL_GPIO_DIR_OUTPUT);
+	mtk_os_hal_gpio_set_direction(gpio_led_green, OS_HAL_GPIO_DIR_OUTPUT);
+	mtk_os_hal_gpio_set_direction(gpio_button_a, OS_HAL_GPIO_DIR_INPUT);
+	mtk_os_hal_gpio_set_direction(gpio_button_b, OS_HAL_GPIO_DIR_INPUT);
+
 	while (1) {
 		/* Get Button_A status and set LED Red. */
-		gpio_input(gpio_button_a, &value);
+		mtk_os_hal_gpio_get_input(gpio_button_a, &value);
 		if (value == OS_HAL_GPIO_DATA_HIGH)
-			gpio_output(gpio_led_red, OS_HAL_GPIO_DATA_HIGH);
+			mtk_os_hal_gpio_set_output(gpio_led_red, OS_HAL_GPIO_DATA_HIGH);
 		else
-			gpio_output(gpio_led_red, OS_HAL_GPIO_DATA_LOW);
+			mtk_os_hal_gpio_set_output(gpio_led_red, OS_HAL_GPIO_DATA_LOW);
 
 		/* Get Button_B status and set LED Green. */
-		gpio_input(gpio_button_b, &value);
+		mtk_os_hal_gpio_get_input(gpio_button_b, &value);
 		if (value == OS_HAL_GPIO_DATA_HIGH)
-			gpio_output(gpio_led_green, OS_HAL_GPIO_DATA_LOW);
+			mtk_os_hal_gpio_set_output(gpio_led_green, OS_HAL_GPIO_DATA_LOW);
 		else
-			gpio_output(gpio_led_green, OS_HAL_GPIO_DATA_HIGH);
+			mtk_os_hal_gpio_set_output(gpio_led_green, OS_HAL_GPIO_DATA_HIGH);
 
 		/* Delay for 100ms */
 		vTaskDelay(pdMS_TO_TICKS(100));
@@ -151,11 +120,11 @@ _Noreturn void RTCoreMain(void)
 
 	/* Init UART */
 	mtk_os_hal_uart_ctlr_init(uart_port_num);
+
 	printf("\nFreeRTOS GPIO Demo\n");
 
 	/* Create GPIO Task */
-	xTaskCreate(gpio_task, "GPIO Task",
-		    APP_STACK_SIZE_BYTES, NULL, 4, NULL);
+	xTaskCreate(gpio_task, "GPIO Task", APP_STACK_SIZE_BYTES, NULL, 4, NULL);
 
 	vTaskStartScheduler();
 	for (;;)

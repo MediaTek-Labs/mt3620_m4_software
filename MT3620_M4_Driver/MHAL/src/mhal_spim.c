@@ -1,5 +1,5 @@
 /*
- * (C) 2005-2019 MediaTek Inc. All rights reserved.
+ * (C) 2005-2020 MediaTek Inc. All rights reserved.
  *
  * Copyright Statement:
  *
@@ -37,22 +37,6 @@
 #include "mhal_spim.h"
 #include "mhal_osai.h"
 
-/*
-  * mt3620 spim hw the max transfer len is 32bytes in half duplex,
-  * 16bytes in full duplex.
-  * But SW can workaround:support hw multi-transfer in one sw spi_transfer
-  * by dma mode.
-  * MAX_SW_LOOP_CNT is the config that SW can support how many multi-transfer
-  * in one sw spi_transfer.
-  * Why we alloc mdata->tx(rx)_buf here?
-  * The reason is:
-  * when can osai_mem_alloc in _mtk_mhal_spim_fill_dma_buffer,
-  * osai_mem_free should be called in dma_rx_callback. But osai_mem_free is not
-  * safety in freeRTos, so SW malloc memory firstly
-  * in mtk_mhal_spim_alloc_controller.
-*/
-#define MAX_SW_LOOP_CNT		1
-
 enum spi_dma_transfer_direction {
 	DMA_MEM_TO_DEV = 0,
 	DMA_DEV_TO_MEM = 1,
@@ -86,8 +70,7 @@ static int _mtk_mhal_spim_xfer_arg_check(struct mtk_spi_transfer *xfer)
 		}
 	} else if (!xfer->tx_buf && xfer->rx_buf) {
 		/* check half duplex opcode len valid */
-		if ((xfer->opcode_len > MTK_SPIM_MAX_OPCODE_LEN) ||
-			(xfer->opcode_len < MTK_SPIM_MIN_RX_OPCODE_LEN_HALF)) {
+		if (xfer->opcode_len > MTK_SPIM_MAX_OPCODE_LEN) {
 			spim_err(
 				"rx only opcode 0~4bytes, now %dbytes.\n",
 				xfer->opcode_len);
@@ -111,8 +94,7 @@ static int _mtk_mhal_spim_xfer_arg_check(struct mtk_spi_transfer *xfer)
 			return -SPIM_ELENGTH;
 		}
 
-		if ((xfer->len > MTK_SPIM_MAX_LENGTH_ONE_TRANS_HALF) ||
-			(xfer->len < 0)) {
+		if (xfer->len > MTK_SPIM_MAX_LENGTH_ONE_TRANS_HALF) {
 			spim_err(
 				"tx only data should be 0~32bytes, now %dbytes.\n",
 				 xfer->len);
@@ -294,7 +276,7 @@ int mtk_mhal_spim_fifo_transfer_one(struct mtk_spi_controller *ctlr,
 					  (u8 *) xfer->rx_buf, xfer->len);
 
 	if (xfer->tx_buf ||
-	    (!xfer->tx_buf && !xfer->rx_buf && (xfer->opcode != 0)))
+	    (!xfer->tx_buf && !xfer->rx_buf && (xfer->opcode_len != 0)))
 		mtk_hdl_spim_enable_fifo_transfer(ctlr->base, xfer->opcode,
 						  0, xfer->opcode_len,
 						  (u8 *) xfer->tx_buf,
@@ -313,36 +295,12 @@ int mtk_mhal_spim_fifo_transfer_one(struct mtk_spi_controller *ctlr,
 
 static void _mtk_mhal_spim_dma_rx_callback(void *data)
 {
-	int i = 0, cnt = 0, remainder = 0, max_len = 0;
 	struct mtk_spi_controller *ctlr = data;
 	struct mtk_spi_transfer *xfer = ctlr->current_xfer;
 	struct mtk_spi_private *mdata = ctlr->mdata;
 
 	if (!xfer->rx_buf)
 		return;
-
-	if (xfer->tx_buf && xfer->rx_buf)
-		max_len = MTK_SPIM_MAX_LENGTH_ONE_TRANS_FULL;
-	else
-		max_len = MTK_SPIM_MAX_LENGTH_ONE_TRANS_HALF;
-
-	cnt = xfer->len / max_len;
-	if (xfer->len % max_len)
-		remainder = 1;
-
-	osai_invalid_cache(mdata->rx_buf, xfer->len);
-
-	i = 0;
-	while (cnt > 0) {
-		memcpy(xfer->rx_buf + i * max_len,
-		       mdata->rx_buf + i * max_len, max_len);
-		i++;
-		cnt--;
-	}
-	if (remainder)
-		memcpy(xfer->rx_buf + i * max_len,
-		       mdata->rx_buf + i * max_len,
-		       xfer->len % max_len);
 
 	/* call OS-HAL done callback */
 	mdata->dma_done_callback(mdata->user_data);
@@ -466,91 +424,47 @@ static int _mtk_mhal_spim_dma_config(struct mtk_spi_controller *ctlr,
 static int _mtk_mhal_spim_fill_dma_buffer(struct mtk_spi_controller *ctlr,
 					  struct mtk_spi_transfer *xfer)
 {
-	u32 i, reg_val, cnt = 0, remainder = 0, total_cnt, tmp_len, max_len = 0;
 	struct mtk_spi_private *mdata = ctlr->mdata;
-	int ret = 0;
+	int reg_val, ret = 0;
 
-	/* tmp buffer init */
+	/* tx tmp buffer init */
 	mdata->tx_buf = ctlr->dma_tmp_tx_buf;
-	mdata->rx_buf = ctlr->dma_tmp_rx_buf;
 
 	ctlr->current_xfer = xfer;
 	mdata->xfer_len = xfer->len;
 
-	if (xfer->tx_buf && xfer->rx_buf)
-		max_len = MTK_SPIM_MAX_LENGTH_ONE_TRANS_FULL + xfer->opcode_len;
-	else
-		max_len = MTK_SPIM_MAX_LENGTH_ONE_TRANS_HALF + xfer->opcode_len;
+	memset(mdata->tx_buf, 0, MTK_SPIM_DMA_BUFFER_BYTES);
 
-	cnt = (xfer->len + xfer->opcode_len) / max_len;
-	if ((xfer->len + xfer->opcode_len) % max_len)
-		remainder = 1;
+	/* config opcode: 0DW=opcode */
+	memcpy(mdata->tx_buf, &xfer->opcode, xfer->opcode_len);
 
-	total_cnt = cnt + remainder;
+	/* config tx data: 1~8DW=tx data */
+	if (xfer->tx_buf)
+		memcpy(mdata->tx_buf + 4, xfer->tx_buf, xfer->len);
 
-	if (total_cnt > MAX_SW_LOOP_CNT) {
-		spim_err("spim support len=%dBytes(<%d)\n",
-			max_len * MAX_SW_LOOP_CNT, xfer->len);
-		return -SPIM_ELENGTH;
-	}
+	/* config 0x28 reg */
+	reg_val = osai_readl(SPI_REG_MASTER(ctlr->base));
+	memcpy(mdata->tx_buf + 36, &reg_val, 4);
 
-	memset(mdata->tx_buf, 0, MTK_SPIM_DMA_BUFFER_BYTES * total_cnt);
+	/* config  0x2c reg: cmd&mosi_bit_cnt&miso_bit_cnt */
+	reg_val = (xfer->opcode_len * 8) << SPI_MBCTL_CMD_SHIFT;
+	if (xfer->tx_buf)
+		reg_val |= (xfer->len * 8) << SPI_MBCTL_TXCNT_SHIFT;
+	if (xfer->rx_buf)
+		reg_val |= (xfer->len * 8) << SPI_MBCTL_RXCNT_SHIFT;
+	memcpy(mdata->tx_buf + 40, &reg_val, 4);
 
-	for (i = 0; i < total_cnt; i++) {
-		/* data should be like this:
-		 * [1]  opcode,byte1,byte2,byte3...byte16...bytes32
-		 * [2]  opcode,byte1,byte2,byte3...byte16...bytes32
-		 * [3]  opcode,byte1,byte2,byte3...
-		 * and so on
-		 */
+	/* config 0x0 reg */
+	reg_val = SPI_CTL_ADDR_SIZE_24BIT | SPI_CTL_START;
+	memcpy(mdata->tx_buf + 44, &reg_val, 4);
 
-		/*  get this transfer len */
-		if ((i == cnt) && (remainder == 1))
-			tmp_len = xfer->len % max_len;
-		else
-			tmp_len = max_len;
-
-		/* config opcode: 0DW=opcode */
-		memcpy(mdata->tx_buf + i * MTK_SPIM_DMA_BUFFER_BYTES,
-		       &xfer->opcode, xfer->opcode_len);
-
-		/* config tx data: 1~8DW=tx data */
-		if (xfer->tx_buf) {
-			memcpy(mdata->tx_buf + 4 +
-			       i * MTK_SPIM_DMA_BUFFER_BYTES,
-			       xfer->tx_buf + i * max_len, tmp_len);
-		}
-
-		/* config 0x28 reg */
-		reg_val = osai_readl(SPI_REG_MASTER(ctlr->base));
-		memcpy(mdata->tx_buf + 36 + i * MTK_SPIM_DMA_BUFFER_BYTES,
-		       &reg_val, 4);
-
-		/* config  0x2c reg: cmd&mosi_bit_cnt&miso_bit_cnt */
-		reg_val = (xfer->opcode_len * 8) << SPI_MBCTL_CMD_SHIFT;
-		if (xfer->tx_buf)
-			reg_val |= (xfer->len * 8) << SPI_MBCTL_TXCNT_SHIFT;
-		if (xfer->rx_buf)
-			reg_val |= (xfer->len * 8) << SPI_MBCTL_RXCNT_SHIFT;
-		memcpy(mdata->tx_buf + 40 + i * MTK_SPIM_DMA_BUFFER_BYTES,
-		       &reg_val, 4);
-
-		/* config 0x0 reg */
-		reg_val = SPI_CTL_ADDR_SIZE_24BIT | SPI_CTL_START;
-		memcpy(mdata->tx_buf + 44 + i * MTK_SPIM_DMA_BUFFER_BYTES,
-		       &reg_val, 4);
-	}
-
-	mtk_hdl_spim_print_packet("dma buffer", mdata->tx_buf,
-				   MTK_SPIM_DMA_BUFFER_BYTES);
+	mtk_hdl_spim_print_packet("dma buffer", mdata->tx_buf, MTK_SPIM_DMA_BUFFER_BYTES);
 
 	mdata->tx_dma = osai_get_phyaddr(mdata->tx_buf);
-	osai_clean_cache(mdata->tx_buf,
-			 MTK_SPIM_DMA_BUFFER_BYTES * MAX_SW_LOOP_CNT);
+	osai_clean_cache(mdata->tx_buf, MTK_SPIM_DMA_BUFFER_BYTES);
 
 	if (xfer->rx_buf) {
-		memset(mdata->rx_buf, 0, xfer->len);
-		mdata->rx_dma = osai_get_phyaddr(mdata->rx_buf);
+		mdata->rx_dma = osai_get_phyaddr(xfer->rx_buf);
 
 		ret = _mtk_mhal_spim_dma_config(ctlr, mdata->rx_dma,
 					  xfer->len,
@@ -562,7 +476,7 @@ static int _mtk_mhal_spim_fill_dma_buffer(struct mtk_spi_controller *ctlr,
 	}
 
 	ret = _mtk_mhal_spim_dma_config(ctlr, mdata->tx_dma,
-				  MTK_SPIM_DMA_BUFFER_BYTES * total_cnt,
+				  MTK_SPIM_DMA_BUFFER_BYTES,
 				  DMA_MEM_TO_DEV);
 	if (ret) {
 		spim_err("%s:tx_dma_config fail.\n", __func__);
@@ -640,6 +554,7 @@ int mtk_mhal_spim_disable_clk(struct mtk_spi_controller *ctlr)
 		spim_err("%s ctlr->cg_base is NULL\n", __func__);
 		return -SPIM_EPTR;
 	}
+
 	mtk_hdl_spim_disable_clk(ctlr->cg_base);
 
 	return 0;

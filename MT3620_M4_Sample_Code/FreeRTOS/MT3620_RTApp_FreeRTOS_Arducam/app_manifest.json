@@ -1,0 +1,14 @@
+{
+  "SchemaVersion": 1,
+  "Name": "MT3620_RTApp_FreeRTOS_Arducam",
+  "ComponentId": "202D38D8-2308-414F-8FA0-AC5548FCBFD1",
+  "EntryPoint": "/bin/app",
+  "CmdArgs": [],
+  "Capabilities": {
+    "Gpio": [ 12, 13 ],
+    "Uart": [ "ISU0" ],
+    "I2cMaster": [ "ISU2" ],
+    "SpiMaster": [ "ISU1" ]
+  },
+  "ApplicationType": "RealTimeCapable"
+}

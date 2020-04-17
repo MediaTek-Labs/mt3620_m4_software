@@ -1,5 +1,5 @@
 /*
- * (C) 2005-2019 MediaTek Inc. All rights reserved.
+ * (C) 2005-2020 MediaTek Inc. All rights reserved.
  *
  * Copyright Statement:
  *
@@ -121,10 +121,8 @@ void pwm_task(void *pParameters)
 
 	/* Init PWM */
 	ret |= mtk_os_hal_pwm_ctlr_init(pwm_group_led_red,
-					pwm_bitmap_led_red);
-	ret |= mtk_os_hal_pwm_ctlr_init(pwm_group_led_green,
-					pwm_bitmap_led_green);
-	ret |= mtk_os_hal_pwm_ctlr_init(pwm_group_led_blue,
+					pwm_bitmap_led_red |
+					pwm_bitmap_led_green |
 					pwm_bitmap_led_blue);
 	if (ret) {
 		printf("mtk_os_hal_pwm_ctlr_init failed\n");
@@ -232,10 +230,8 @@ void pwm_task(void *pParameters)
 
 	/* Deinit PWM */
 	ret |= mtk_os_hal_pwm_ctlr_deinit(pwm_group_led_red,
-					  pwm_bitmap_led_red);
-	ret |= mtk_os_hal_pwm_ctlr_deinit(pwm_group_led_green,
-					  pwm_bitmap_led_green);
-	ret |= mtk_os_hal_pwm_ctlr_deinit(pwm_group_led_blue,
+					  pwm_bitmap_led_red |
+					  pwm_bitmap_led_green |
 					  pwm_bitmap_led_blue);
 	if (ret) {
 		printf("mtk_os_hal_pwm_ctlr_deinit failed\n");

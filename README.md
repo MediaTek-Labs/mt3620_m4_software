@@ -1,7 +1,7 @@
 # MediaTek MT3620 M4 Driver & Real-Time Application Sample Code
 ### Current Status
 * Avaiable sample code
-    * **FreeRTOS**: GPIO / GPT / UART / SPIM / PWM / I2C / I2S / DMA / ADC / MBOX / LP(Low Power)
+    * **FreeRTOS**: GPIO / GPT / UART / SPIM / PWM / I2C / I2S / DMA / ADC / MBOX / LP(Low Power) / C++ / Arducam / Accelerometer
     * **Bare Metal**: GPIO / Hello World
 * Known Issue
     * External interrupt is not working.

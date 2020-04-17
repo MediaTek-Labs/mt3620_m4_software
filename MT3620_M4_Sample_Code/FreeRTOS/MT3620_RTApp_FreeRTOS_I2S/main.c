@@ -1,5 +1,5 @@
 /*
- * (C) 2005-2019 MediaTek Inc. All rights reserved.
+ * (C) 2005-2020 MediaTek Inc. All rights reserved.
  *
  * Copyright Statement:
  *
@@ -182,7 +182,8 @@ static int i2s_loopback_check_rx_buffer(unsigned int *u4buf,
 	cmp_value = seed + ((seed) << 8) + ((seed) << 16) + ((seed) << 24);
 	for (i = index+1; i < u4length-index; i++) {
 		if (u4buf[i] != cmp_value) {
-			printf("fail rx_buffer! [0x%x]\n", seed);
+		printf("fail rx_buffer[0x%x],target[0x%x]\n",
+			u4buf[i], cmp_value);
 			i2s_loopback_test_stop = 1;
 			return -1;
 		}
@@ -307,6 +308,7 @@ static int i2s_loopback_test(i2s_no i2s_port)
 						((I2S_RX_BUFFER_PERIOD>>2)*2);
 			} else {
 				printf("i2s_rx_index error!\n");
+				return -1;
 			}
 
 			/* Check the received data */
@@ -319,15 +321,15 @@ static int i2s_loopback_test(i2s_no i2s_port)
 		}
 
 		/* Check test stop condition */
-		if (i2s_rx_counter >= 20 || i2s_loopback_test_stop)
+		if (i2s_rx_counter >= 200 || i2s_loopback_test_stop)
 			break;
 	}
 
 	if (i2s_loopback_test_stop)
-		printf("[%d]I2S Loopback Test Result: Failed!\n\n",
+		printf("[%d]I2S Loopback Test Result: Failed!\n",
 			i2s_test_counter);
 	else
-		printf("[%d]I2S Loopback Test Result: Success.\n\n",
+		printf("[%d]I2S Loopback Test Result: Success.\n",
 			i2s_test_counter);
 
 	result = mtk_os_hal_disable_i2s(i2s_port);
@@ -336,12 +338,18 @@ static int i2s_loopback_test(i2s_no i2s_port)
 			result, i2s_test_counter);
 		return result;
 	}
-	return 0;
+	if (i2s_loopback_test_stop)
+		return -1;
+	else
+		return 0;
 }
 
 static void I2STask(void *pParameters)
 {
 	unsigned int result;
+
+	/*cpu usage is too high after software reboot*/
+	vTaskDelay(pdMS_TO_TICKS(2000));
 
 	printf("I2S Task Started.\n");
 
@@ -363,25 +371,25 @@ static void I2STask(void *pParameters)
 	audio_param_default.rx_buffer_addr = i2srxbuf;
 
 	while (1) {
-		vTaskDelay(pdMS_TO_TICKS(3000));
+		vTaskDelay(pdMS_TO_TICKS(10));
 		/* Init I2S */
 		result = mtk_os_hal_request_i2s(i2s_port_num);
 		if (result) {
-			printf("mtk_os_hal_request_i2s fail : %x\n", result);
+			printf("mtk_os_hal_request_i2s fail : %d\n", result);
 			goto test_failed;
 		}
 
 		/* Start I2S loopback test*/
 		result = i2s_loopback_test(i2s_port_num);
 		if (result) {
-			printf("i2s_loopback_test fail : %x\n", result);
+			printf("i2s_loopback_test fail : %d\n", result);
 			goto test_failed;
 		}
 
 		/* De-Init I2S */
 		result = mtk_os_hal_free_i2s(i2s_port_num);
 		if (result) {
-			printf("mtk_os_hal_free_i2s fail : %x\n", result);
+			printf("mtk_os_hal_free_i2s fail : %d\n", result);
 			goto test_failed;
 		}
 	}
