@@ -156,13 +156,13 @@ static ExitCode InitHandlers(void)
     }
 
     // Open connection to real-time capable application.
-    sockFd = Application_Socket(rtAppComponentId);
+    sockFd = Application_Connect(rtAppComponentId);
     if (sockFd == -1) {
         Log_Debug("ERROR: Unable to create socket: %d (%s)\n", errno, strerror(errno));
         return ExitCode_Init_Socket;
     }
 
-    sockFd_B = Application_Socket(rtAppComponentId_B);
+    sockFd_B = Application_Connect(rtAppComponentId_B);
     if (sockFd_B == -1) {
         Log_Debug("ERROR: Unable to create socket: %d (%s)\n", errno, strerror(errno));
         return ExitCode_Init_Socket;

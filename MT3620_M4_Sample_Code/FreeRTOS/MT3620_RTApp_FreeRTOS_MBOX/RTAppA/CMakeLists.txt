@@ -12,6 +12,10 @@ PROJECT(Azure_Sphere_RTcore_FreeRTOS_MBOX_A C)
 ADD_COMPILE_DEFINITIONS(OSAI_FREERTOS)
 ADD_LINK_OPTIONS(-specs=nano.specs -specs=nosys.specs)
 
+# Configure build specifics
+azsphere_configure_tools(TOOLS_REVISION "20.04")
+azsphere_configure_api(TARGET_API_SET "5+Beta2004")
+
 # Executable
 ADD_EXECUTABLE(${PROJECT_NAME}
                main.c
