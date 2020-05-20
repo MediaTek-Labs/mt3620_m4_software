@@ -1,6 +1,6 @@
 {
   "SchemaVersion": 1,
-  "Name": "MT3620_RTApp_FreeRTOS_PWM",
+  "Name": "FreeRTOS_RTApp_PWM",
   "ComponentId": "5E9342DB-280D-4C8E-96AA-1CAA72FF97A8",
   "EntryPoint": "/bin/app",
   "CmdArgs": [],

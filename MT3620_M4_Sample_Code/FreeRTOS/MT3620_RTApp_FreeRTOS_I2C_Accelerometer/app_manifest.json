@@ -1,6 +1,6 @@
 {
   "SchemaVersion": 1,
-  "Name": "MT3620_RTApp_FreeRTOS_I2C_Accelerometer",
+  "Name": "FreeRTOS_RTApp_2C_Accelerometer",
   "ComponentId": "6583cf17-9072-4d72-8761-0b7c5b56442b",
   "EntryPoint": "/bin/app",
   "CmdArgs": [],

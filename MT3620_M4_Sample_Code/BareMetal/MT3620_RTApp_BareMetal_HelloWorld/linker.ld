@@ -26,7 +26,6 @@ REGION_ALIAS("DATA_REGION", TCM);
 REGION_ALIAS("BSS_REGION", TCM);
 
 ENTRY(__isr_vector)
-
 SECTIONS
 {
     /* The exception vector's virtual address must be aligned to a power of two,
@@ -52,8 +51,12 @@ SECTIONS
         *(.bss)
     } >BSS_REGION
 
-	  . = ALIGN(4);
-  	end = . ;
+    .sysram : {
+        *(.sysram)
+    } >SYSRAM
+
+    . = ALIGN(4);
+    end = . ;
 
     StackTop = ORIGIN(TCM) + LENGTH(TCM);
 }

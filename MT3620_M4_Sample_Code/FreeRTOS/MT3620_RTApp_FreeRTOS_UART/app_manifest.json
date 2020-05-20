@@ -1,6 +1,6 @@
 {
   "SchemaVersion": 1,
-  "Name": "MT3620_RTApp_FreeRTOS_UART",
+  "Name": "FreeRTOS_RTApp_UART",
   "ComponentId": "4076F74F-89B4-4227-B404-272ED82F9F8E",
   "EntryPoint": "/bin/app",
   "CmdArgs": [],

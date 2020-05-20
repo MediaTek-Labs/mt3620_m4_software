@@ -40,9 +40,7 @@
 #include <string.h>
 #include <stdbool.h>
 
-#ifdef OSAI_FREERTOS
 #include "printf.h"
-#endif
 
 /**
   * This section introduces the Macro definition

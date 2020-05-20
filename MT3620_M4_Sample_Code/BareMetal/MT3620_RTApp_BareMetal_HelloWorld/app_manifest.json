@@ -1,6 +1,6 @@
 {
   "SchemaVersion": 1,
-  "Name": "MT3620_RTApp_BareMetal_HelloWorld",
+  "Name": "BARE_METAL_RTAPP_HELLOWORLD",
   "ComponentId": "EFA4362A-14D6-4DA6-BE47-5A93D44E511A",
   "EntryPoint": "/bin/app",
   "CmdArgs": [],

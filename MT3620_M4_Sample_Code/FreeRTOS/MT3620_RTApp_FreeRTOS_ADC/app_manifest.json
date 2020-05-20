@@ -1,6 +1,6 @@
 {
   "SchemaVersion": 1,
-  "Name": "MT3620_RTApp_FreeRTOS_ADC",
+  "Name": "FreeRTOS_RTApp_ADC",
   "ComponentId": "6A0C871F-FCB7-4650-A495-40537DA1DC7C",
   "EntryPoint": "/bin/app",
   "CmdArgs": [],

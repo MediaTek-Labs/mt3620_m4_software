@@ -3,7 +3,7 @@
     {
       "environment": "AzureSphere",
 
-      "AzureSphereTargetApiSet": "4+Beta2001"
+      "AzureSphereTargetApiSet": "5+Beta2004"
     }
   ],
   "configurations": [

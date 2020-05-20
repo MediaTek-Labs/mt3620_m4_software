@@ -63,7 +63,14 @@ void osai_delay_us(u32 us)
 	}
 }
 
-#ifdef OSAI_BARE_METAL
+#ifdef OSAI_FREERTOS
+#include "FreeRTOS.h"
+#include "task.h"
+void osai_delay_ms(u32 ms)
+{
+	vTaskDelay(pdMS_TO_TICKS(ms));
+}
+#else
 void osai_delay_ms(u32 ms)
 {
 	extern volatile u32 sys_tick_in_ms;
@@ -81,15 +88,6 @@ void osai_delay_ms(u32 ms)
 		while (sys_tick_in_ms < target_ms)
 			;
 	}
-}
-#endif
-
-#ifdef OSAI_FREERTOS
-#include "FreeRTOS.h"
-#include "task.h"
-void osai_delay_ms(u32 ms)
-{
-	vTaskDelay(pdMS_TO_TICKS(ms));
 }
 #endif
 

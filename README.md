@@ -1,13 +1,24 @@
 # MediaTek MT3620 M4 Driver & Real-Time Application Sample Code
 ### Current Status
 * Avaiable sample code
-    * **FreeRTOS**: GPIO / GPT / UART / SPIM / PWM / I2C / I2S / DMA / ADC / MBOX / LP(Low Power) / C++ / Arducam / Accelerometer
-    * **Bare Metal**: GPIO / Hello World
+    * **FreeRTOS**: GPIO / GPT / UART / SPIM / PWM / I2C / I2S / DMA / ADC / MBOX / LP(Low Power) / C++ / Arducam / Arducam+TFT_Display / Accelerometer
+    * **Bare Metal**: GPIO / Hello World / MBOX
+* Supported Azure Sphere SDK/API Version
+    * SDK Version: **20.04** (Download latest version [here](https://docs.microsoft.com/en-ca/azure-sphere/install/install-sdk#install-the-azure-sphere-sdk).)
+    * API Version: **5+Beta2004**
+* Revision History of relesae_200520
+    * Azure Sphere SDK 20.04 (API version "5+Beta2004") is supported.
+    * FreeRTOS and Bare Metal OS_HAL are merged.
+    * FreeRTOS RTApp Toolchain cmake file is updated.
+    * New sample code: Bare Metal Mailbox
+    * New sample code: FreeRTOS Arducam+TFT_Display
 * Known Issue
     * External interrupt is not working.
-        * Caused by Azure Sphere OS firewall setting problem, still under discussion/clarification.
-    * SPI slave is not working.
+        * Caused by Azure Sphere OS firewall configuration, still under discussion/clarification.
+    * SPI_Slave is not working.
         * App Manifest file does not support SPI slave, still under discussion/clarification.
+    * WDT_Reset (WatchDog Timer Reset) failed to reboot correctly.
+        * M4 core failed to reboot after WDT_Reset, still under discussion/clarification.
 
 ### To clone this repository:
 ```
@@ -32,9 +43,7 @@ Please refer to the **[MT3620 M4 API Reference Manual](https://support.mediatek.
 
 ### Prerequisites
 * **Hardware**
-    * [AVNET MT3620 Starter Kit](https://www.avnet.com/shop/us/products/avnet-engineering-services/aes-ms-mt3620-sk-g-3074457345636825680/)
-    * or [Seeed MT3620 Development Kit](https://aka.ms/azurespheredevkits)
-    * or other hardware that implements the [MT3620 Reference Development Board (RDB)](https://docs.microsoft.com/azure-sphere/hardware/mt3620-reference-board-design) design.
+    * [AVNET MT3620 Starter Kit](https://www.avnet.com/shop/us/products/avnet-engineering-services/aes-ms-mt3620-sk-g-3074457345636825680/) or [Seeed MT3620 Development Kit](https://www.seeedstudio.com/Azure-Sphere-MT3620-Development-Kit-US-Version-p-3052.html)
 * **Software**
     * Refer to [Azure Sphere software installation guide](https://docs.microsoft.com/en-ca/azure-sphere/install/overview).
     * A terminal emulator (such as Telnet or [PuTTY](https://www.chiark.greenend.org.uk/~sgtatham/putty/) to display the output log).

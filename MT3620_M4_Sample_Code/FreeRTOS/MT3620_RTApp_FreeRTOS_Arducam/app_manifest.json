@@ -1,6 +1,6 @@
 {
   "SchemaVersion": 1,
-  "Name": "MT3620_RTApp_FreeRTOS_Arducam",
+  "Name": "FreeRTOS_RTApp_Arducam",
   "ComponentId": "202D38D8-2308-414F-8FA0-AC5548FCBFD1",
   "EntryPoint": "/bin/app",
   "CmdArgs": [],

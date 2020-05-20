@@ -1,0 +1,13 @@
+{
+  "SchemaVersion": 1,
+  "Name": "FreeRTOS_RTApp_Arducam_ILI9341",
+  "ComponentId": "0606E0F9-2F67-4E98-ACCA-3525E27CE1B9",
+  "EntryPoint": "/bin/app",
+  "CmdArgs": [],
+  "Capabilities": {
+    "Gpio": [ 0, 1, 2, 12, 13 ],
+    "I2cMaster": [ "ISU0" ],
+    "SpiMaster": [ "ISU1", "ISU3" ]
+  },
+  "ApplicationType": "RealTimeCapable"
+}

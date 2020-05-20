@@ -84,7 +84,7 @@ static int _mtk_mhal_spim_xfer_arg_check(struct mtk_spi_transfer *xfer)
 				 xfer->len);
 			return -SPIM_ELENGTH;
 		}
-	} else if (!xfer->rx_buf && (xfer->opcode_len > 0)) {
+	} else if (!xfer->rx_buf && (xfer->opcode_len >= 0)) {
 		/* check half duplex opcode len valid */
 		if ((xfer->opcode_len > MTK_SPIM_MAX_OPCODE_LEN) ||
 			(xfer->opcode_len < MTK_SPIM_MIN_TX_OPCODE_LEN_HALF)) {

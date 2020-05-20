@@ -1,6 +1,6 @@
 {
   "SchemaVersion": 1,
-  "Name": "MT3620_RTApp_FreeRTOS_GPIO",
+  "Name": "FreeRTOS_RTApp_GPIO",
   "ComponentId": "F5A911AD-0D56-4C02-A983-3D53C1C2C67D",
   "EntryPoint": "/bin/app",
   "CmdArgs": [],
