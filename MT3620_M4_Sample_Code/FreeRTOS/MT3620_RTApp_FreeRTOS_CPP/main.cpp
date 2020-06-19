@@ -45,12 +45,13 @@
 #include "os_hal_gpio.h"
 #include "os_hal_uart.h"
 
+_Noreturn extern void CcMain(void);
+
 #ifdef __cplusplus
 extern "C" {
 #endif
 void vApplicationStackOverflowHook(TaskHandle_t xTask, char* pcTaskName);
 void vApplicationMallocFailedHook(void);
-_Noreturn void RTCoreMain(void);
 #ifdef __cplusplus
 }
 #endif
@@ -128,11 +129,8 @@ static void blink_task(void* pParameters)
 	}
 }
 
-_Noreturn void RTCoreMain(void)
+_Noreturn void CcMain(void)
 {
-	/* Setup Vector Table */
-	NVIC_SetupVectorTable();
-
 	/* Init UART */
 	mtk_os_hal_uart_ctlr_init(uart_port_num);
 

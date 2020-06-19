@@ -18,6 +18,7 @@ add_link_options(-specs=nano.specs -specs=nosys.specs)
 
 # Executable
 add_executable(${PROJECT_NAME}
+               startup.cpp
                main.cpp
                ../../OS_HAL/src/os_hal_gpio.c
                ../../OS_HAL/src/os_hal_uart.c
