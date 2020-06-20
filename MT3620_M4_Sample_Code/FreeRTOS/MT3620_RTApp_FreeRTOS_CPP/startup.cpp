@@ -19,11 +19,11 @@ extern InitFunc __init_array_end;
 
 _Noreturn void RTCoreMain(void)
 {
-	// Call global constructors
-	for (InitFunc* func = &__init_array_start; func < &__init_array_end; ++func) (*func)();
-
 	// Setup vector table
 	NVIC_SetupVectorTable();
+
+	// Call global constructors
+	for (InitFunc* func = &__init_array_start; func < &__init_array_end; ++func) (*func)();
 
 	CcMain();
 }
