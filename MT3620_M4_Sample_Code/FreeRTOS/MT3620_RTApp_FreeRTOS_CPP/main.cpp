@@ -45,13 +45,15 @@
 #include "os_hal_gpio.h"
 #include "os_hal_uart.h"
 
-_Noreturn extern void CcMain(void);
-
 #ifdef __cplusplus
 extern "C" {
 #endif
 void vApplicationStackOverflowHook(TaskHandle_t xTask, char* pcTaskName);
 void vApplicationMallocFailedHook(void);
+_Noreturn void RTCoreMain(void);
+typedef void (*InitFunc)(void);
+extern InitFunc __init_array_start;
+extern InitFunc __init_array_end;
 #ifdef __cplusplus
 }
 #endif
@@ -142,4 +144,15 @@ _Noreturn void CcMain(void)
 	vTaskStartScheduler();
 	for (;;)
 		__asm__("wfi");
+}
+
+_Noreturn void RTCoreMain(void)
+{
+	// Setup vector table
+	NVIC_SetupVectorTable();
+
+	// Call global constructors
+	for (InitFunc* func = &__init_array_start; func < &__init_array_end; ++func) (*func)();
+
+	CcMain();
 }
