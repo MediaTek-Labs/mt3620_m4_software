@@ -51,6 +51,9 @@ extern "C" {
 void vApplicationStackOverflowHook(TaskHandle_t xTask, char* pcTaskName);
 void vApplicationMallocFailedHook(void);
 _Noreturn void RTCoreMain(void);
+typedef void (*InitFunc)(void);
+extern InitFunc __init_array_start;
+extern InitFunc __init_array_end;
 #ifdef __cplusplus
 }
 #endif
@@ -128,11 +131,8 @@ static void blink_task(void* pParameters)
 	}
 }
 
-_Noreturn void RTCoreMain(void)
+_Noreturn void CcMain(void)
 {
-	/* Setup Vector Table */
-	NVIC_SetupVectorTable();
-
 	/* Init UART */
 	mtk_os_hal_uart_ctlr_init(uart_port_num);
 
@@ -144,4 +144,15 @@ _Noreturn void RTCoreMain(void)
 	vTaskStartScheduler();
 	for (;;)
 		__asm__("wfi");
+}
+
+_Noreturn void RTCoreMain(void)
+{
+	// Setup vector table
+	NVIC_SetupVectorTable();
+
+	// Call global constructors
+	for (InitFunc* func = &__init_array_start; func < &__init_array_end; ++func) (*func)();
+
+	CcMain();
 }
