@@ -131,7 +131,7 @@
  * - \b The \b OS-HAL \b FreeRTOS \b Driver \b Sample \b Code \b as \b
  * Following.
  *  \n
- * <a href="https://github.com/MediaTek-Labs/mt3620_m4_software/blob/master/MT3620_M4_Sample_Code/FreeRTOS/OS_HAL/src/os_hal_dma.c"> freeRTos DMA sample code on github </a>
+ * <a href="https://github.com/MediaTek-Labs/mt3620_m4_software/blob/master/MT3620_M4_Sample_Code/OS_HAL/src/os_hal_dma.c"> freeRTos DMA sample code on github </a>
  *
  * @}
  * @}

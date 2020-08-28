@@ -104,7 +104,6 @@ public:
 DigitalOut::DigitalOut(os_hal_gpio_pin pin)
 {
 	_Pin = pin;
-	mtk_os_hal_gpio_request(_Pin);
 	mtk_os_hal_gpio_set_direction(_Pin, OS_HAL_GPIO_DIR_OUTPUT);
 }
 

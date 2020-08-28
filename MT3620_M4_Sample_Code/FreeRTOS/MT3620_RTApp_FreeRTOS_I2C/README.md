@@ -2,12 +2,12 @@
 ### Description
 This sample demonstrates how to use I2C on an MT3620 real-time core.  
 - ISU0 UART interface is used to print the output log.
-- ISU1 I2C interface is used as I2C MASTER.
-- ISU2 I2C interface is used as I2C SLAVE.
-- This sample code is trying to demostrate I2C loopback test on ISU1/ISU2. Please connect ISU1(SDA/SCL) to ISU2(SDA/SCL).  
-(Note, This sample code works only on Seeed development board, NOT on AVNET development board. Since ISU2 of AVNET development board has additional sensors connected, if run this sample code on AVNET development board, some I2C transport error might be happening. One possible work around for AVNET development board is to change I2C_MAX_LEN from 64 to 8.)  
+- ISU1 I2C interface is used as the I2C MASTER.
+- ISU2 I2C interface is used as the I2C SLAVE.
+- This sample code is trying to demonstrate the I2C loopback test on ISU1/ISU2. Please connect ISU1(SDA/SCL) to ISU2(SDA/SCL).  
+(Note, This sample code works only on Seeed development board, NOT on AVNET development board. Since ISU2 of AVNET development board has additional sensors connected, if run this sample code on AVNET development board, some I2C transport error might be happening. One possible workaround for AVNET development board is to change I2C_MAX_LEN from 64 to 8.)  
 (Note, UART port number in main.c could be changed from **OS_HAL_UART_ISU0** to **OS_HAL_UART_PORT0** to use M4 dedicate UART port.)  
-Please refer to the [MT3620 M4 API Rerference Manual](https://support.mediatek.com/AzureSphere/mt3620/M4_API_Reference_Manual) for the detailed API description.
+Please refer to the [MT3620 M4 API Reference Manual](https://support.mediatek.com/AzureSphere/mt3620/M4_API_Reference_Manual) for the detailed API description.
 
 ### Prerequisites
 * **Hardware**
@@ -20,7 +20,7 @@ Please refer to the [MT3620 M4 API Rerference Manual](https://support.mediatek.c
 1. Start Visual Studio.  
 2. From **File** menu, select **Open > CMake...** and navigate to the folder that contains this sample.  
 3. Select **CMakeList.txt** and then click **Open**.  
-4. Wait few seconds until Visual Studio finish create the project files.
+4. Wait few seconds until Visual Studio finishes creating the project files.
 5. From **Build** menu, select **Build ALL (Ctrl+Shift+B)**.  
 6. Click **Select Start Item** and then select **GDB Debugger (RTCore)** as following.  
     ![VS Start](../../BareMetal/MT3620_RTApp_BareMetal_HelloWorld/pic/select_start_item.jpg)

@@ -4,12 +4,12 @@ This sample demonstrates how to control Arducam/ILI9341 TFT LCD Display on an MT
 - M4 dedicate UART interface is used to print the output log.  
 - ISU0 I2C interface is used to control Arducam.
 - ISU1 SPI interface is used to receive image data from Arducam.
-- ISU3 SPI interface is used to control ILI9341 TFT LCD Display.
+- ISU3 SPI interface is used to control the ILI9341 TFT LCD Display.
 - GPIO_0 / GPIO_1 / GPIO_2 are used to control ILI9341 TFT LCD Display.
-- On-board button_A is used to trigger Arducam single capture.
-- On-board button_B is used to trigger Arducam continuous capture.
+- On-board button_A is used to trigger Arducam "single capture".
+- On-board button_B is used to trigger Arducam "continuous capture".
 - ![VS Start](../../BareMetal/MT3620_RTApp_BareMetal_HelloWorld/pic/seeed_arducam_ili9341.png)
-Please refer to the [MT3620 M4 API Rerference Manual](https://support.mediatek.com/AzureSphere/mt3620/M4_API_Reference_Manual) for the detailed API description.
+Please refer to the [MT3620 M4 API Reference Manual](https://support.mediatek.com/AzureSphere/mt3620/M4_API_Reference_Manual) for the detailed API description.
 
 ### Prerequisites
 * **Hardware**
@@ -25,7 +25,7 @@ Please refer to the [MT3620 M4 API Rerference Manual](https://support.mediatek.c
 1. Start Visual Studio.  
 2. From **File** menu, select **Open > CMake...** and navigate to the folder that contains this sample.  
 3. Select **CMakeList.txt** and then click **Open**.  
-4. Wait few seconds until Visual Studio finish create the project files.
+4. Wait few seconds until Visual Studio finishes creating the project files.
 5. From **Build** menu, select **Build ALL (Ctrl+Shift+B)**.  
 6. Click **Select Start Item** and then select **GDB Debugger (RTCore)** as following.  
     ![VS Start](../../BareMetal/MT3620_RTApp_BareMetal_HelloWorld/pic/select_start_item.jpg)

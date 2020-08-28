@@ -120,7 +120,7 @@
  *
  * - \b The \b OS-HAL \b freeRTos \b driver\n
  * \b sample \b code \b is \b as \b follows: \n
- * <a href="https://github.com/MediaTek-Labs/mt3620_m4_software/blob/master/MT3620_M4_Sample_Code/FreeRTOS/OS_HAL/src/os_hal_spim.c"> freeRTos SPIM sample code on github </a>
+ * <a href="https://github.com/MediaTek-Labs/mt3620_m4_software/blob/master/MT3620_M4_Sample_Code/OS_HAL/src/os_hal_spim.c"> freeRTos SPIM sample code on github </a>
  *
  * @}
  * @}

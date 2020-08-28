@@ -90,7 +90,7 @@
  *
  * - \b The \b OS-HAL \b freeRTos \b driver \b sample \b code \b is
  *    \b as \b follows: \n
- * <a href="https://github.com/MediaTek-Labs/mt3620_m4_software/blob/master/MT3620_M4_Sample_Code/FreeRTOS/OS_HAL/src/os_hal_gpio.c"> freeRTos GPIO sample code on github </a>
+ * <a href="https://github.com/MediaTek-Labs/mt3620_m4_software/blob/master/MT3620_M4_Sample_Code/OS_HAL/src/os_hal_gpio.c"> freeRTos GPIO sample code on github </a>
  *
  * @}
  * @}
@@ -334,8 +334,6 @@ struct mtk_pinctrl_desc_pin {
 struct mtk_pinctrl_controller {
 	/** GPIO controller base address */
 	void __iomem *base[MHAL_GPIO_REG_BASE_MAX];
-	/** An array describing all pins that the pin controller affects. */
-	struct mtk_pinctrl_desc_pin	mtk_pins[MHAL_GPIO_MAX];
 	/** The number of gpio mode in per reg. */
 	unsigned int  gpio_mode_bits;
 	/** The max gpio mode in per reg. */
@@ -363,40 +361,8 @@ extern "C" {
 #endif
 
 /**
- * @brief     This function is used to request the target GPIO.
- * @brief Usage: OS-HAL driver should call it before other GPIO function
- *    to request the GPIO. It is used to get the gpio resource.
- *    If we call it on the second time, the API function
- *    will return -#EQUEST to indicate request fail.
- * @param [in] pctl : GPIO Pinctrl controller used with the device.
- * @param[in] pin : Specifies the pin number to operate.(0~93)
- * @return    To indicate that whether the pin is requested
- *    successfully or not.\n
- *    If the return value is -#EQUEST, it means GPIO fails to be requested.\n
- *    If the return value is 0, it means GPIO is requested successfully.\n
- */
-
-int mtk_mhal_gpio_request(struct mtk_pinctrl_controller *pctl, u32 pin);
-
-/**
- * @brief This function is used to free the target GPIO.
- * @brief Usage: OS-HAL driver should call it after other GPIO functions
- *    to free the GPIO. It is used to free the gpio resource.
- *    If we call it on the second time, the API function
- *    will return -#EFREE to indicate free fail.
- * @param[in] pctl : GPIO Pinctrl controller used with the device.
- * @param[in] pin : Specifies the pin number to operate.(0~93)
- * @return  To indicate that whether the pin is freed successfully or not.\n
- *    If the return value is -#EFREE, it means that GPIO is not freed.\n
- *    If the return value is 0, it means that GPIO is freed successfully.\n
- */
-int mtk_mhal_gpio_free(struct mtk_pinctrl_controller *pctl, u32 pin);
-
-/**
  * @brief This function is used to get input data of the target GPIO.
  * @brief Usage: OS-HAL driver should call it in GPIO get-input value function.
- *    This API function get the input value of pin and save it to
- *    mtk_pinctrl_controller->mtk_pins[pin].din
  * @param [in] pctl : GPIO Pinctrl controller used with the device.
  * @param[in] pin : Specifies the pin number to operate.(0~93)
  * @param[out] *pvalue : 0 means input low, 1 means input high.
@@ -437,8 +403,6 @@ int mtk_mhal_gpio_set_output(struct mtk_pinctrl_controller *pctl,
 /**
  * @brief This function is used to get output data of the target GPIO.
  * @brief Usage: OS-HAL driver should call it in GPIO get-output value function.
- *    This API function get the output value of pin and save it to
- *    mtk_pinctrl_controller->mtk_pins[pin].dout
  * @param[in] pctl : GPIO Pinctrl controller used with the device.
  * @param[in] pin : Specifies the pin number to operate.(0~93)
  * @param[out] *pvalue : 0 means output low, 1 means output high.
@@ -479,8 +443,6 @@ int mtk_mhal_gpio_set_direction(
 /**
  * @brief This function is used to get the direction of the target GPIO.
  * @brief Usage: OS-HAL driver should call it in GPIO get-direction function.
- *    This API function get the direction value of pin and save it to
- *    mtk_pinctrl_controller->mtk_pins[pin].dir
  * @param[in] pctl : GPIO Pinctrl controller used with the device.
  * @param[in] pin : Specifies the pin number to operate.(0~93)
  * @param[out] *pvalue : 0 means input, 1 means output.
@@ -552,8 +514,6 @@ int mtk_mhal_gpio_pmx_set_mode(
   *    connects the pin and the onboard peripherals,
   *    so the pin will operate in a specific mode
   *    once this pin is programmed to a peripheral's function.
-  *    This API function get the mode value of pin and save it to
-  *    mtk_pinctrl_controller->mtk_pins[pin].mode.
   * @param[in] pctl : GPIO Pinctrl controller used with the device.
   * @param[in] pin : Specifies pin number to configure.(0~93)
   * @param[out] *pvalue : Specifies multifunction value.(0~7)

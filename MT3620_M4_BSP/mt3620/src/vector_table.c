@@ -57,7 +57,7 @@ void __attribute__((weak, alias("DefaultExceptionHandler"))) SystmTick_Handler(v
 
 uintptr_t __isr_vector[116] __attribute__((section(".vector_table"))) __attribute__((used)) = {
 	[0] = (uintptr_t)&StackTop,				/* Top of Stack */
-	[1] = (uintptr_t)RTCoreMain,			/* Reset Handler */
+	[1] = (uintptr_t)Reset_Handler,			/* Reset Handler */
 	[2] = (uintptr_t)NMI_Handler,			/* NMI Handler */
 	[3] = (uintptr_t)Hard_Fault_Handler,	/* Hard Fault Handler */
 	[4] = (uintptr_t)MPU_Fault_Handler,		/* MPU Fault Handler */

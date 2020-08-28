@@ -4,10 +4,10 @@ This sample demonstrates how to use GPIO and UART on an MT3620 real-time core.
 - On-board LED_Red(GPIO8) and LED_Green(GPIO9) are used as GPIO output.
 - On-board Button_A(GPIO12) and Button_B(GPIO13) are used as GPIO input.
 - ISU0 UART interface is used to print the output log.
-- User could press Button_A to turn on LED_Red, and release to turn off.
-- User could press Button_B to turn off LED_Green, and release to on off.  
+- Users could press Button_A to turn on LED_Red, and release to turn off.
+- Users could press Button_B to turn off LED_Green, and release to turn off.  
 (Note, UART port number in main.c could be changed from **OS_HAL_UART_ISU0** to **OS_HAL_UART_PORT0** to use M4 dedicate UART port.)  
-Please refer to the [MT3620 M4 API Rerference Manual](https://support.mediatek.com/AzureSphere/mt3620/M4_API_Reference_Manual) for the detailed API description.
+Please refer to the [MT3620 M4 API Reference Manual](https://support.mediatek.com/AzureSphere/mt3620/M4_API_Reference_Manual) for the detailed API description.
 
 ### Prerequisites
 * **Hardware**
@@ -20,7 +20,7 @@ Please refer to the [MT3620 M4 API Rerference Manual](https://support.mediatek.c
 1. Start Visual Studio.  
 2. From **File** menu, select **Open > CMake...** and navigate to the folder that contains this sample.  
 3. Select **CMakeList.txt** and then click **Open**.  
-4. Wait few seconds until Visual Studio finish create the project files.
+4. Wait few seconds until Visual Studio finishes creating the project files.
 5. From **Build** menu, select **Build ALL (Ctrl+Shift+B)**.  
 6. Click **Select Start Item** and then select **GDB Debugger (RTCore)** as following.  
     ![VS Start](../../BareMetal/MT3620_RTApp_BareMetal_HelloWorld/pic/select_start_item.jpg)

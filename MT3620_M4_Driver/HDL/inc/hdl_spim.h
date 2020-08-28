@@ -56,7 +56,13 @@
 #define SPI_REG_MOREBUF(offset)	(offset + 0x2c)
 #define SPI_REG_Q_CTL(offset)	(offset + 0x30)
 #define SPI_REG_STATUS(offset)	(offset + 0x34)
+
 #define SPI_REG_CS_POLAR(offset)	(offset + 0x38)
+#define CMD_DELAY_SEL_MASK		BITS(12, 15)
+#define CMD_DELAY_SEL_OFFSET		12
+#define END_DELAY_SEL_MASK		BITS(16, 19)
+#define END_DELAY_SEL_OFFSET		16
+
 #define SPI_REG_DATAPORT_CR(offset)	(offset + 0x40)
 #define SPI_REG_SDIR0(offset)	(offset + 0x48)
 #define SPI_REG_SDIR(offset, x)	(offset + 0x48 + ((x) * 4))

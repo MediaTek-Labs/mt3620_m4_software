@@ -48,7 +48,9 @@ SECTIONS
     } >DATA_REGION
 
     .bss : {
+        __bss_start__ = .;
         *(.bss)
+        __bss_end__ = .;
     } >BSS_REGION
 
 	.freertosheap : {

@@ -84,10 +84,6 @@ static void gpio_task(void *pParameters)
 	printf("GPIO Task Started\n");
 
 	/* Init GPIO */
-	mtk_os_hal_gpio_request(gpio_led_red);
-	mtk_os_hal_gpio_request(gpio_led_green);
-	mtk_os_hal_gpio_request(gpio_button_a);
-	mtk_os_hal_gpio_request(gpio_button_b);
 	mtk_os_hal_gpio_set_direction(gpio_led_red, OS_HAL_GPIO_DIR_OUTPUT);
 	mtk_os_hal_gpio_set_direction(gpio_led_green, OS_HAL_GPIO_DIR_OUTPUT);
 	mtk_os_hal_gpio_set_direction(gpio_button_a, OS_HAL_GPIO_DIR_INPUT);

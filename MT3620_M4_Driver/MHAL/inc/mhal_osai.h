@@ -42,6 +42,10 @@
 
 #include "printf.h"
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 /**
   * This section introduces the Macro definition
   * that OSAI provided to mapping different OS.
@@ -147,6 +151,7 @@ void osai_clean_cache(void *vir_addr, u32 len);
  * @return None.
  */
 void osai_invalid_cache(void *vir_addr, u32 len);
+
 
 /** @brief DMA parameter-type definition.
  * Sometimes users want to set or get some parameters
@@ -262,10 +267,6 @@ struct osai_dma_config {
 	/** The user data of excep_callback */
 	void *excep_callback_data;
 };
-
-#ifdef __cplusplus
-extern "C" {
-#endif
 
 /**
  * @brief This function is used to allocate one DMA channel.

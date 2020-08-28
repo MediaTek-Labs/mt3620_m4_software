@@ -1,0 +1,11 @@
+{
+  "SchemaVersion": 1,
+  "Name": "FreeRTOS_RTApp_WDT",
+  "ComponentId": "F3BD7E45-FC44-4CDE-B6A5-5152A6C1ABBA",
+  "EntryPoint": "/bin/app",
+  "CmdArgs": [],
+  "Capabilities": {
+    "Uart": [ "ISU0" ]
+  },
+  "ApplicationType": "RealTimeCapable"
+}

@@ -49,8 +49,8 @@ else()
     set(ENV{PATH} "${AZURE_SPHERE_SDK_PATH}/Tools:${ARM_GNU_BIN_PATH}:$ENV{PATH}")
 endif()
 
-set(CMAKE_C_FLAGS_INIT "-std=c11 -mthumb -mcpu=cortex-m4 -mfloat-abi=hard -mfpu=fpv4-sp-d16 -Wall")
-set(CMAKE_CXX_FLAGS_INIT "-std=gnu++14 -mthumb -mcpu=cortex-m4 -mfloat-abi=hard -mfpu=fpv4-sp-d16 -Wall")
+set(CMAKE_C_FLAGS_INIT "-std=c11 -fno-common -mthumb -mcpu=cortex-m4 -mfloat-abi=hard -mfpu=fpv4-sp-d16 -Wall")
+set(CMAKE_CXX_FLAGS_INIT "-std=gnu++14 -fno-common -mthumb -mcpu=cortex-m4 -mfloat-abi=hard -mfpu=fpv4-sp-d16 -Wall")
 set(CMAKE_EXE_LINKER_FLAGS_INIT "-nostartfiles -Wl,--no-undefined -Wl,-n -T \"${CMAKE_SOURCE_DIR}/linker.ld\" -fdata-sections -ffunction-sections -Wl,--gc-sections -Xlinker -Map=${PROJECT_NAME}.map")
 
 file(GLOB ARM_GNU_INCLUDE_PATH "${ARM_GNU_BASE_PATH}/lib/gcc/arm-none-eabi/*/include")
@@ -58,4 +58,4 @@ set(CMAKE_C_STANDARD_INCLUDE_DIRECTORIES "${ARM_GNU_INCLUDE_PATH}" "${ARM_GNU_BA
 set(CMAKE_CXX_STANDARD_INCLUDE_DIRECTORIES "${ARM_GNU_INCLUDE_PATH}" "${ARM_GNU_BASE_PATH}/arm-none-eabi/include")
 set(COMPILE_DEBUG_FLAGS $<$<CONFIG:Debug>:-g2> $<$<CONFIG:Debug>:-gdwarf-2> $<$<CONFIG:Debug>:-O0>)
 set(COMPILE_RELEASE_FLAGS $<$<CONFIG:Release>:-g1> $<$<CONFIG:Release>:-O3>)
-add_compile_options(-std=c11 -Wall ${COMPILE_DEBUG_FLAGS} ${COMPILE_RELEASE_FLAGS})
+add_compile_options(-Wall ${COMPILE_DEBUG_FLAGS} ${COMPILE_RELEASE_FLAGS})

@@ -88,40 +88,17 @@ void _putchar(char character)
 /******************************************************************************/
 static int gpio_output(u8 gpio_no, u8 level)
 {
-	int ret;
-
-	ret = mtk_os_hal_gpio_request(gpio_no);
-	if (ret != 0) {
-		printf("request gpio[%d] fail\n", gpio_no);
-		return ret;
-	}
-
 	mtk_os_hal_gpio_set_direction(gpio_no, OS_HAL_GPIO_DIR_OUTPUT);
 	mtk_os_hal_gpio_set_output(gpio_no, level);
-	ret = mtk_os_hal_gpio_free(gpio_no);
-	if (ret != 0) {
-		printf("free gpio[%d] fail\n", gpio_no);
-		return 0;
-	}
+
 	return 0;
 }
 
 static int gpio_input(u8 gpio_no, os_hal_gpio_data *pvalue)
 {
-	u8 ret;
-
-	ret = mtk_os_hal_gpio_request(gpio_no);
-	if (ret != 0) {
-		printf("request gpio[%d] fail\n", gpio_no);
-		return ret;
-	}
 	mtk_os_hal_gpio_set_direction(gpio_no, OS_HAL_GPIO_DIR_INPUT);
 	mtk_os_hal_gpio_get_input(gpio_no, pvalue);
-	ret = mtk_os_hal_gpio_free(gpio_no);
-	if (ret != 0) {
-		printf("free gpio[%d] fail\n", gpio_no);
-		return ret;
-	}
+
 	return 0;
 }
 

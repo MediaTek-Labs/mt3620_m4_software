@@ -36,9 +36,16 @@
 #ifndef __VECTOR_TABLE_H__
 #define __VECTOR_TABLE_H__
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 extern uintptr_t __isr_vector[];
 
-_Noreturn void RTCoreMain(void);
+_Noreturn void Reset_Handler(void);
 
+#ifdef __cplusplus
+}
+#endif
 
 #endif

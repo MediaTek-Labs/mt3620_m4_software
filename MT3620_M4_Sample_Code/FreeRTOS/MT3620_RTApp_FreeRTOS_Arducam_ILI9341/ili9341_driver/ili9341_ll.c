@@ -174,9 +174,6 @@ int ili9341_ll_init(void)
 	return 0;
 
 #elif defined(AzureSphere_CM4)
-	mtk_os_hal_gpio_request(gpio_ili9341_rst);
-	mtk_os_hal_gpio_request(gpio_ili9341_dc);
-	mtk_os_hal_gpio_request(gpio_ili9341_bl);
 	mtk_os_hal_gpio_set_direction(gpio_ili9341_rst, OS_HAL_GPIO_DIR_OUTPUT);
 	mtk_os_hal_gpio_set_direction(gpio_ili9341_dc, OS_HAL_GPIO_DIR_OUTPUT);
 	mtk_os_hal_gpio_set_direction(gpio_ili9341_bl, OS_HAL_GPIO_DIR_OUTPUT);

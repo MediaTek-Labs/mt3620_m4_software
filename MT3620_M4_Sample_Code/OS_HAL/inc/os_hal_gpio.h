@@ -73,17 +73,14 @@
  *    @code
  *
  *    - Set GPIO output high/low:
- *      -Call mtk_os_hal_gpio_request(pin) to get gpio request resource.
  *      -Call mtk_os_hal_gpio_set_direction(pin, OS_HAL_GPIO_DIR_OUTPUT)
  *        to set gpio direction as output mode.
  *      -Call mtk_os_hal_gpio_set_output(pin, OS_HAL_GPIO_DATA_HIGH)
  *        to set gpio output high.
  *      -Call mtk_os_hal_gpio_set_output(pin, OS_HAL_GPIO_DATA_LOW)
  *        to set gpio output low.
- *      -Call mtk_os_hal_gpio_free(pin) to free gpio request resource.
  *
  *    - Set GPIO input mode:
- *      -Call mtk_os_hal_gpio_request(pin) to get gpio request resource.
  *      -Call mtk_os_hal_gpio_set_direction(pin, OS_HAL_GPIO_DIR_INPUT)
  *        to set gpio direction as input mode.
  *      -Call mtk_os_hal_gpio_set_pullen_pullsel(pin, false, false)
@@ -93,7 +90,6 @@
  *      -Call mtk_os_hal_gpio_set_pullen_pullsel(pin, ture, ture)
  *        to set gpio as pull-up state.
  *      -Call mtk_os_hal_gpio_get_input(pin, pvalue) to get gpio input value.
- *      -Call mtk_os_hal_gpio_free(pin) to free gpio request resource.
  *
  *    @endcode
  *
@@ -250,38 +246,8 @@ extern "C" {
 #endif
 
 /**
- * @brief     This function is used to request the target GPIO.
- * @brief Usage: OS-HAL driver should call it before other GPIO function
- *    to request the GPIO. It is used to get the gpio resource.
- *    If we call it on the second time, the API function
- *    will return -#EQUEST to indicate request fail.
- * @param[in] pin : Specifies the pin number to operate.(0~93)
- * @return    To indicate that whether the pin is requested
- *    successfully or not.\n
- *    If the return value is -#EQUEST, it means GPIO fails to be requested.\n
- *    If the return value is 0, it means GPIO is requested successfully.\n
- */
-
-int mtk_os_hal_gpio_request(os_hal_gpio_pin pin);
-
-/**
- * @brief This function is used to free the target GPIO.
- * @brief Usage: OS-HAL driver should call it after other GPIO functions
- *    to free the GPIO. It is used to free the gpio resource.
- *    If we call it on the second time, the API function
- *    will return -#EFREE to indicate free fail.
- * @param[in] pin : Specifies the pin number to operate.(0~93)
- * @return  To indicate that whether the pin is freed successfully or not.\n
- *    If the return value is -#EFREE, it means that GPIO is not freed.\n
- *    If the return value is 0, it means that GPIO is freed successfully.\n
- */
-int mtk_os_hal_gpio_free(os_hal_gpio_pin pin);
-
-/**
  * @brief This function is used to get input data of the target GPIO.
  * @brief Usage: OS-HAL driver should call it in GPIO get-input value function.
- *    This API function get the input value of pin and save it to
- *    mtk_pinctrl_controller->mtk_pins[pin].din
  * @param[in] pin : Specifies the pin number to operate.(0~93)
  * @param [out] pvalue : Get DIN value and save it to address pvalue.
  * @return To indicate that whether this function call is successful or not.\n
@@ -318,8 +284,6 @@ int mtk_os_hal_gpio_set_output(os_hal_gpio_pin pin, os_hal_gpio_data out_val);
 /**
  * @brief This function is used to get output data of the target GPIO.
  * @brief Usage: OS-HAL driver should call it in GPIO get-output value function.
- *    This API function get the output value of pin and save it to
- *    mtk_pinctrl_controller->mtk_pins[pin].dout
  * @param[in] pin : Specifies the pin number to operate.(0~93)
  * @param [out] pvalue : Get DOUT value and save it to address pvalue
  * @return To indicate that whether this function call is successful or not.\n
@@ -357,8 +321,6 @@ int mtk_os_hal_gpio_set_direction(os_hal_gpio_pin pin,
 /**
  * @brief This function is used to get the direction of the target GPIO.
  * @brief Usage: OS-HAL driver should call it in GPIO get-direction function.
- *    This API function get the direction value of pin and save it to
- *    mtk_pinctrl_controller->mtk_pins[pin].dir
  * @param[in] pin : Specifies the pin number to operate.(0~93)
  * @param [out] pvalue : Get DIR value and save it to address pvalue
  * @return To indicate that whether this function call is successful or not.\n

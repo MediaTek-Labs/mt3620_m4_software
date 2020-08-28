@@ -358,48 +358,6 @@ static int _mtk_mhal_gpio_reg_map(
 	return dout;
 }
 
-int mtk_mhal_gpio_request(struct mtk_pinctrl_controller *pctl, u32 pin)
-{
-	u32 value = 0;
-
-	if (!pctl)
-		return -EINVAL;
-
-	if (pin >= MHAL_GPIO_MAX)
-		return -EPIN;
-
-	if (pctl->mtk_pins[pin].pinctrl_free == true) {
-		mtk_mhal_gpio_pmx_get_mode(pctl, pin, &value);
-		gpio_err("pin is request as mode %d fail\n", value);
-		return -EQUEST;
-	} else if (pctl->mtk_pins[pin].pinctrl_free == false) {
-		pctl->mtk_pins[pin].pinctrl_free = true;
-	}
-
-	return 0;
-}
-
-int mtk_mhal_gpio_free(struct mtk_pinctrl_controller *pctl, u32 pin)
-{
-	u32 value = 0;
-
-	if (!pctl)
-		return -EINVAL;
-
-	if (pin >= MHAL_GPIO_MAX)
-		return -EPIN;
-
-	if (pctl->mtk_pins[pin].pinctrl_free == true) {
-		pctl->mtk_pins[pin].pinctrl_free = false;
-	} else if (pctl->mtk_pins[pin].pinctrl_free == false) {
-		mtk_mhal_gpio_pmx_get_mode(pctl, pin, &value);
-		gpio_err("pin[%d] is free as mode %d fail\n", pin, value);
-		return -EFREE;
-	}
-
-	return 0;
-}
-
 int mtk_mhal_gpio_get_input(struct mtk_pinctrl_controller *pctl,
 	u32 pin, mhal_gpio_data *pvalue)
 {

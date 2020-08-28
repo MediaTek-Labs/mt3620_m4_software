@@ -36,6 +36,10 @@
 #ifndef __TIMER_H__
 #define __TIMER_H__
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 /* timer information (only can be used by system but not other modules) */
 
 #define TICK_TIMER_ID			0	/* GPT0 */
@@ -127,6 +131,9 @@ void mtk_timer_stop_kick_wdt(void);
  */
 void mtk_timer_init(void);
 
+#ifdef __cplusplus
+}
+#endif
 
 #endif /* __TIMER_H__ */
 

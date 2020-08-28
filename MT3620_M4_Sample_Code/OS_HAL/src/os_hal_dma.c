@@ -183,6 +183,8 @@ int mtk_os_hal_dma_alloc_chan(enum dma_channel chn)
 		CM4_Install_NVIC(CM4_IRQ_M4DMA, CM4_DMA_PRI, IRQ_LEVEL_TRIGGER,
 				 _mtk_os_hal_dma_irq_handler, TRUE);
 
+		mtk_mhal_dma_reset(ctrl_rtos->ctlr);
+
 		ctrl_rtos->status = RUNNING;
 	} else {
 		printf("chn %d is being used\n", chn);

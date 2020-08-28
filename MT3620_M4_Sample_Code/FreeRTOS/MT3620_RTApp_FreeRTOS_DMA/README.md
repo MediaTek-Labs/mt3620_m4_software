@@ -2,10 +2,10 @@
 ### Description
 This sample demonstrates how to use DMA on an MT3620 real-time core.  
 - ISU0 UART interface is used to print the output log.  
-- Fullsize dma channel is used to copy data from source memory to desitination memory.  
-(Note, This sample code only demonstrates "memory to meory" DMA. Regarding the example of "memory to peripheral" or "peripheral to memory" DMA, please refer to UART/SPI/I2S sample code.)  
+- Fullsize DMA channel is used to copy data from the source memory to the destination memory.  
+(Note, This sample code only demonstrates "memory to memory" DMA. Regarding the example of "memory to peripheral" or "peripheral to memory" DMA, please refer to UART/SPI/I2S sample code.)  
 (Note, UART port number in main.c could be changed from **OS_HAL_UART_ISU0** to **OS_HAL_UART_PORT0** to use M4 dedicate UART port.)  
-Please refer to the [MT3620 M4 API Rerference Manual](https://support.mediatek.com/AzureSphere/mt3620/M4_API_Reference_Manual) for the detailed API description.
+Please refer to the [MT3620 M4 API Reference Manual](https://support.mediatek.com/AzureSphere/mt3620/M4_API_Reference_Manual) for the detailed API description.
 
 ### Prerequisites
 * **Hardware**
@@ -18,7 +18,7 @@ Please refer to the [MT3620 M4 API Rerference Manual](https://support.mediatek.c
 1. Start Visual Studio.  
 2. From **File** menu, select **Open > CMake...** and navigate to the folder that contains this sample.  
 3. Select **CMakeList.txt** and then click **Open**.  
-4. Wait few seconds until Visual Studio finish create the project files.
+4. Wait few seconds until Visual Studio finishes creating the project files.
 5. From **Build** menu, select **Build ALL (Ctrl+Shift+B)**.  
 6. Click **Select Start Item** and then select **GDB Debugger (RTCore)** as following.  
     ![VS Start](../../BareMetal/MT3620_RTApp_BareMetal_HelloWorld/pic/select_start_item.jpg)

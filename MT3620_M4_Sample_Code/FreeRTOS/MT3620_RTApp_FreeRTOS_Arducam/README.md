@@ -5,10 +5,10 @@ This sample demonstrates how to control Arducam on an MT3620 real-time core.
 - ISU0 UART interface is used to communicate with Arducam Host APP on PC.
 - ISU1 SPI interface is used to receive image data from Arducam.
 - ISU2 I2C interface is used to configure Arducam.
-- On-board button_A is used to trigger Arducam single capture.
-- On-board button_B is used to trigger Arducam continuous capture.
+- On-board button_A is used to trigger Arducam "single capture".
+- On-board button_B is used to trigger Arducam "continuous capture".
 - Arducam host APP V2 executed on Windows PC is used to display the image data.  
-Please refer to the [MT3620 M4 API Rerference Manual](https://support.mediatek.com/AzureSphere/mt3620/M4_API_Reference_Manual) for the detailed API description.
+Please refer to the [MT3620 M4 API Reference Manual](https://support.mediatek.com/AzureSphere/mt3620/M4_API_Reference_Manual) for the detailed API description.
 
 ### Prerequisites
 * **Hardware**
@@ -23,7 +23,7 @@ Please refer to the [MT3620 M4 API Rerference Manual](https://support.mediatek.c
 1. Start Visual Studio.  
 2. From **File** menu, select **Open > CMake...** and navigate to the folder that contains this sample.  
 3. Select **CMakeList.txt** and then click **Open**.  
-4. Wait few seconds until Visual Studio finish create the project files.
+4. Wait few seconds until Visual Studio finishes creating the project files.
 5. From **Build** menu, select **Build ALL (Ctrl+Shift+B)**.  
 6. Click **Select Start Item** and then select **GDB Debugger (RTCore)** as following.  
     ![VS Start](../../BareMetal/MT3620_RTApp_BareMetal_HelloWorld/pic/select_start_item.jpg)

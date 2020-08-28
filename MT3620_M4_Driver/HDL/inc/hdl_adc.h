@@ -57,9 +57,6 @@
 #define adc_debug(fmt, arg...)
 #endif
 
-#define ADC_FIFO_SIZE   32
-/**< ADC FIFO buffer size */
-
 #define MASK(Field)         (Field##_MASK)
 #define SHFT(Field)         (Field##_SHFT)
 
@@ -77,6 +74,12 @@
 
 #define CH_BIT_MAP              0xFF
 /**< 0xFF mean open all 8 adc channel*/
+#define ADC_FIFO_SIZE   32
+/**< ADC FIFO buffer size */
+#define ADC_INIT_TIME	20
+/**< ADC initial stable time value */
+#define ADC_CH_STABLE_TIME	8
+/**< ADC channel stable time value */
 
 #define ADC_FSM_ENABLE		1
 #define ADC_FSM_DISABLE		0
@@ -91,7 +94,7 @@
 #define ADC_INVERT_PMU_CLK_ENABLE		1
 #define ADC_INVERT_PMU_CLK_DISABLE		0
 #define ADC_VREF18_SUPPORT		1
-#define ADC_VREF25_SUPPORT		0
+#define ADC_VREF25_SUPPORT		1
 #define ADC_CLK_SRC_CONTROLLER		1
 #define ADC_CLK_SRC_BUCK		0
 
@@ -269,9 +272,6 @@ void mtk_hdl_adc_fsm_param_get(void __iomem *base,
 
 void mtk_hdl_adc_start(void __iomem *base);
 
-void mtk_hdl_adc_start_ch(void __iomem *base,
-		u16 ch_bit_map);
-
 void mtk_hdl_adc_stop(void __iomem *base);
 
 void mtk_hdl_adc_reset(void __iomem *base);
@@ -280,7 +280,6 @@ void mtk_hdl_adc_dma_enable(void __iomem *base);
 
 void mtk_hdl_adc_fifo_rx_full_enable(void __iomem *base);
 
-void mtk_hdl_adc_fifo_rx_timeout_enable(void __iomem *base);
 
 void mtk_hdl_adc_trigger_level_set(void __iomem *base,
 		u32 trigger_level);

@@ -2,13 +2,13 @@
 ### Description
 This sample demonstrates how to use MBOX on an MT3620 real-time core.
 - There are 1 HLApp and 2 RTApp (RTAppA & RTAppB) included in this sample code.
-- Both RTAppA and RTAppB listens for incoming mailbox message from HLApp, once RTAppA or RTAppB receives mailbox message from HLApp, message content is printed to UART and then send back to HLApp.
-- The RTAppA also sends mailbox message to RTAppB, once RTAppB receives mailbox message from RTAppA, message content is printed to UART and then send back to RTAppA.
-- Once RTAppA receives mailbox message from RTAppB, message content is printed to UART.
+- Both RTAppA and RTAppB listens for incoming mailbox messages from HLApp, once RTAppA or RTAppB receives mailbox messages from HLApp, the message content is printed to UART and then send back to HLApp.
+- The RTAppA also sends mailbox messages to RTAppB, once RTAppB receives mailbox messages from RTAppA, the message content is printed to UART and then send back to RTAppA.
+- Once RTAppA receives mailbox messages from RTAppB, the message content is printed to UART.
 - ISU0 UART interface is used by RTAppA to print the output log.
 - ISU1 UART interface is used by RTAppB to print the output log.  
 (Note, UART port number in main.c could be changed from **OS_HAL_UART_ISU0** to **OS_HAL_UART_PORT0** to use M4 dedicate UART port.)  
-Please refer to the [MT3620 M4 API Rerference Manual](https://support.mediatek.com/AzureSphere/mt3620/M4_API_Reference_Manual) for the detailed API description.
+Please refer to the [MT3620 M4 API Reference Manual](https://support.mediatek.com/AzureSphere/mt3620/M4_API_Reference_Manual) for the detailed API description.
 
 ### Prerequisites
 * **Hardware**
@@ -22,7 +22,7 @@ Please refer to the [MT3620 M4 API Rerference Manual](https://support.mediatek.c
     1. Start Visual Studio. (Totally three Visual Studio instances for HLApp/RTAppA/RTAppB.)
     2. From **File** menu, select **Open > CMake...** and navigate to the folder that contains this sample.
     3. Select **CMakeList.txt** and then click **Open**.
-    4. Wait few seconds until Visual Studio finish create the project files.
+    4. Wait few seconds until Visual Studio finishes creating the project files.
     5. From **Build** menu, select **Build ALL (Ctrl+Shift+B)**.
     6. Repeat the above for RTAppA and RTAppB and HLApp.
 
@@ -38,7 +38,7 @@ azsphere dev app show-status
 * **Run the sample**  
     1. From the Visual Studio instance of the HLApp, click **Select Start Item** and then select **GDB Debugger (HLCore)**.  
     2. Press **F5** to start the application with debugging.  
-    3. Check Visual Studio log and the UART log of ISU0 & ISU1.
+    3. Check the Visual Studio log and the UART log of ISU0 & ISU1.
 
 ### Hardware configuration
 * [AVNET MT3620 Starter Kit](https://www.avnet.com/shop/us/products/avnet-engineering-services/aes-ms-mt3620-sk-g-3074457345636825680/)

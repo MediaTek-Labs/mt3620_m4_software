@@ -65,7 +65,7 @@
 /** The pinmux register offset. */
 #define PINMUX_OFFSET	0x20
 
-struct mtk_pinctrl_controller pctl = {
+static struct mtk_pinctrl_controller pctl = {
 	.base[0] = (void __iomem *)CM4_GPIO_PWM_GRP0_BASE,
 	.base[1] = (void __iomem *)CM4_GPIO_PWM_GRP1_BASE,
 	.base[2] = (void __iomem *)CM4_GPIO_PWM_GRP2_BASE,
@@ -88,16 +88,6 @@ struct mtk_pinctrl_controller pctl = {
 	.port_mask = PORT_MASK,
 	.pinmux_offset = PINMUX_OFFSET,
 };
-
-int mtk_os_hal_gpio_request(os_hal_gpio_pin pin)
-{
-	return mtk_mhal_gpio_request(&pctl, pin);
-}
-
-int mtk_os_hal_gpio_free(os_hal_gpio_pin pin)
-{
-	return mtk_mhal_gpio_free(&pctl, pin);
-}
 
 int mtk_os_hal_gpio_get_input(os_hal_gpio_pin pin, os_hal_gpio_data *pvalue)
 {

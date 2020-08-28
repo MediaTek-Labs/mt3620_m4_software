@@ -75,69 +75,52 @@
  *	- sample code (this is the user application sample code on freeRTos):
  *	  @code
  *
- *
  *	  - ADC one shot mode:
  *
  *        -Initialize the ADC module.
- *            - Call mtk_os_hal_adc_ctlr_init(
- *            adc_pmode pmode,
- *            adc_fifo_mode fifo_mode,
- *            u16 bit_map)
+ *            - Call mtk_os_hal_adc_ctlr_init(void)
  *
+ *        //One shot mode will use fifo RX data, The user needs to pass
+ *        //the data storage address to driver, HW will put sampling data
+ *        //to this buf, Each sampling data takes 4 bytes, bit[3:0] is the
+ *        //channel number information, bit[15:4] is the sample raw data,
+ *        //bit[32:16] is debug info, no need to care.
+ *        //When use one shot mode, please select
+ *        //adc_fsm_parameter->fifo_mode = ADC_FIFO_DIRECT.
  *        -Set one shot state machine parameters.
  *            -Call mtk_os_hal_adc_fsm_param_set(
  *            struct adc_fsm_param *adc_fsm_parameter)
  *
  *        -Start the ADC module.
- *            - Call mtk_os_hal_adc_start(void) or
- *            mtk_os_hal_adc_start_ch(u16 ch_bit_map)
- *
- *        -Retrieve sample data for a channel.
- *            - Call mtk_os_hal_adc_one_shot_get_data(
- *            adc_channel sample_channel,
- *            u32 *data)
+ *            - Call mtk_os_hal_adc_trigger_one_shot_once(void)
  *
  *        -ADC hw is no longer in use,  to return the ADC module back
  *        to its original state.
  *            - Call mtk_os_hal_adc_ctlr_deinit(void)
  *
  *
- *	  - ADC fifo mode:
+ *	  - ADC Periodic mode with DMA:
  *
  *        -Initialize the ADC module.
- *            - Call mtk_os_hal_adc_ctlr_init(
- *            adc_pmode pmode,
- *            adc_fifo_mode fifo_mode,
- *            u16 bit_map)
+ *            - Call mtk_os_hal_adc_ctlr_init(void)
  *
- *        -Set one shot state machine parameters.
+ *        //Periodic mode will use DMA RX data, The user needs to pass
+ *        //the data storage address to driver, HW will put sampling data
+ *        //to this buf, Each sampling data takes 4 bytes, bit[3:0] is the
+ *        //channel number information, bit[15:4] is the sample raw data,
+ *        //bit[32:16] is debug info, no need to care.
+ *        //When use periodic mode, please select
+ *        //adc_fsm_parameter->fifo_mode = ADC_FIFO_DMA.
+ *        -Set dma state machine parameters.
  *            - Call mtk_os_hal_adc_fsm_param_set(
  *            struct adc_fsm_param *adc_fsm_parameter)
  *
- *        -Retrieve the sample data.
- *            - Call mtk_os_hal_adc_period_get_data(u32 (*rx_buf)[32],
- *            u32 *length)
+ *        -Start the ADC module.
+ *            - Call mtk_os_hal_adc_period_start(void)
  *
- *        -ADC hw is no longer in use,  to return the ADC module back
- *        to its original state.
- *            - Call mtk_os_hal_adc_ctlr_deinit(void)
- *
- *
- *	  - ADC dma mode:
- *
- *        -Initialize the ADC module.
- *            - Call mtk_os_hal_adc_ctlr_init(
- *            adc_pmode pmode,
- *            adc_fifo_mode fifo_mode,
- *            u16 bit_map)
- *
- *        -Set one shot state machine parameters.
- *            - Call mtk_os_hal_adc_fsm_param_set(
- *            struct adc_fsm_param *adc_fsm_parameter)
- *
- *        -Retrieve sample dat
- *            - Call mtk_os_hal_adc_period_get_data(u32 (*rx_buf)[32],
- *            u32 *length)
+ *        //There is no need to continue sampling data, stop the ADC.
+ *        -Stop the ADC module.
+ *            - Call mtk_os_hal_adc_period_stop(void)
  *
  *        -ADC hw is no longer in use,  to return the ADC module back
  *        to its original state.
@@ -160,8 +143,7 @@
   *	OS-HAL ADC function list information, including
   *	ADC hardware initializing and de-initializing,
   *	enabling and disabling ADC hardware output,
-  *	gets ADC sample data using FIFO mode,
-  *	gets ADC sample data using DMA mode,
+  *	gets ADC sample data using one shot mode.
   */
 
 #ifdef __cplusplus
@@ -171,22 +153,14 @@ extern "C" {
 /**
  * @brief  Init ADC controller.
  *
- *  @param pmode : ADC one shot or periodic mode select,
- *	0 one shot mode, 1 is  periodic mode.
- *  @param fifo_mode : ADC data transfer operation mode,
-  *	0 is ADC_FIFO_DIRECT, 1 is DMA mode.
-  *  @param bit_map :  ch_bit_map: ADC_CH_0 = 0x0001, ADC_CH_1 = 0x0002,
-  *  ADC_CH_2 = 0x0004, ADC_CH_3 = 0x0008, ADC_CH_4 = 0x0010,
-  *  ADC_CH_5 = 0x0020, ADC_CH_6 = 0x0040, ADC_CH_7 = 0x0080.\n
-  *  For example: use ADC 0 and ADC1
-  *  ch_bit_map = ADC_CH_0 | ADC_CH_1,\n
+ *  @param none.
+ *
  * @return
  *	If return value is 0, it means success.\n
  *	If return value is -#ADC_EPTR , it means ctlr is NULL.\n
  *	If return value is -#ADC_EPARAMETER , it means parameter invalid.
  */
-int mtk_os_hal_adc_ctlr_init(adc_pmode pmode, adc_fifo_mode fifo_mode,
-	u16 bit_map);
+int mtk_os_hal_adc_ctlr_init(void);
 
 /**
  * @brief  Deinit ADC controller.
@@ -201,7 +175,20 @@ int mtk_os_hal_adc_ctlr_init(adc_pmode pmode, adc_fifo_mode fifo_mode,
 int mtk_os_hal_adc_ctlr_deinit(void);
 
 /**
- * @brief  start predefined channels by ADC init API.
+  * @brief  Configure  ADC controller parameters.
+  * @param [in] adc_fsm_parameter : ADC parameter information.
+  * @return
+  *  If return value is 0, it means success.\n
+  *  If return value is -#ADC_EPTR , it means ctlr is NULL.\n
+  *  If return value is -#ADC_EPARAMETER , it means parameter invalid.
+  */
+
+int mtk_os_hal_adc_fsm_param_set(struct adc_fsm_param *adc_fsm_parameter);
+
+/**
+ * @brief  Start predefined channels to sample data with one shot mode.\n
+ *	Once the function is called, ADC will be triggered once, and users can\n
+ *	call this api multiple times to obtain data.\n
  *
  *  @param none.
  *
@@ -210,56 +197,31 @@ int mtk_os_hal_adc_ctlr_deinit(void);
  *	If return value is -#ADC_EPTR , it means ctlr is NULL.\n
  *	If return value is -#ADC_EPARAMETER , it means parameter invalid.
  */
-int mtk_os_hal_adc_start(void);
+int mtk_os_hal_adc_trigger_one_shot_once(void);
 
 /**
- * @brief  start ADC controller by channel bit map info.
+ * @brief  Start predefined channels to sample datas with period mode.
  *
- *  @param ch_bit_map: ADC_CH_0 = 0x0001, ADC_CH_1 = 0x0002,
- *	ADC_CH_2 = 0x0004, ADC_CH_3 = 0x0008, ADC_CH_4 = 0x0010,
- *	ADC_CH_5 = 0x0020, ADC_CH_6 = 0x0040, ADC_CH_7 = 0x0080.\n
- *	For example: use ADC 0 and ADC1
- *	ch_bit_map = ADC_CH_0 | ADC_CH_1,\n
+ *  @param none.
  *
  * @return
  *	If return value is 0, it means success.\n
  *	If return value is -#ADC_EPTR , it means ctlr is NULL.\n
  *	If return value is -#ADC_EPARAMETER , it means parameter invalid.
  */
+int mtk_os_hal_adc_period_start(void);
 
-int mtk_os_hal_adc_start_ch(u16 ch_bit_map);
 /**
-  * @brief  Configure  ADC controller parameters.
-  * @param [in] adc_fsm_parameter : ADC parameter information.
-  * @return
-  *  If return value is 0, it means success.\n
-  *  If return value is -#ADC_EPTR , it means ctlr is NULL.\n
-  *  If return value is -#ADC_EPARAMETER , it means parameter invalid.
-  */
-int mtk_os_hal_adc_fsm_param_set(struct adc_fsm_param *adc_fsm_parameter);
-/**
-  * @brief  This function is used to sample ADC channel voltage
-  *  using one shot FIFO mode.
-  * @param [in] sample_channel : ADC channel number(0~7).
-  * @param [out] data : ADC sample data.
-  * @return
-  *  If return value is 0, it means success.\n
-  *  If return value is -#ADC_EPTR , it means ctlr is NULL.\n
-  *  If return value is -#ADC_EPARAMETER , it means parameter invalid.
-  */
-
-int mtk_os_hal_adc_one_shot_get_data(adc_channel sample_channel, u32 *data);
-/**
-  * @brief  This function is used to sample ADC channel voltage
-  *  using period FIFO mode.
-  * @param [out] rx_buf : Sampled data.
-  * @param [out] length : Length of sample data.
-  * @return
-  *  If return value is 0, it means success.\n
-  *  If return value is -#ADC_EPTR , it means ctlr is NULL.\n
-  *  If return value is -#ADC_EPARAMETER , it means parameter invalid.
-  */
-int mtk_os_hal_adc_period_get_data(u32 (*rx_buf)[32], u32 *length);
+ * @brief  Stop predefined channels to sample datas with period mode.
+ *
+ *  @param none.
+ *
+ * @return
+ *	If return value is 0, it means success.\n
+ *	If return value is -#ADC_EPTR , it means ctlr is NULL.\n
+ *	If return value is -#ADC_EPARAMETER , it means parameter invalid.
+ */
+int mtk_os_hal_adc_period_stop(void);
 
 #ifdef __cplusplus
 }

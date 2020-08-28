@@ -290,9 +290,7 @@ _Noreturn void RTCoreMain(void)
 	mtk_os_hal_uart_set_baudrate(uart_port_num_arducam_host, uart_baudrate_arducam_host);
 
 	/* Init GPIO */
-	mtk_os_hal_gpio_request(gpio_button_a);
 	mtk_os_hal_gpio_set_direction(gpio_button_a, OS_HAL_GPIO_DIR_INPUT);
-	mtk_os_hal_gpio_request(gpio_button_b);
 	mtk_os_hal_gpio_set_direction(gpio_button_b, OS_HAL_GPIO_DIR_INPUT);
 
 	printf("\nFreeRTOS Arducam Demo\n");

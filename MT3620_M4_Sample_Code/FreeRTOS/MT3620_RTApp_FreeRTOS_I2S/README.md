@@ -2,11 +2,11 @@
 ### Description
 This sample demonstrates how to use I2S on an MT3620 real-time core.
 - ISU0 UART interface is used to print the output log.  
-- This sample demostrates the I2S function with "I2S loopback test mode".  
-- The I2S looback test mode is an special HW mode which I2S_Tx signal is routed to I2S_Rx directly by HW. Users does not need to connet the I2S pins.  
+- This sample demonstrates the I2S function with the "I2S loopback test mode".  
+- The I2S loopback test mode is a special HW mode in which the I2S_Tx signal is routed to I2S_Rx directly by HW. Users do not need to connect the I2S pins.  
 - The I2S API invocation sequence for "loopback mode" and "external mode" is the same. Users could modify the main.c to change the I2S mode from **MHAL_I2S_TYPE_INTERNAL_LOOPBACK_MODE** to **MHAL_I2S_TYPE_EXTERNAL_MODE** or **MHAL_I2S_TYPE_EXTERNAL_TDM_MODE** to switch to "external mode".  
 (Note, UART port number in main.c could be changed from **OS_HAL_UART_ISU0** to **OS_HAL_UART_PORT0** to use M4 dedicate UART port.)  
-Please refer to the [MT3620 M4 API Rerference Manual](https://support.mediatek.com/AzureSphere/mt3620/M4_API_Reference_Manual) for the detailed API description.
+Please refer to the [MT3620 M4 API Reference Manual](https://support.mediatek.com/AzureSphere/mt3620/M4_API_Reference_Manual) for the detailed API description.
 
 ### Prerequisites
 * **Hardware**
@@ -19,7 +19,7 @@ Please refer to the [MT3620 M4 API Rerference Manual](https://support.mediatek.c
 1. Start Visual Studio.  
 2. From **File** menu, select **Open > CMake...** and navigate to the folder that contains this sample.  
 3. Select **CMakeList.txt** and then click **Open**.  
-4. Wait few seconds until Visual Studio finish create the project files.
+4. Wait few seconds until Visual Studio finishes creating the project files.
 5. From **Build** menu, select **Build ALL (Ctrl+Shift+B)**.  
 6. Click **Select Start Item** and then select **GDB Debugger (RTCore)** as following.  
     ![VS Start](../../BareMetal/MT3620_RTApp_BareMetal_HelloWorld/pic/select_start_item.jpg)

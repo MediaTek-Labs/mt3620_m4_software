@@ -250,6 +250,12 @@ void mtk_hdl_spim_prepare_hw(void __iomem *base,
 	reg_val |= SPI_MASTER_MB_MODE_ENABLE;
 
 	osai_writel(reg_val, SPI_REG_MASTER(base));
+
+	/* config cs_setup and cs_hold delay to maximum  */
+	reg_val = osai_readl(SPI_REG_CS_POLAR(base));
+	reg_val |= 0xf << CMD_DELAY_SEL_OFFSET; /* cs_setup */
+	reg_val |= 0xf << END_DELAY_SEL_OFFSET; /* cs_hold */
+	osai_writel(reg_val, SPI_REG_CS_POLAR(base));
 }
 
 void mtk_hdl_spim_prepare_transfer(void __iomem *base,
