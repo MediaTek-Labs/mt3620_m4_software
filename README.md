@@ -5,7 +5,7 @@
     * **Bare Metal**: GPIO / Hello World / MBOX
 * Supported Azure Sphere SDK/API Version
     * SDK Version: **20.07** (Download latest version [here](https://docs.microsoft.com/en-ca/azure-sphere/install/install-sdk#install-the-azure-sphere-sdk).)
-* Revision History of relesae_200910
+* Revision History of relesae_200911
     * Fix build error in some specific build environment.
     * Fix DMA hang up issue when XIP.
     
