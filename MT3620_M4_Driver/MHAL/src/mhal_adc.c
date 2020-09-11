@@ -366,11 +366,11 @@ int mtk_mhal_adc_start(struct mtk_adc_controller *ctlr)
 
 	switch (adc_fsm_params->fifo_mode) {
 	case ADC_FIFO_DMA:
-		mtk_hdl_adc_start(ctlr->base);
 		osai_dma_clr_dreq(ctlr->dma_channel);
 		ret = osai_dma_start(ctlr->dma_channel);
 		if (ret < 0)
 			return ret;
+		mtk_hdl_adc_start(ctlr->base);
 		break;
 	case ADC_FIFO_DIRECT:
 		if (adc_fsm_params->pmode == ADC_PMODE_ONE_TIME) {

@@ -71,3 +71,22 @@ uintptr_t __isr_vector[116] __attribute__((section(".vector_table"))) __attribut
 	[(16)... (115)] = (uintptr_t)DefaultExceptionHandler
 };
 
+#ifdef M4_ENABLE_XIP_FLASH
+uintptr_t __isr_vector_tcm[116] __attribute__((section(".vector_table_tcm")));
+
+void relocate_vector_table(uintptr_t *vector_start,
+			   uintptr_t *vector_end,
+			   uintptr_t *new_address)
+{
+	uintptr_t *src, *dest;
+
+	src = vector_start;
+	dest = new_address;
+
+	if ((dest - src) & 0xFFFFFF00) {
+		while (src < vector_end)
+			*dest++ = *src++;
+	}
+}
+#endif
+
