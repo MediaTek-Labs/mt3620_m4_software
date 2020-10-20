@@ -1,0 +1,13 @@
+{
+  "SchemaVersion": 1,
+  "Name": "FreeRTOS_RTApp_EINT",
+  "ComponentId": "B2DC2D57-8D63-4BE3-A302-D412EDE57F84",
+  "EntryPoint": "/bin/app",
+  "CmdArgs": [],
+  "Capabilities": {
+    "Uart": [ "ISU0" ],
+    "Gpio": [ 8, 9 ],
+    "ExternalInterrupt": [ "EINT12", "EINT13" ]
+  },
+  "ApplicationType": "RealTimeCapable"
+}

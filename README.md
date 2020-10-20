@@ -1,17 +1,11 @@
 # MediaTek MT3620 M4 Driver & Real-Time Application Sample Code
 ### Current Status
 * Avaiable sample code
-    * **FreeRTOS**: GPIO / GPT / UART / SPIM / PWM / I2C / I2S / DMA / ADC / MBOX / LP(Low Power) / C++ / WDT(WatchDog Timer) / Arducam / Arducam+TFT_Display / Accelerometer
+    * **FreeRTOS**: GPIO / GPT / UART / SPIM / PWM / I2C / I2S / DMA / ADC / MBOX / LP(Low Power) / C++ / WDT(WatchDog Timer) / EINT / Arducam / Arducam+TFT_Display / Accelerometer
     * **Bare Metal**: GPIO / Hello World / MBOX
 * Supported Azure Sphere SDK/API Version
-    * SDK Version: **20.07** (Download latest version [here](https://docs.microsoft.com/en-ca/azure-sphere/install/install-sdk#install-the-azure-sphere-sdk).)
-* Revision History of relesae_200911
-    * Fix build error in some specific build environment.
-    * Fix DMA hang up issue when XIP.
-    
-* Known Issue
-    * External interrupt is not working.
-        * Caused by Azure Sphere OS firewall configuration, still under discussion/clarification.
+    * SDK Version: **20.07** or later(Download latest version [here](https://docs.microsoft.com/en-ca/azure-sphere/install/install-sdk#install-the-azure-sphere-sdk).)
+
 
 ### To clone this repository:
 ```
