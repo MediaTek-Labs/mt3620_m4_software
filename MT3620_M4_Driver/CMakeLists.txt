@@ -12,7 +12,7 @@ ADD_LIBRARY(MT3620_M4_Driver
             ./MHAL/src/mhal_gpioif.c ./HDL/src/hdl_gpioif.c
             ./MHAL/src/mhal_gpt.c ./HDL/src/hdl_gpt.c
             ./MHAL/src/mhal_i2c.c ./HDL/src/hdl_i2c.c
-            ./MHAL/src/mhal_i2s.c ./HDL/src/hdl_i2S.c
+            ./MHAL/src/mhal_i2s.c ./HDL/src/hdl_i2s.c
             ./MHAL/src/mhal_pwm.c ./HDL/src/hdl_pwm.c
             ./MHAL/src/mhal_spim.c ./HDL/src/hdl_spim.c
             ./MHAL/src/mhal_uart.c ./HDL/src/hdl_uart.c
