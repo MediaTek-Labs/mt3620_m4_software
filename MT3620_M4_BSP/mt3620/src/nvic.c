@@ -45,7 +45,7 @@ volatile uint32_t sys_tick_in_ms = 0;
 void SystmTick_Handler(void)
 {
 	sys_tick_in_ms++;
-	#ifdef OSAI_FREERTOS
+	#if defined(OSAI_FREERTOS) || defined(OSAI_AZURE_RTOS)
 	extern void SysTick_Handler(void);
 	SysTick_Handler();
 	#endif
