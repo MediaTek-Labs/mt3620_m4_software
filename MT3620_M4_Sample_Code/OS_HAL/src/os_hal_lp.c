@@ -131,12 +131,23 @@ static uint32_t _mtk_os_hal_lp_check_wic_pend_sta(void)
 	return wic_pend_sta;
 }
 
-static void _mtk_os_hal_lp_gpt3_cb_hdl(void *unused)
+static void _mtk_os_hal_lp_clr_wakeup_src(void)
 {
+	int i;
+
+	for (i = HAL_EINT_NUMBER_0; i < HAL_EINT_NUMBER_MAX; i++)
+		mtk_os_hal_eint_unregister((eint_number)i);
+
 	mtk_os_hal_gpt_stop(GPT3);
 
 	/* clear WIC IRQ status */
 	_mtk_os_hal_lp_clear_wic_sta();
+}
+
+static void _mtk_os_hal_lp_gpt3_cb_hdl(void *unused)
+{
+	_mtk_os_hal_lp_clr_wakeup_src();
+	printf("[%s]Wakeup by GPT3\n", __func__);
 }
 
 static struct os_gpt_int gpt3_int = {
@@ -146,16 +157,8 @@ static struct os_gpt_int gpt3_int = {
 
 static void _mtk_os_hal_lp_eint_isr(void)
 {
-	uint32_t wic_pend_sta;
-	int i;
-
-	wic_pend_sta = _mtk_os_hal_lp_check_wic_pend_sta();
-	for (i = HAL_EINT_NUMBER_0; i < HAL_EINT_NUMBER_MAX; i++)
-		if (wic_pend_sta & BIT(i))
-			mtk_os_hal_eint_unregister((eint_number)i);
-
-	/* clear WIC IRQ status */
-	_mtk_os_hal_lp_clear_wic_sta();
+	_mtk_os_hal_lp_clr_wakeup_src();
+	printf("[%s]Wakeup by EINT\n", __func__);
 }
 
 static void _mtk_os_hal_lp_config_wakeup_src(uint32_t wakeup_src)

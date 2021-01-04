@@ -6,7 +6,7 @@
 // second and prints the message which was sent, and the response which was received.
 //
 // It uses the following Azure Sphere libraries
-// - log (messages shown in Visual Studio's Device Output window during debugging);
+// - log (displays messages in the Device Output window during debugging)
 // - application (establish a connection with a real-time capable application).
 // - eventloop (system invokes handlers for timer events)
 
@@ -52,8 +52,8 @@ static EventLoopTimer *sendTimer = NULL;
 static EventRegistration *socketEventReg = NULL;
 static volatile sig_atomic_t exitCode = ExitCode_Success;
 
-static const char rtAppComponentId[] = "CC0C53C7-E4B8-4D30-884C-034D64341AAA";
-static const char rtAppComponentId_B[] = "CC0C53C7-E4B8-4D30-884C-034D64341BBB";
+static const char rtAppComponentId[] = "CC0C53C7-E4B8-4D30-884C-034D6434DAAA";
+static const char rtAppComponentId_B[] = "CC0C53C7-E4B8-4D30-884C-034D6434DBBB";
 
 static void TerminationHandler(int signalNumber);
 static void SendTimerEventHandler(EventLoopTimer *timer);
@@ -89,7 +89,6 @@ static void SendTimerEventHandler(EventLoopTimer *timer)
 /// </summary>
 static void SendMessageToRTApp(void)
 {
-    // Send "hl-app-to-rt-app-%02d" message to RTApp, where the number cycles from 00 to 99.
     static int iter = 0;
 
     // Send "HELLO-WORLD-%d" message to real-time capable application.
@@ -107,7 +106,6 @@ static void SendMessageToRTApp(void)
     snprintf(txMessage, sizeof(txMessage), "Hello-World-b%d", iter++);
     Log_Debug("Sending to CM4_B: %s\n", txMessage);
     bytesSent = send(sockFd_B, txMessage, strlen(txMessage), 0);
-
     if (bytesSent == -1) {
         Log_Debug("ERROR: Unable to send message: %d (%s)\n", errno, strerror(errno));
         exitCode = ExitCode_SendMsg_Send;
@@ -159,7 +157,7 @@ static ExitCode InitHandlers(void)
         return ExitCode_Init_EventLoop;
     }
 
-    // Register one second timer to send a message to the RTApp.
+    // Register a 3 seconds timer to send a message to the RTApp.
     static const struct timespec sendPeriod = {.tv_sec = 3, .tv_nsec = 0};
     sendTimer = CreateEventLoopPeriodicTimer(eventLoop, &SendTimerEventHandler, &sendPeriod);
     if (sendTimer == NULL) {
@@ -243,8 +241,8 @@ static void CloseHandlers(void)
 
 int main(void)
 {
-    Log_Debug("High-level intercore comms application\n");
-    Log_Debug("Sends data to, and receives data from a real-time capable application.\n");
+    Log_Debug("High-level intercore application.\n");
+    Log_Debug("Sends data to, and receives data from the real-time core.\n");
 
     exitCode = InitHandlers();
 

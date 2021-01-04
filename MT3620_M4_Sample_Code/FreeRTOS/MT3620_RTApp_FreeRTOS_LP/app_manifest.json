@@ -5,7 +5,8 @@
   "EntryPoint": "/bin/app",
   "CmdArgs": [],
   "Capabilities": {
-    "Uart": [ "ISU0" ]
+    "Uart": [ "ISU0" ],
+    "ExternalInterrupt": [ "EINT12" ]
   },
   "ApplicationType": "RealTimeCapable"
 }

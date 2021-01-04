@@ -255,7 +255,7 @@ static int mtk_adc_periodic_mode_test(void)
 			timeout_count++;
 		}
 
-		if (timeout_count == 10000)
+		if (timeout_count == 20)
 			break;
 	}
 
@@ -312,7 +312,6 @@ void adc_task(void *pParameters)
 		}
 
 		printf("adc test pass(%d)\n", ++count);
-goto err_exit;
 		vTaskDelay(pdMS_TO_TICKS(2000));
 		printf("\n");
 	}

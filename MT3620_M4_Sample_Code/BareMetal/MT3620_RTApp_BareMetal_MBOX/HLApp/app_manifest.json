@@ -1,11 +1,11 @@
 {
   "SchemaVersion": 1,
   "Name": "IntercoreComms_HighLevelApp",
-  "ComponentId": "25025D2C-66DA-4448-BAE1-AC26FCDD1627",
+  "ComponentId": "25025D2C-66DA-4448-BAE1-AC26FCDD3627",
   "EntryPoint": "/bin/app",
   "CmdArgs": [],
   "Capabilities": {
-    "AllowedApplicationConnections": [ "CC0C53C7-E4B8-4D30-884C-034D64341AAA", "CC0C53C7-E4B8-4D30-884C-034D64341BBB" ]
+    "AllowedApplicationConnections": [ "CC0C53C7-E4B8-4D30-884C-034D6434DAAA", "CC0C53C7-E4B8-4D30-884C-034D6434DBBB" ]
   },
   "ApplicationType": "Default"
 }

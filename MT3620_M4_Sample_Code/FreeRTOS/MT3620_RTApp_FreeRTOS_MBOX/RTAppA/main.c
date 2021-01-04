@@ -62,7 +62,7 @@ static const uint8_t uart_port_num = OS_HAL_UART_ISU0;
  *    Component UUID len : 16B
  *    Reserved data len  : 4B
 */
-static const uint32_t mbox_buffer_len_max = 1048;
+#define MBOX_BUFFER_LEN_MAX 1044
 
 /* Bitmap for IRQ enable. bit_0 and bit_1 are used to communicate with HL_APP */
 static const uint32_t mbox_irq_status = 0x3;
@@ -122,8 +122,7 @@ void mbox_fifo_cb(struct mtk_os_hal_mbox_cb_data *data)
 	if (data->event.channel == OS_HAL_MBOX_CH0) {
 		/* A7 core write data to mailbox fifo. */
 		if (data->event.wr_int) {
-			xSemaphoreGiveFromISR(blockFifoSema,
-				&higher_priority_task_woken);
+			xSemaphoreGiveFromISR(blockFifoSema, &higher_priority_task_woken);
 			portYIELD_FROM_ISR(higher_priority_task_woken);
 		}
 	}
@@ -132,8 +131,7 @@ void mbox_fifo_cb(struct mtk_os_hal_mbox_cb_data *data)
 		/* The other M4 core write data to mailbox fifo. */
 		if (data->event.wr_int) {
 			higher_priority_task_woken = pdFALSE;
-			xSemaphoreGiveFromISR(blockFifoSema_M4,
-				&higher_priority_task_woken);
+			xSemaphoreGiveFromISR(blockFifoSema_M4, &higher_priority_task_woken);
 			portYIELD_FROM_ISR(higher_priority_task_woken);
 		}
 	}
@@ -156,8 +154,7 @@ void mbox_swint_cb(struct mtk_os_hal_mbox_cb_data *data)
 
 	if (data->swint.channel == OS_HAL_MBOX_CH0) {
 		if (data->swint.swint_sts & (1 << 1)) {
-			xSemaphoreGiveFromISR(blockDeqSema,
-				&higher_priority_task_woken);
+			xSemaphoreGiveFromISR(blockDeqSema, &higher_priority_task_woken);
 			portYIELD_FROM_ISR(higher_priority_task_woken);
 		}
 	}
@@ -165,8 +162,7 @@ void mbox_swint_cb(struct mtk_os_hal_mbox_cb_data *data)
 	if (data->swint.channel == OS_HAL_MBOX_CH1) {
 		if (data->swint.swint_sts & (1 << 0)) {
 			higher_priority_task_woken = pdFALSE;
-			xSemaphoreGiveFromISR(SwIntSema_M4,
-				&higher_priority_task_woken);
+			xSemaphoreGiveFromISR(SwIntSema_M4, &higher_priority_task_woken);
 			portYIELD_FROM_ISR(higher_priority_task_woken);
 		}
 	}
@@ -177,7 +173,7 @@ void mbox_print_and_convert_buf(u8 *mbox_buf, u32 mbox_data_len)
 	u32 payload_len;
 	u32 i;
 
-	printf("Received message of %d bytes (from A7):\n", mbox_data_len);
+	printf("\n\nCM4_A receives message from CA7 (%d bytes):\n", mbox_data_len);
 	printf("  Component Id (16 bytes): %02X%02X%02X%02X-%02X%02X-%02X%02X-%02X%02X-%02X%02X%02X%02X%02X%02X\n",
 			mbox_buf[3], mbox_buf[2], mbox_buf[1], mbox_buf[0],
 			mbox_buf[5], mbox_buf[4], mbox_buf[7], mbox_buf[6],
@@ -185,8 +181,7 @@ void mbox_print_and_convert_buf(u8 *mbox_buf, u32 mbox_data_len)
 			mbox_buf[12], mbox_buf[13], mbox_buf[14], mbox_buf[15]);
 
 	/* Print reserved field as little-endian 4-byte integer. */
-	printf("  Reserved (4 bytes): 0x%02X %02X %02X %02X\n",
-		mbox_buf[19], mbox_buf[18], mbox_buf[17], mbox_buf[16]);
+	printf("  Reserved (4 bytes): 0x%02X %02X %02X %02X\n", mbox_buf[19], mbox_buf[18], mbox_buf[17], mbox_buf[16]);
 
 	/* Print message as hex. */
 	payload_len = mbox_data_len - pay_load_start_offset;
@@ -209,10 +204,11 @@ void mbox_print_and_convert_buf(u8 *mbox_buf, u32 mbox_data_len)
 			mbox_buf[i] = toupper(mbox_buf[i]);
 	}
 
-	printf("  Send back (%d bytes as text):", payload_len);
+	printf("CM4_A sends message to CA7:\n");
+	printf("  Payload (%d bytes as text): ", payload_len);
 	for (i = pay_load_start_offset; i < mbox_data_len; ++i)
 		printf("%c", mbox_buf[i]);
-	printf("\n\n");
+	printf("\n");
 }
 
 void MBOXTask_A(void *pParameters)
@@ -243,8 +239,7 @@ void MBOXTask_A(void *pParameters)
 	mask.rd_int = 0;	/* Read FIFO interrupt */
 	mask.wr_int = 1;	/* Write FIFO interrupt */
 	mtk_os_hal_mbox_fifo_register_cb(OS_HAL_MBOX_CH0, mbox_fifo_cb, &mask);
-	mtk_os_hal_mbox_sw_int_register_cb(OS_HAL_MBOX_CH0, mbox_swint_cb,
-						mbox_irq_status);
+	mtk_os_hal_mbox_sw_int_register_cb(OS_HAL_MBOX_CH0, mbox_swint_cb, mbox_irq_status);
 
 	mask.channel = OS_HAL_MBOX_CH1;
 	mask.ne_sts = 0;	/* FIFO Non-Empty interrupt */
@@ -252,8 +247,7 @@ void MBOXTask_A(void *pParameters)
 	mask.rd_int = 1;	/* Read FIFO interrupt */
 	mask.wr_int = 1;	/* Write FIFO interrupt */
 	mtk_os_hal_mbox_fifo_register_cb(OS_HAL_MBOX_CH1, mbox_fifo_cb, &mask);
-	mtk_os_hal_mbox_sw_int_register_cb(OS_HAL_MBOX_CH1, mbox_swint_cb,
-		mbox_irq_status_M4);
+	mtk_os_hal_mbox_sw_int_register_cb(OS_HAL_MBOX_CH1, mbox_swint_cb, mbox_irq_status_M4);
 
 	/* Get mailbox shared buffer size, defined by Azure Sphere OS. */
 	if (GetIntercoreBuffers(&outbound, &inbound, &shared_buf_size) == -1) {
@@ -263,8 +257,8 @@ void MBOXTask_A(void *pParameters)
 
 	/* Allocate the M4 buffer for mailbox communication */
 	allocated_buf_size = shared_buf_size;
-	if (allocated_buf_size > mbox_buffer_len_max)
-		allocated_buf_size = mbox_buffer_len_max;
+	if (allocated_buf_size > MBOX_BUFFER_LEN_MAX)
+		allocated_buf_size = MBOX_BUFFER_LEN_MAX;
 	mbox_buf = pvPortMalloc(allocated_buf_size);
 	if (mbox_buf == NULL) {
 		printf("pvPortMalloc failed\n");
@@ -283,8 +277,7 @@ void MBOXTask_A(void *pParameters)
 		memset(mbox_buf, 0, allocated_buf_size);
 
 		/* Read from A7, dequeue from mailbox */
-		result = DequeueData(outbound, inbound, shared_buf_size,
-					mbox_buf, &mbox_buf_len);
+		result = DequeueData(outbound, inbound, shared_buf_size, mbox_buf, &mbox_buf_len);
 		if (result == -1 || mbox_buf_len < pay_load_start_offset) {
 			xSemaphoreTake(blockDeqSema, portMAX_DELAY);
 			continue;
@@ -294,23 +287,19 @@ void MBOXTask_A(void *pParameters)
 		mbox_print_and_convert_buf(mbox_buf, mbox_buf_len);
 
 		/* Write to A7, enqueue to mailbox */
-		EnqueueData(inbound, outbound, shared_buf_size, mbox_buf,
-				mbox_buf_len);
+		EnqueueData(inbound, outbound, shared_buf_size, mbox_buf, mbox_buf_len);
 
 
 		/* Handle M4 <--> M4 Communication */
+		/* Write to M4 mailbox */
 		iter++;
 		item.data = iter;
 		item.cmd = 0xAAAAAA00 | iter;
-		/* Write to M4 mailbox */
-		printf("CM4_A Sending to CM4_B: CMD=%08X, DATA=%08X\n",
-			item.cmd, item.data);
-		mtk_os_hal_mbox_fifo_write(OS_HAL_MBOX_CH1, &item,
-			MBOX_TR_DATA_CMD);
+		printf("CM4_A sends message to CM4_B:\n  CMD=%08X, DATA=%08X\n", item.cmd, item.data);
+		mtk_os_hal_mbox_fifo_write(OS_HAL_MBOX_CH1, &item, MBOX_TR_DATA_CMD);
 
 		/* Get read fifo count */
-		mtk_os_hal_mbox_ioctl(OS_HAL_MBOX_CH1, MBOX_IOGET_ACPT_FIFO_CNT,
-			&read_fifo_count);
+		mtk_os_hal_mbox_ioctl(OS_HAL_MBOX_CH1, MBOX_IOGET_ACPT_FIFO_CNT, &read_fifo_count);
 		while (read_fifo_count == 0) {
 			xSemaphoreTake(blockFifoSema_M4, portMAX_DELAY);
 			mtk_os_hal_mbox_ioctl(OS_HAL_MBOX_CH1,
@@ -318,18 +307,15 @@ void MBOXTask_A(void *pParameters)
 		}
 
 		/* Read from M4 mailbox */
-		mtk_os_hal_mbox_fifo_read(OS_HAL_MBOX_CH1, &item,
-			MBOX_TR_DATA_CMD);
-		printf("CM4_A received from CM4_B: CMD=%08X, DATA=%08X\n",
-			item.cmd, item.data);
+		mtk_os_hal_mbox_fifo_read(OS_HAL_MBOX_CH1, &item, MBOX_TR_DATA_CMD);
+		printf("CM4_A receives message from CM4_B:\n  CMD=%08X, DATA=%08X\n", item.cmd, item.data);
 
 		/* Trigger M4 SW interrupt 0 */
-		mtk_os_hal_mbox_ioctl(OS_HAL_MBOX_CH1, MBOX_IOSET_SWINT_TRIG,
-			&swint_bit);
+		mtk_os_hal_mbox_ioctl(OS_HAL_MBOX_CH1, MBOX_IOSET_SWINT_TRIG, &swint_bit);
 
 		/* Wait for M4 SW interrupt 0 */
 		xSemaphoreTake(SwIntSema_M4, portMAX_DELAY);
-		printf("CM4_A received SW interrupt from CM4_B\n\n\n\n");
+		printf("CM4_A received SW interrupt from CM4_B\n");
 	}
 }
 
@@ -349,8 +335,7 @@ _Noreturn void RTCoreMain(void)
 	mtk_os_hal_mbox_open_channel(OS_HAL_MBOX_CH1);
 
 	/* Create MBOX Task */
-	xTaskCreate(MBOXTask_A, "MBOX_A Task", APP_STACK_SIZE_BYTES, NULL, 4,
-						NULL);
+	xTaskCreate(MBOXTask_A, "MBOX_A Task", APP_STACK_SIZE_BYTES, NULL, 4, NULL);
 
 	vTaskStartScheduler();
 	for (;;)

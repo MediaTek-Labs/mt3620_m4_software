@@ -46,7 +46,7 @@
 /******************************************************************************/
 static const uint8_t uart_port_num = OS_HAL_UART_ISU0;
 
-#define WDT_TIMEOUT_SEC 10	/* Watchdog timeout value, 5 seconds */
+#define WDT_TIMEOUT_SEC 10	/* Watchdog timeout value, 10 seconds */
 #define WDT_TEST_CASE_1_COUNTER 10
 
 #define APP_STACK_SIZE_BYTES (1024 / 4)
@@ -168,8 +168,11 @@ void wdt_task(void *pParameters)
 
 		/* This is WDT SW Reset boot up */
 		if (rst_sta == OS_WDT_SW_RST) {
-			printf("\nPress RESET button to restart again.\n");
-			return;
+			printf("\nTest case 1~3 finished. Press RESET button to restart again.\n");
+			while(1){
+				vTaskDelay(pdMS_TO_TICKS(1));
+				mtk_os_hal_wdt_restart();
+			}
 		}
 	}
 }

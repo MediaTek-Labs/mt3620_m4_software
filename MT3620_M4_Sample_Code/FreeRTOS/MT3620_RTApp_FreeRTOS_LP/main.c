@@ -47,21 +47,12 @@
 /* Configurations */
 /******************************************************************************/
 static const uint8_t uart_port_num = OS_HAL_UART_ISU0;
-
-/* There are totally 25 wakeup source:
- *     GPIO0~23 & GPT3
- * Currently, only GPT3 is supported.
- * For GPIO0~23, MediaTek is working with Microsoft.
-*/
-static const uint32_t wakeup_source = GPT3_WAKEUP_SRC_24;
-
-/* GPT3 wakeup timeout (5 seconds) */
-static const uint32_t wakeup_timeout = 5;
+static const uint32_t wakeup_source = GPT3_WAKEUP_SRC_24 | EINT_WAKEUP_SRC_12; /* GPIO_24: GPT3, GPIO12: BUTTON_A */
+static const uint32_t wakeup_timeout = 10;
 
 /* There are totally 3 low power scenarios:
  *     Clock_Gating / Legacy_Sleep / Deep_Sleep
  * Currently, only Clock_Gating is supported.
- * For Legacy_Sleep & Deep_Sleep, MediaTek is working with Microsoft.
 */
 static const uint8_t low_power_scenario = CPU_CLOCK_GATING;
 
@@ -98,19 +89,18 @@ static void lp_task(void *pParameters)
 
 	printf("LP Task Started\n");
 	while (1) {
-		vTaskDelay(pdMS_TO_TICKS(1000));
-
 		/* Select GPT3 timeout value, unit is "second" */
 		mtk_os_hal_lp_config_gpt3_timeout(wakeup_timeout);
 
-		printf("CM4 enter low power mode(Clock Gating)(timeout=%lds)\n",
-				wakeup_timeout);
+		printf("CM4 enter low power mode(Press Button_A or wait for %ld seconds to wake up)\n", wakeup_timeout);
 		result = mtk_os_hal_lp_enter(wakeup_source, low_power_scenario);
 		if (result) {
 			printf("Enter LP(%d) FAILED\n", low_power_scenario);
 			goto err_exit;
 		}
-		printf("CM4 exit low power mode(Clock Gating)\n\n");
+		printf("CM4 exit low power mode\n\n");
+
+		vTaskDelay(pdMS_TO_TICKS(2000));
 	}
 
 err_exit:

@@ -59,7 +59,7 @@ static const uint8_t uart_port_num = OS_HAL_UART_ISU0;
  *    Component UUID len : 16B
  *    Reserved data len  : 4B
 */
-#define MBOX_BUFFER_LEN_MAX 1048
+#define MBOX_BUFFER_LEN_MAX 1044
 static uint8_t mbox_local_buf[MBOX_BUFFER_LEN_MAX];
 
 /* Bitmap for IRQ enable. bit_0 and bit_1 are used to communicate with HL_APP */
@@ -105,16 +105,14 @@ void mbox_fifo_cb(struct mtk_os_hal_mbox_cb_data *data)
 {
 	if (data->event.channel == OS_HAL_MBOX_CH0) {
 		/* A7 core write data to mailbox fifo. */
-		if (data->event.wr_int) {
+		if (data->event.wr_int)
 			blockFifoSema++;
-		}
 	}
 
 	if (data->event.channel == OS_HAL_MBOX_CH1) {
 		/* The other M4 core write data to mailbox fifo. */
-		if (data->event.wr_int) {
+		if (data->event.wr_int)
 			blockFifoSema_M4++;
-		}
 	}
 }
 
@@ -132,15 +130,13 @@ void mbox_fifo_cb(struct mtk_os_hal_mbox_cb_data *data)
 void mbox_swint_cb(struct mtk_os_hal_mbox_cb_data *data)
 {
 	if (data->swint.channel == OS_HAL_MBOX_CH0) {
-		if (data->swint.swint_sts & (1 << 1)) {
+		if (data->swint.swint_sts & (1 << 1))
 			blockDeqSema++;
-		}
 	}
 
 	if (data->swint.channel == OS_HAL_MBOX_CH1) {
-		if (data->swint.swint_sts & (1 << 0)) {
+		if (data->swint.swint_sts & (1 << 0))
 			SwIntSema_M4++;
-		}
 	}
 }
 
@@ -149,7 +145,7 @@ void mbox_print_and_convert_buf(u8 *mbox_buf, u32 mbox_data_len)
 	u32 payload_len;
 	u32 i;
 
-	printf("Received message of %d bytes (from A7):\n", mbox_data_len);
+	printf("\n\nCM4_A receives message from CA7 (%d bytes):\n", mbox_data_len);
 	printf("  Component Id (16 bytes): %02X%02X%02X%02X-%02X%02X-%02X%02X-%02X%02X-%02X%02X%02X%02X%02X%02X\n",
 			mbox_buf[3], mbox_buf[2], mbox_buf[1], mbox_buf[0],
 			mbox_buf[5], mbox_buf[4], mbox_buf[7], mbox_buf[6],
@@ -181,10 +177,11 @@ void mbox_print_and_convert_buf(u8 *mbox_buf, u32 mbox_data_len)
 			mbox_buf[i] = toupper(mbox_buf[i]);
 	}
 
-	printf("  Send back (%d bytes as text):", payload_len);
+	printf("CM4_A sends message to CA7:\n");
+	printf("  Payload (%d bytes as text): ", payload_len);
 	for (i = pay_load_start_offset; i < mbox_data_len; ++i)
 		printf("%c", mbox_buf[i]);
-	printf("\n\n");
+	printf("\n");
 }
 
 void MBOXTask_A(void)
@@ -245,6 +242,7 @@ void MBOXTask_A(void)
 		blockDeqSema--;
 
 		/* Read from A7, dequeue from mailbox */
+		mbox_local_buf_len = MBOX_BUFFER_LEN_MAX;
 		result = DequeueData(outbound, inbound, mbox_shared_buf_size, mbox_local_buf, &mbox_local_buf_len);
 		if (result == -1 || mbox_local_buf_len < pay_load_start_offset) {
 			printf("Mailbox dequeue failed!\n");
@@ -263,7 +261,7 @@ void MBOXTask_A(void)
 		iter++;
 		item.data = iter;
 		item.cmd = 0xAAAAAA00 | iter;
-		printf("CM4_A Sending to CM4_B: CMD=%08X, DATA=%08X\n", item.cmd, item.data);
+		printf("CM4_A sends message to CM4_B:\n  CMD=%08X, DATA=%08X\n", item.cmd, item.data);
 		mtk_os_hal_mbox_fifo_write(OS_HAL_MBOX_CH1, &item, MBOX_TR_DATA_CMD);
 
 		/* Wait for interrupt (The other M4 core write data to mailbox fifo.) */
@@ -280,7 +278,7 @@ void MBOXTask_A(void)
 
 		/* Read from M4 mailbox */
 		mtk_os_hal_mbox_fifo_read(OS_HAL_MBOX_CH1, &item, MBOX_TR_DATA_CMD);
-		printf("CM4_A received from CM4_B: CMD=%08X, DATA=%08X\n", item.cmd, item.data);
+		printf("CM4_A receives message from CM4_B:\n  CMD=%08X, DATA=%08X\n", item.cmd, item.data);
 
 		/* Trigger M4 SW interrupt 0 to the other M4 core */
 		mtk_os_hal_mbox_ioctl(OS_HAL_MBOX_CH1, MBOX_IOSET_SWINT_TRIG, &swint_bit);
@@ -289,7 +287,7 @@ void MBOXTask_A(void)
 		while (SwIntSema_M4 == 0)
 			;
 		SwIntSema_M4--;
-		printf("CM4_A received SW interrupt from CM4_B\n\n\n\n");
+		printf("CM4_A received SW interrupt from CM4_B\n");
 	}
 }
 

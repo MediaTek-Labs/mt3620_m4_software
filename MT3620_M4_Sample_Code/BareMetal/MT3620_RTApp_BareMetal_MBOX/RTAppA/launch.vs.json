@@ -14,7 +14,7 @@
       "applicationPath": "${debugInfo.target}",
       "imagePath": "${debugInfo.targetImage}",
       "targetCore": "RTCore",
-      "partnerComponents": [ "25025D2C-66DA-4448-BAE1-AC26FCDD1627", "CC0C53C7-E4B8-4D30-884C-034D64341BBB" ]
+      "partnerComponents": [ "25025D2C-66DA-4448-BAE1-AC26FCDD3627", "CC0C53C7-E4B8-4D30-884C-034D6434DBBB" ]
     }
   ]
 }

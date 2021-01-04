@@ -12,7 +12,7 @@
 #ifdef OSAI_FREERTOS
 extern SemaphoreHandle_t blockFifoSema;
 #else
-volatile u8 blockFifoSema;
+extern volatile u8 blockFifoSema;
 #endif
 
 static void ReceiveMessage(u32 *command, u32 *data);
