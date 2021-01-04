@@ -4,7 +4,7 @@
     * **FreeRTOS**: GPIO / GPT / UART / SPIM / PWM / I2C / I2S / DMA / ADC / MBOX / LP(Low Power) / C++ / WDT(WatchDog Timer) / EINT / Arducam / Arducam+TFT_Display / Accelerometer
     * **Bare Metal**: GPIO / Hello World / MBOX
 * Supported Azure Sphere SDK/API Version
-    * SDK Version: **20.07** or later(Download latest version [here](https://docs.microsoft.com/en-ca/azure-sphere/install/install-sdk#install-the-azure-sphere-sdk).)
+    * SDK Version: **20.10** or later(Download latest version [here](https://docs.microsoft.com/en-ca/azure-sphere/install/install-sdk#install-the-azure-sphere-sdk).)
 
 
 ### To clone this repository:
