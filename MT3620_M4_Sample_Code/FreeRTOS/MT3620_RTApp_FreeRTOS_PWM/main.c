@@ -150,33 +150,48 @@ void pwm_task(void *pParameters)
 		goto err_exit;
 	}
 
-	/* Set PWM Frequency & Duty */
+	/* Follow the below steps to start the PWM for one channel */
+	/* Step1: Call mtk_os_hal_pwm_config_freq_duty_normal() for one channel */
+	/* Step2: Call mtk_os_hal_pwm_start_normal() to start right after step1 */
+
+	/* Set PWM Frequency & Duty, and start PWM for LED Red */
 	ret |= mtk_os_hal_pwm_config_freq_duty_normal(pwm_group_led_red,
 						      pwm_channel_led_red,
 						      pwm_frequency_led_red,
 						      pwm_duty_led_red);
+
+	ret |= mtk_os_hal_pwm_start_normal(pwm_group_led_red,
+		pwm_channel_led_red);
+
+	if (ret) {
+		printf("PWM config and start for LED Red failed\n");
+		goto err_exit;
+	}
+
+	/* Set PWM Frequency & Duty, and start PWM for LED Green */
+
 	ret |= mtk_os_hal_pwm_config_freq_duty_normal(pwm_group_led_green,
 						      pwm_channel_led_green,
 						      pwm_frequency_led_green,
 						      pwm_duty_led_green);
+	ret |= mtk_os_hal_pwm_start_normal(pwm_group_led_green,
+		pwm_channel_led_green);
+
+	if (ret) {
+		printf("PWM config and start for LED Green failed\n");
+		goto err_exit;
+	}
+
+	/* Set PWM Frequency & Duty, and start PWM for LED Blue */
 	ret |= mtk_os_hal_pwm_config_freq_duty_normal(pwm_group_led_blue,
 						      pwm_channel_led_blue,
 						      pwm_frequency_led_blue,
 						      pwm_duty_led_blue);
-	if (ret) {
-		printf("mtk_os_hal_pwm_config_freq_duty_normal failed\n");
-		goto err_exit;
-	}
 
-	/* Start PWM */
-	ret |= mtk_os_hal_pwm_start_normal(pwm_group_led_red,
-					   pwm_channel_led_red);
-	ret |= mtk_os_hal_pwm_start_normal(pwm_group_led_green,
-					   pwm_channel_led_green);
 	ret |= mtk_os_hal_pwm_start_normal(pwm_group_led_blue,
 					   pwm_channel_led_blue);
 	if (ret) {
-		printf("mtk_os_hal_pwm_start_normal failed\n");
+		printf("PWM config and start for LED Blue failed\n");
 		goto err_exit;
 	}
 
