@@ -80,6 +80,7 @@ static struct mtk_spi_config spi_default_config = {
 	.rx_mlsb = SPI_MSB,
 	.tx_mlsb = SPI_MSB,
 	.slave_sel = SPI_SELECT_DEVICE_0,
+	.cs_polar = SPI_CS_POLARITY_LOW,
 };
 
 /* Commands */

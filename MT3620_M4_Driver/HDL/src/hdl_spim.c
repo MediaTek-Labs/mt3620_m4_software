@@ -207,7 +207,7 @@ void mtk_hdl_spim_fifo_handle_rx(void __iomem *base,
 void mtk_hdl_spim_prepare_hw(void __iomem *base,
 			     u32 cpol, u32 cpha,
 			     u32 tx_mlsb, u32 rx_mlsb,
-			     u32 slave_sel)
+			     u32 slave_sel, u32 cs_polar)
 {
 	u32 reg_val;
 
@@ -255,6 +255,10 @@ void mtk_hdl_spim_prepare_hw(void __iomem *base,
 	reg_val = osai_readl(SPI_REG_CS_POLAR(base));
 	reg_val |= 0xf << CMD_DELAY_SEL_OFFSET; /* cs_setup */
 	reg_val |= 0xf << END_DELAY_SEL_OFFSET; /* cs_hold */
+
+	/* config cs polarity */
+	reg_val &= ~0xff;
+	reg_val |= cs_polar << slave_sel;
 	osai_writel(reg_val, SPI_REG_CS_POLAR(base));
 }
 

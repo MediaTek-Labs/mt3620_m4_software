@@ -186,7 +186,7 @@ int mtk_mhal_spim_prepare_hw(struct mtk_spi_controller *ctlr,
 	mtk_hdl_spim_prepare_hw(ctlr->base,
 				config->cpol, config->cpha,
 				config->tx_mlsb, config->rx_mlsb,
-				config->slave_sel);
+				config->slave_sel, config->cs_polar);
 
 	return 0;
 }

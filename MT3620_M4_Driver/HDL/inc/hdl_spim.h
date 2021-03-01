@@ -169,7 +169,7 @@ void mtk_hdl_spim_fifo_handle_rx(void __iomem *base,
 void mtk_hdl_spim_prepare_hw(void __iomem *base,
 			     u32 cpol, u32 cpha,
 			     u32 tx_mlsb, u32 rx_mlsb,
-			     u32 slave_sel);
+			     u32 slave_sel, u32 cs_polar);
 void mtk_hdl_spim_prepare_transfer(void __iomem *base,
 				   u32 speed_khz,
 				   u32 is_full_duplex);

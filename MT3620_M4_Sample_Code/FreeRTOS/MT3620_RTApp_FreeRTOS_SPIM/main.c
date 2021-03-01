@@ -89,6 +89,7 @@ static struct mtk_spi_config spi_default_config = {
 	.rx_mlsb = SPIM_RX_MLSB,
 	.tx_mlsb = SPIM_TX_MSLB,
 	.slave_sel = SPI_SELECT_DEVICE_0,
+	.cs_polar = SPI_CS_POLARITY_LOW,
 };
 static uint8_t *spim_tx_buf;
 static uint8_t *spim_rx_buf;

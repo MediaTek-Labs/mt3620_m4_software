@@ -87,6 +87,7 @@ static struct mtk_spi_config spi_default_config_arducam = {
 	.rx_mlsb = SPI_MSB,
 	.tx_mlsb = SPI_MSB,
 	.slave_sel = SPI_SELECT_DEVICE_0,
+	.cs_polar = SPI_CS_POLARITY_LOW,
 };
 struct mtk_spi_config spi_default_config_ili9341 = {
 	.cpol = SPI_CPOL_0,
@@ -94,6 +95,7 @@ struct mtk_spi_config spi_default_config_ili9341 = {
 	.rx_mlsb = SPI_MSB,
 	.tx_mlsb = SPI_MSB,
 	.slave_sel = SPI_SELECT_DEVICE_0,
+	.cs_polar = SPI_CS_POLARITY_LOW,
 };
 
 /* Commands */

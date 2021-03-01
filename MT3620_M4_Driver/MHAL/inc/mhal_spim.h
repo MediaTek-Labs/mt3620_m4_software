@@ -209,6 +209,17 @@ enum spi_slave_sel {
 	SPI_SELECT_DEVICE_1 = 1,
 };
 
+/** @brief SPI master's CS polarity definition.
+* Before performing transfer, user should
+* configured through #mtk_mhal_spim_prepare_hw().
+ */
+enum spi_cs_polarity {
+	/** cs operate low active */
+	SPI_CS_POLARITY_LOW = 0,
+	/** cs operate high active */
+	SPI_CS_POLARITY_HIGH = 1,
+};
+
 /**
   * @}
   */
@@ -258,6 +269,8 @@ struct mtk_spi_config {
 	enum spi_mlsb rx_mlsb;
 	/** define select which spi slave device */
 	enum spi_slave_sel slave_sel;
+	/** cs polarity for slave device */
+	enum spi_cs_polarity cs_polar;
 };
 
 /** @brief I/O INTERFACE between SPI OS-HAL and M-HAL.
@@ -429,6 +442,7 @@ int mtk_mhal_spim_fifo_handle_rx(struct mtk_spi_controller *ctlr,
  *		 .rx_mlsb = SPI_MSB,
  *		 .tx_mlsb = SPI_MSB,
  *		 .slave_sel = SPI_SELECT_DEVICE_0,
+ *		 .cs_polar = SPI_CS_POLARITY_LOW,
  *	 };
  *
  *	mtk_mhal_spim_prepare_hw(ctlr, &spi_default_config);
