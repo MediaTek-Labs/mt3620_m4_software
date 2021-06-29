@@ -99,7 +99,7 @@ int mtk_os_hal_gpioif_int_callback_register(gpioif_group group,
 	struct mtk_gpioif_controller_rtos *ctlr_rtos =
 	    _mtk_os_hal_gpioif_get_ctlr(group);
 
-	if (!ctlr_rtos || !callback || !user_data)
+	if (!ctlr_rtos || !callback)
 		return -GPIOIF_EINVAL;
 
 	ctlr_rtos->user_data = user_data;
@@ -510,19 +510,16 @@ int mtk_os_hal_gpioif_interrupt_control(
 		return -GPIOIF_EINVAL;
 
 	ctlr->mconfig->group = (mhal_gpioif_group)group;
-	if (enable)
-		mtk_mhal_gpioif_interrupt_bit_wise(ctlr,
-			bit, 0x1);
-	else
-		mtk_mhal_gpioif_interrupt_bit_wise(ctlr,
-			0x0, 0x0);
 
 	if (clear) {
-		mtk_mhal_gpioif_interrupt_bit_wise(ctlr,
-			bit, 0x1);
-		mtk_mhal_gpioif_interrupt_bit_wise(ctlr,
-			0x0, 0x0);
+		mtk_mhal_gpioif_interrupt_bit_wise(ctlr, bit, 0x1);
+		mtk_mhal_gpioif_interrupt_bit_wise(ctlr, 0x0, 0x0);
 	}
+
+	if (enable)
+		mtk_mhal_gpioif_interrupt_bit_wise(ctlr, bit, 0x1);
+	else
+		mtk_mhal_gpioif_interrupt_bit_wise(ctlr, 0x0, 0x0);
 
 	return 0;
 }

@@ -1,0 +1,12 @@
+{
+  "SchemaVersion": 1,
+  "Name": "FreeRTOS_RTApp_GPIOIF",
+  "ComponentId": "7F1EC83F-4ABB-480F-8627-1C2855CD9430",
+  "EntryPoint": "/bin/app",
+  "CmdArgs": [],
+  "Capabilities": {
+    "Gpio": [ 12, 13],
+    "Uart": [ "ISU0" ]
+  },
+  "ApplicationType": "RealTimeCapable"
+}
